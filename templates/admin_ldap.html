@@ -51,7 +51,7 @@
     {{range $key, $value := .Props}}
       {{if $value.Editable}}
         <div class="row mt-4">
-          <div class="col-md-3"><strong>{{$key}}</strong></div>
+          <div class="col-md-3"><strong>{{$value.Name}}</strong></div>
 
           <div class="col-md-7">
             <form method="POST">
@@ -106,7 +106,7 @@
     </form>
 </div>
 
-{{if .Members}}
+{{if .HasMembers}}
   <hr class="mt-4" />
   <h5 class="mt-4">Membres</h5>
   <div class="container">
@@ -143,7 +143,7 @@
   </div>
 {{end}}
 
-{{if .Groups}}
+{{if .HasGroups}}
   <hr class="mt-4" />
   <h5 class="mt-4">Membre de</h5>
   <div class="container">

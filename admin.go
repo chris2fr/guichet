@@ -123,11 +123,15 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 
 type AdminLDAPTplData struct {
 	DN string
-	Members []EntryName
-	Groups []EntryName
-	Props map[string]*PropValues
-	Children []Child
+
 	Path []PathItem
+	Children []Child
+	Props map[string]*PropValues
+
+	HasMembers bool
+	Members []EntryName
+	HasGroups bool
+	Groups []EntryName
 
 	Error string
 	Success bool
@@ -151,6 +155,7 @@ type PathItem struct {
 }
 
 type PropValues struct {
+	Name string
 	Values []string
 	Editable bool
 }
@@ -306,8 +311,9 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 	props := make(map[string]*PropValues)
 	for _, attr := range object.Attributes {
-		if attr.Name != dn_last_attr {
-			if existing, ok := props[attr.Name]; ok {
+		name_lower := strings.ToLower(attr.Name)
+		if name_lower != dn_last_attr {
+			if existing, ok := props[name_lower]; ok {
 				existing.Values = append(existing.Values, attr.Values...)
 			} else {
 				editable := true
@@ -320,7 +326,8 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 				}
-				props[attr.Name] = &PropValues{
+				props[name_lower] = &PropValues{
+					Name: attr.Name,
 					Values: attr.Values,
 					Editable: editable,
 				}
@@ -415,13 +422,33 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	// Checkup objectclass
+	objectClass := []string{}
+	if val, ok := props["objectclass"]; ok {
+		objectClass = val.Values
+	}
+	hasMembers, hasGroups := false, false
+	for _, oc := range objectClass {
+		if strings.EqualFold(oc, "organizationalperson") || strings.EqualFold(oc, "person") {
+			hasGroups = true
+		}
+		if strings.EqualFold(oc, "groupOfNames") {
+			hasMembers = true
+		}
+	}
+
 	templateAdminLDAP.Execute(w, &AdminLDAPTplData{
 		DN: dn,
-		Members: members,
-		Groups: groups,
-		Props: props,
-		Children: children,
+
 		Path: path,
+		Children: children,
+		Props: props,
+
+		HasMembers: len(members) > 0 || hasMembers,
+		Members: members,
+		HasGroups: len(groups) > 0 || hasGroups,
+		Groups: groups,
+
 		Error: dError,
 		Success: dSuccess,
 	})
