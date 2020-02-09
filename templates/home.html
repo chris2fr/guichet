@@ -2,7 +2,7 @@
 
 {{define "body"}}
 <div class="alert alert-success">
-    Bienvenue, <strong>{{ .UserEntry.GetAttributeValue "givenname" }}</strong> !
+    Bienvenue, <strong>{{ .Login.UserEntry.GetAttributeValue "givenname" }}</strong> !
 </div>
 <div class="d-flex">
   <a class="ml-auto btn btn-sm btn-dark" href="/logout">Se déconnecter</a>
@@ -16,19 +16,23 @@
   <div class="list-group list-group-flush">
     <a class="list-group-item list-group-item-action" href="/profile">Modifier mon profil</a>
     <a class="list-group-item list-group-item-action" href="/passwd">Modifier mon mot de passe</a>
-    <a class="list-group-item list-group-item-action" href="/invite">Inviter quelqu'un</a>
+    {{if .CanInvite}}
+      <a class="list-group-item list-group-item-action" href="/invite">Inviter quelqu'un</a>
+    {{end}}
   </div>
 </div>
 
-<div class="card mt-3">
-  <div class="card-header">
-    Administration
+{{if .CanAdmin}}
+  <div class="card mt-3">
+    <div class="card-header">
+      Administration
+    </div>
+    <div class="list-group list-group-flush">
+      <a class="list-group-item list-group-item-action" href="/admin/users">Utilisateurs</a>
+      <a class="list-group-item list-group-item-action" href="/admin/groups">Groupes</a>
+      <a class="list-group-item list-group-item-action" href="/admin/ldap">Explorateur LDAP</a>
+    </div>
   </div>
-  <div class="list-group list-group-flush">
-    <a class="list-group-item list-group-item-action" href="/admin/users">Utilisateurs</a>
-    <a class="list-group-item list-group-item-action" href="/admin/groups">Groupes</a>
-    <a class="list-group-item list-group-item-action" href="/admin/ldap">Explorateur LDAP</a>
-  </div>
-</div>
+{{end}}
 
 {{end}}

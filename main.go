@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"crypto/rand"
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -24,6 +24,8 @@ type ConfigFile struct {
 	LdapServerAddr string `json:"ldap_server_addr"`
 	LdapTLS        bool   `json:"ldap_tls"`
 	UserFormat     string `json:"user_format"`
+	GroupCanInvite string `json:"group_can_invite"`
+	GroupCanAdmin  string `json:"group_can_admin"`
 }
 
 var configFlag = flag.String("config", "./config.json", "Configuration file path")
@@ -112,8 +114,8 @@ type LoginInfo struct {
 }
 
 type LoginStatus struct {
-	Info *LoginInfo
-	conn *ldap.Conn
+	Info      *LoginInfo
+	conn      *ldap.Conn
 	UserEntry *ldap.Entry
 }
 
@@ -172,11 +174,11 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		login_info.DN,
 		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=organizationalPerson))"),
-		[]string{"dn", "displayname", "givenname", "sn", "mail"},
+		[]string{"dn", "displayname", "givenname", "sn", "mail", "memberof"},
 		nil)
 
 	sr, err := l.Search(searchRequest)
-	if err!= nil {
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return nil
 	}
@@ -187,8 +189,8 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	}
 
 	return &LoginStatus{
-		Info: login_info,
-		conn: l,
+		Info:      login_info,
+		conn:      l,
 		UserEntry: sr.Entries[0],
 	}
 }
@@ -220,6 +222,12 @@ type LoginFormData struct {
 
 // Page handlers ----
 
+type HomePageData struct {
+	Login     *LoginStatus
+	CanAdmin  bool
+	CanInvite bool
+}
+
 func handleHome(w http.ResponseWriter, r *http.Request) {
 	templateHome := template.Must(template.ParseFiles("templates/layout.html", "templates/home.html"))
 
@@ -228,7 +236,22 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templateHome.Execute(w, login)
+	can_admin := false
+	can_invite := false
+	for _, group := range login.UserEntry.GetAttributeValues("memberof") {
+		if config.GroupCanInvite != "" && group == config.GroupCanInvite {
+			can_invite = true
+		}
+		if config.GroupCanAdmin != "" && group == config.GroupCanAdmin {
+			can_admin = true
+		}
+	}
+
+	templateHome.Execute(w, &HomePageData{
+		Login:     login,
+		CanAdmin:  can_admin,
+		CanInvite: can_invite,
+	})
 }
 
 func handleLogout(w http.ResponseWriter, r *http.Request) {
@@ -307,13 +330,13 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 }
 
 type ProfileTplData struct {
-	Status *LoginStatus
+	Status       *LoginStatus
 	ErrorMessage string
-	Success bool
-	Mail string
-	DisplayName string
-	GivenName string
-	Surname string
+	Success      bool
+	Mail         string
+	DisplayName  string
+	GivenName    string
+	Surname      string
 }
 
 func handleProfile(w http.ResponseWriter, r *http.Request) {
@@ -325,9 +348,9 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &ProfileTplData{
-		Status: login,
+		Status:       login,
 		ErrorMessage: "",
-		Success: false,
+		Success:      false,
 	}
 
 	if r.Method == "POST" {
@@ -361,10 +384,10 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 type PasswdTplData struct {
-	Status *LoginStatus
+	Status       *LoginStatus
 	ErrorMessage string
 	NoMatchError bool
-	Success bool
+	Success      bool
 }
 
 func handlePasswd(w http.ResponseWriter, r *http.Request) {
@@ -376,9 +399,9 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &PasswdTplData{
-		Status: login,
+		Status:       login,
 		ErrorMessage: "",
-		Success: false,
+		Success:      false,
 	}
 
 	if r.Method == "POST" {
