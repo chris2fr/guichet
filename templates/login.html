@@ -1,0 +1,12 @@
+{{define "title"}}Log in{{end}}
+
+{{define "body"}}
+<h1>Log in</h1>
+
+<form method="POST">
+  <div>{{ .ErrorMessage }}</div>
+  Username: <input type="text" name="username" value="{{ .Username }}" /><br />
+  Password: <input type="password" name="password" /><br />
+  <input type="submit" value="log in">
+</form>
+{{end}}
