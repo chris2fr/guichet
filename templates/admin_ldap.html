@@ -190,6 +190,22 @@
   </div>
 {{end}}
 
+{{if .CanDelete}}
+  <hr class="mt-4">
+  <h5 class="mt-4">Supprimer l'objet</h5>
+  <div class="alert alert-danger">
+    Attention, cette opération est irrévocable !
+  </div>
+  <form method="POST" onsubmit="return confirm('Supprimer cet objet DÉFINITIVEMENT ?');">
+    <div class="form-row">
+      <input type="hidden" name="action" value="delete-object" />
+      <div class="col-sm-5"></div>
+      <input type="submit" value="Supprimer l'objet" class="form-control btn btn-danger col-sm-2" />
+      <div class="col-sm-5"></div>
+    </div>
+  </form>
+{{end}}
+
 <hr class="mt-4" />
 
 {{end}}

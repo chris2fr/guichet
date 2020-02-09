@@ -128,6 +128,7 @@ type AdminLDAPTplData struct {
 	Children []Child
 	CanAddChild bool
 	Props    map[string]*PropValues
+	CanDelete bool
 
 	HasMembers bool
 	Members    []EntryName
@@ -174,6 +175,27 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	dError := ""
 	dSuccess := false
 
+	// Build path
+	path := []PathItem{
+		PathItem{
+			DN:         config.BaseDN,
+			Identifier: config.BaseDN,
+			Active:     dn == config.BaseDN,
+		},
+	}
+
+	len_base_dn := len(strings.Split(config.BaseDN, ","))
+	dn_split := strings.Split(dn, ",")
+	dn_last_attr := strings.Split(dn_split[0], "=")[0]
+	for i := len_base_dn + 1; i <= len(dn_split); i++ {
+		path = append(path, PathItem{
+			DN:         strings.Join(dn_split[len(dn_split)-i:len(dn_split)], ","),
+			Identifier: dn_split[len(dn_split)-i],
+			Active:     i == len(dn_split),
+		})
+	}
+
+	// Handle modification operation
 	if r.Method == "POST" {
 		r.ParseForm()
 		action := strings.Join(r.Form["action"], "")
@@ -266,27 +288,16 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			} else {
 				dSuccess = true
 			}
+		} else if action == "delete-object" {
+			del_request := ldap.NewDelRequest(dn, nil)
+			err := login.conn.Del(del_request)
+			if err != nil {
+				dError = err.Error()
+			} else {
+				http.Redirect(w, r, "/admin/ldap/" + strings.Join(dn_split[1:], ","), http.StatusFound)
+				return
+			}
 		}
-	}
-
-	// Build path
-	path := []PathItem{
-		PathItem{
-			DN:         config.BaseDN,
-			Identifier: config.BaseDN,
-			Active:     dn == config.BaseDN,
-		},
-	}
-
-	len_base_dn := len(strings.Split(config.BaseDN, ","))
-	dn_split := strings.Split(dn, ",")
-	dn_last_attr := strings.Split(dn_split[0], "=")[0]
-	for i := len_base_dn + 1; i <= len(dn_split); i++ {
-		path = append(path, PathItem{
-			DN:         strings.Join(dn_split[len(dn_split)-i:len(dn_split)], ","),
-			Identifier: dn_split[len(dn_split)-i],
-			Active:     i == len(dn_split),
-		})
 	}
 
 	// Get object and parse it
@@ -445,6 +456,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		Children: children,
 		Props:    props,
 		CanAddChild: dn_last_attr == "ou",
+		CanDelete: dn != config.BaseDN && len(children) == 0,
 
 		HasMembers: len(members) > 0 || hasMembers,
 		Members:    members,
