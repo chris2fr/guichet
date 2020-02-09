@@ -4,7 +4,6 @@ import (
 	"os"
 	"strings"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"io/ioutil"
@@ -156,6 +155,7 @@ type LoginFormData struct {
 
 var (
 	templateLogin = template.Must(template.ParseFiles("templates/layout.html", "templates/login.html"))
+	templateHome = template.Must(template.ParseFiles("templates/layout.html", "templates/home.html"))
 )
 
 // Page handlers ----
@@ -166,7 +166,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Welcome, %s!", login.Username)
+	templateHome.Execute(w, login)
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
