@@ -23,7 +23,12 @@ type ConfigFile struct {
 	SessionKey     string `json:"session_key"`
 	LdapServerAddr string `json:"ldap_server_addr"`
 	LdapTLS        bool   `json:"ldap_tls"`
-	UserFormat     string `json:"user_format"`
+
+	UserBaseDN    string `json:"user_base_dn"`
+	UserNameAttr  string `json:"user_name_attr"`
+	GroupBaseDN   string `json:"group_base_dn"`
+	GroupNameAttr string `json:"group_name_attr"`
+
 	GroupCanInvite string `json:"group_can_invite"`
 	GroupCanAdmin  string `json:"group_can_admin"`
 }
@@ -48,7 +53,12 @@ func readConfig() ConfigFile {
 		SessionKey:     base64.StdEncoding.EncodeToString(key_bytes),
 		LdapServerAddr: "ldap://127.0.0.1:389",
 		LdapTLS:        false,
-		UserFormat:     "cn=%s,ou=users,dc=example,dc=com",
+		UserBaseDN:     "ou=users,dc=example,dc=com",
+		UserNameAttr:   "uid",
+		GroupBaseDN:    "ou=groups,dc=example,dc=com",
+		GroupNameAttr:  "gid",
+		GroupCanInvite: "",
+		GroupCanAdmin:  "gid=admin,ou=groups,dc=example,dc=com",
 	}
 
 	_, err = os.Stat(*configFlag)
@@ -213,13 +223,6 @@ func ldapOpen(w http.ResponseWriter) *ldap.Conn {
 	return l
 }
 
-// Templates ----
-
-type LoginFormData struct {
-	Username     string
-	ErrorMessage string
-}
-
 // Page handlers ----
 
 type HomePageData struct {
@@ -274,6 +277,11 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
+type LoginFormData struct {
+	Username     string
+	ErrorMessage string
+}
+
 func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 	templateLogin := template.Must(template.ParseFiles("templates/layout.html", "templates/login.html"))
 
@@ -285,7 +293,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 
 		username := strings.Join(r.Form["username"], "")
 		password := strings.Join(r.Form["password"], "")
-		user_dn := strings.ReplaceAll(config.UserFormat, "%s", username)
+		user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
 
 		l := ldapOpen(w)
 		if l == nil {
@@ -327,102 +335,4 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		http.Error(w, "Unsupported method", http.StatusBadRequest)
 		return nil
 	}
-}
-
-type ProfileTplData struct {
-	Status       *LoginStatus
-	ErrorMessage string
-	Success      bool
-	Mail         string
-	DisplayName  string
-	GivenName    string
-	Surname      string
-}
-
-func handleProfile(w http.ResponseWriter, r *http.Request) {
-	templateProfile := template.Must(template.ParseFiles("templates/layout.html", "templates/profile.html"))
-
-	login := checkLogin(w, r)
-	if login == nil {
-		return
-	}
-
-	data := &ProfileTplData{
-		Status:       login,
-		ErrorMessage: "",
-		Success:      false,
-	}
-
-	if r.Method == "POST" {
-		r.ParseForm()
-
-		data.Mail = strings.Join(r.Form["mail"], "")
-		data.DisplayName = strings.Join(r.Form["display_name"], "")
-		data.GivenName = strings.Join(r.Form["given_name"], "")
-		data.Surname = strings.Join(r.Form["surname"], "")
-
-		modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
-		modify_request.Replace("mail", []string{data.Mail})
-		modify_request.Replace("displayname", []string{data.DisplayName})
-		modify_request.Replace("givenname", []string{data.GivenName})
-		modify_request.Replace("sn", []string{data.Surname})
-
-		err := login.conn.Modify(modify_request)
-		if err != nil {
-			data.ErrorMessage = err.Error()
-		} else {
-			data.Success = true
-		}
-	} else {
-		data.Mail = login.UserEntry.GetAttributeValue("mail")
-		data.DisplayName = login.UserEntry.GetAttributeValue("displayname")
-		data.GivenName = login.UserEntry.GetAttributeValue("givenname")
-		data.Surname = login.UserEntry.GetAttributeValue("sn")
-	}
-
-	templateProfile.Execute(w, data)
-}
-
-type PasswdTplData struct {
-	Status       *LoginStatus
-	ErrorMessage string
-	NoMatchError bool
-	Success      bool
-}
-
-func handlePasswd(w http.ResponseWriter, r *http.Request) {
-	templatePasswd := template.Must(template.ParseFiles("templates/layout.html", "templates/passwd.html"))
-
-	login := checkLogin(w, r)
-	if login == nil {
-		return
-	}
-
-	data := &PasswdTplData{
-		Status:       login,
-		ErrorMessage: "",
-		Success:      false,
-	}
-
-	if r.Method == "POST" {
-		r.ParseForm()
-
-		password := strings.Join(r.Form["password"], "")
-		password2 := strings.Join(r.Form["password2"], "")
-
-		if password2 != password {
-			data.NoMatchError = true
-		} else {
-			modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
-			modify_request.Replace("userpassword", []string{SSHAEncode([]byte(password))})
-			err := login.conn.Modify(modify_request)
-			if err != nil {
-				data.ErrorMessage = err.Error()
-			} else {
-				data.Success = true
-			}
-		}
-	}
-
-	templatePasswd.Execute(w, data)
 }
