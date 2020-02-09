@@ -123,12 +123,19 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 
 type AdminLDAPTplData struct {
 	DN string
-	Members []string
-	Groups []string
+	Members []EntryName
+	Groups []EntryName
 	Props map[string]*PropValues
 	Children []Child
 	Path []PathItem
-	AddError string
+
+	Error string
+	Success bool
+}
+
+type EntryName struct {
+	DN string
+	DisplayName string
 }
 
 type Child struct {
@@ -146,8 +153,6 @@ type PathItem struct {
 type PropValues struct {
 	Values []string
 	Editable bool
-	ModifySuccess bool
-	ModifyError string
 }
 
 func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
@@ -160,10 +165,8 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 	dn := mux.Vars(r)["dn"]
 
-	modifyAttr := ""
-	modifyError := ""
-	modifySuccess := false
-	addError := ""
+	dError := ""
+	dSuccess := false
 
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -179,18 +182,17 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			modifyAttr = attr
 			if len(values_filtered) == 0 {
-				modifyError = "Refusing to delete attribute."
+				dError = "Refusing to delete attribute."
 			} else {
 				modify_request := ldap.NewModifyRequest(dn, nil)
 				modify_request.Replace(attr, values_filtered)
 
 				err := login.conn.Modify(modify_request)
 				if err != nil {
-					modifyError = err.Error()
+					dError = err.Error()
 				} else {
-					modifySuccess = true
+					dSuccess = true
 				}
 			}
 		} else if action == "add" {
@@ -208,9 +210,10 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Add(attr, values_filtered)
 
 			err := login.conn.Modify(modify_request)
-			modifyAttr = attr
 			if err != nil {
-				addError = err.Error()
+				dError = err.Error()
+			} else {
+				dSuccess = true
 			}
 		} else if action == "delete" {
 			attr := strings.Join(r.Form["attr"], "")
@@ -220,7 +223,42 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 			err := login.conn.Modify(modify_request)
 			if err != nil {
-				modifyError = err.Error()
+				dError = err.Error()
+			} else {
+				dSuccess = true
+			}
+		} else if action == "delete-from-group" {
+			group := strings.Join(r.Form["group"], "")
+			modify_request := ldap.NewModifyRequest(group, nil)
+			modify_request.Delete("member", []string{dn})
+
+			err := login.conn.Modify(modify_request)
+			if err != nil {
+				dError = err.Error()
+			} else {
+				dSuccess = true
+			}
+		} else if action == "add-to-group" {
+			group := strings.Join(r.Form["group"], "")
+			modify_request := ldap.NewModifyRequest(group, nil)
+			modify_request.Add("member", []string{dn})
+
+			err := login.conn.Modify(modify_request)
+			if err != nil {
+				dError = err.Error()
+			} else {
+				dSuccess = true
+			}
+		} else if action == "delete-member" {
+			member := strings.Join(r.Form["member"], "")
+			modify_request := ldap.NewModifyRequest(dn, nil)
+			modify_request.Delete("member", []string{member})
+
+			err := login.conn.Modify(modify_request)
+			if err != nil {
+				dError = err.Error()
+			} else {
+				dSuccess = true
 			}
 		}
 	}
@@ -282,31 +320,74 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 				}
-				pv := &PropValues{
+				props[attr.Name] = &PropValues{
 					Values: attr.Values,
 					Editable: editable,
 				}
-				if attr.Name == modifyAttr {
-					if modifySuccess {
-						pv.ModifySuccess = true
-					} else if modifyError != "" {
-						pv.ModifyError = modifyError
-					}
-				}
-				props[attr.Name] = pv
 			}
 		}
 	}
 
-	members := []string{}
+	members_dn := []string{}
 	if mp, ok := props["member"]; ok {
-		members = mp.Values
+		members_dn = mp.Values
 		delete(props, "member")
 	}
-	groups := []string{}
+
+	members := []EntryName{}
+	if len(members_dn) > 0 {
+		mapDnToName := make(map[string]string)
+		searchRequest = ldap.NewSearchRequest(
+			config.UserBaseDN,
+			ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+			fmt.Sprintf("(objectClass=organizationalPerson)"),
+			[]string{"dn", "displayname"},
+			nil)
+		sr, err := login.conn.Search(searchRequest)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		for _, ent := range sr.Entries {
+			mapDnToName[ent.DN] = ent.GetAttributeValue("displayname")
+		}
+		for _, memdn := range members_dn {
+			members = append(members, EntryName{
+				DN: memdn,
+				DisplayName: mapDnToName[memdn],
+			})
+		}
+	}
+
+	groups_dn := []string{}
 	if gp, ok := props["memberof"]; ok {
-		groups = gp.Values
+		groups_dn = gp.Values
 		delete(props, "memberof")
+	}
+
+	groups := []EntryName{}
+	if len(groups_dn) > 0 {
+		mapDnToName := make(map[string]string)
+		searchRequest = ldap.NewSearchRequest(
+			config.GroupBaseDN,
+			ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+			fmt.Sprintf("(objectClass=groupOfNames)"),
+			[]string{"dn", "displayname"},
+			nil)
+		sr, err := login.conn.Search(searchRequest)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		for _, ent := range sr.Entries {
+			mapDnToName[ent.DN] = ent.GetAttributeValue("displayname")
+		}
+		for _, grpdn := range groups_dn {
+			groups = append(groups, EntryName{
+				DN: grpdn,
+				DisplayName: mapDnToName[grpdn],
+			})
+		}
 	}
 
 	// Get children
@@ -341,6 +422,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		Props: props,
 		Children: children,
 		Path: path,
-		AddError: addError,
+		Error: dError,
+		Success: dSuccess,
 	})
 }

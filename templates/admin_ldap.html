@@ -36,6 +36,16 @@
   </tbody>
 </table>
 
+{{if .Success}}
+  <div class="alert alert-success mt-2">Modification enregistrée.</div>
+{{end}}
+{{if .Error}}
+  <div class="alert alert-danger mt-2">
+    Impossible d'effectuer la modification.
+    <div style="font-size: 0.8em">{{.Error}}</div>
+  </div>
+{{end}}
+
 <h5>Attributs</h5>
 <div class="container">
     {{range $key, $value := .Props}}
@@ -54,15 +64,6 @@
                 </div>
               </div>
             </form>
-            {{if $value.ModifySuccess}}
-              <div class="alert alert-success mt-2">Modification enregistrée.</div>
-            {{end}}
-            {{if $value.ModifyError}}
-              <div class="alert alert-danger mt-2">
-                Impossible de modifier la valeur.
-                <div style="font-size: 0.8em">{{$value.ModifyError}}</div>
-              </div>
-            {{end}}
           </div>
 
           <div class="col-md-1">
@@ -94,12 +95,6 @@
           <input class="form-control" type="text" name="attr" placeholder="Ajouter un attribut..." />
         </div>
         <div class="col-md-7">
-          {{if .AddError}}
-            <div class="alert alert-danger">
-              Impossible d'ajouter la valeur.
-              <div style="font-size: 0.8em">{{.AddError}}</div>
-            </div>
-          {{end}}
           <div class="form-row">
             <textarea name="values" placeholder="Valeur(s)..." rows="2" class="form-control col-md-9"></textarea>
             <div class="col-md-3">
@@ -112,21 +107,76 @@
 </div>
 
 {{if .Members}}
+  <hr class="mt-4" />
   <h5 class="mt-4">Membres</h5>
-  <ul class="list-group">
+  <div class="container">
     {{range .Members}}
-      <li class="list-group-item">{{.}}</li>
+      <div class="row mt-4">
+        <div class="col-md-3">
+          <strong>{{.DisplayName}}</strong>
+        </div>
+        <div class="col-md-5">
+          <a href="/admin/ldap/{{.DN}}">{{.DN}}</a>
+        </div>
+        <div class="col-md-2">
+            <form method="POST" onsubmit="return confirm('Supprimer du groupe ?');">
+              <input type="hidden" name="action" value="delete-member" />
+              <input type="hidden" name="member" value="{{.DN}}" />
+              <input type="submit" value="Supprimer" class="form-control btn btn-danger btn-sm" />
+            </form>
+        </div>
+      </div>
     {{end}}
-  </ul>
+    <form method="POST">
+      <input type="hidden" name="action" value="add" />
+      <input type="hidden" name="attr" value="member" />
+      <div class="row mt-4">
+        <div class="col-md-3"><strong>Ajouter au groupe :</strong>
+      </div>
+      <div class="col-md-5">
+        <input class="form-control" type="text" name="values" placeholder="Groupe..." />
+      </div>
+      <div class="col-md-2">
+          <input type="submit" value="Ajouter" class="form-control btn btn-success btn-sm" />
+      </div>
+    </form>
+  </div>
 {{end}}
 
 {{if .Groups}}
+  <hr class="mt-4" />
   <h5 class="mt-4">Membre de</h5>
-  <ul class="list-group">
+  <div class="container">
     {{range .Groups}}
-      <li class="list-group-item">{{.}}</li>
+      <div class="row mt-4">
+        <div class="col-md-3">
+          <strong>{{.DisplayName}}</strong>
+        </div>
+        <div class="col-md-5">
+          <a href="/admin/ldap/{{.DN}}">{{.DN}}</a>
+        </div>
+        <div class="col-md-2">
+            <form method="POST" onsubmit="return confirm('Supprimer du groupe ?');">
+              <input type="hidden" name="action" value="delete-from-group" />
+              <input type="hidden" name="group" value="{{.DN}}" />
+              <input type="submit" value="Supprimer" class="form-control btn btn-danger btn-sm" />
+            </form>
+        </div>
+      </div>
     {{end}}
-  </ul>
+    <form method="POST">
+      <input type="hidden" name="action" value="add-to-group" />
+      <div class="row mt-4">
+        <div class="col-md-3"><strong>Nouveau groupe :</strong>
+      </div>
+      <div class="col-md-5">
+        <input class="form-control" type="text" name="group" placeholder="Groupe..." />
+      </div>
+      <div class="col-md-2">
+          <input type="submit" value="Ajouter" class="form-control btn btn-success btn-sm" />
+      </div>
+    </form>
+  </div>
 {{end}}
 
 <hr class="mt-4" />
