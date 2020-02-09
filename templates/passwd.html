@@ -1,24 +1,31 @@
 {{define "title"}}Mot de passe |{{end}}
 
 {{define "body"}}
-<h4>Modifier mon mot de passe</h4>
+<div class="d-flex">
+  <h4>Modifier mon mot de passe</h4>
+  <a class="ml-auto btn btn-info" href="/">Retour</a>
+</div>
 
   {{if .ErrorMessage}}
-    <div class="alert alert-danger">Impossible d'effectuer la modification.
+    <div class="alert alert-danger mt-4">Impossible d'effectuer la modification.
       <div style="font-size: 0.8em">{{ .ErrorMessage }}</div>
     </div>
   {{end}}
   {{if .Success}}
-    <div class="alert alert-success">
+    <div class="alert alert-success mt-4">
        Nouveau mot de passe enregistré.
     </div>
-    <a class="btn btn-info" href="/">Retour</a>
   {{else}}
-    <form method="POST">
+    <form method="POST" class="mt-4">
       <div class="form-group">
         <label for="password">Nouveau mot de passe :</label>
         <input type="password" id="password" name="password" class="form-control" />
       </div>
+      {{if .TooShortError}}
+        <div class="alert alert-warning">
+          Le mot de passe choisi est trop court (minimum 8 caractères).
+        </div>
+      {{end}}
       <div class="form-group">
         <label for="password2">Répéter le mot de passe :</label>
         <input type="password" id="password2" name="password2" class="form-control" />
@@ -28,10 +35,7 @@
           Les deux mots de passe entrés ne correspondent pas.
         </div>
       {{end}}
-      <div class="d-flex">
-        <button type="submit" class="btn btn-primary">Changer de mot de passe</button>
-        <a class="ml-auto btn btn-danger" href="/">Annuler</a>
-      </div>
+      <button type="submit" class="btn btn-primary">Changer de mot de passe</button>
     </form>
   {{end}}
 {{end}}

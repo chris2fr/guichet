@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
-	"fmt"
 	"sort"
 
 	"github.com/go-ldap/ldap/v3"
@@ -31,9 +31,9 @@ func checkAdminLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 }
 
 type AdminUsersTplData struct {
-	Login *LoginStatus
+	Login        *LoginStatus
 	UserNameAttr string
-	Users []*ldap.Entry
+	Users        []*ldap.Entry
 }
 
 func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
@@ -58,9 +58,9 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &AdminUsersTplData{
-		Login: login,
+		Login:        login,
 		UserNameAttr: config.UserNameAttr,
-		Users: sr.Entries,
+		Users:        sr.Entries,
 	}
 	sort.Sort(data)
 

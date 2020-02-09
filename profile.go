@@ -63,10 +63,11 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 type PasswdTplData struct {
-	Status       *LoginStatus
-	ErrorMessage string
-	NoMatchError bool
-	Success      bool
+	Status        *LoginStatus
+	ErrorMessage  string
+	TooShortError bool
+	NoMatchError  bool
+	Success       bool
 }
 
 func handlePasswd(w http.ResponseWriter, r *http.Request) {
@@ -89,7 +90,9 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 		password := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
 
-		if password2 != password {
+		if len(password) < 8 {
+			data.TooShortError = true
+		} else if password2 != password {
 			data.NoMatchError = true
 		} else {
 			modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
