@@ -1,7 +1,18 @@
 {{define "title"}}Guichet{{end}}
 
 {{define "body"}}
-<h1>Guichet</h1>
+<div class="alert alert-success">
+  Bienvenue, <strong>{{ .Username }}</strong> !
+</div>
 
-Welcome, {{ .Username }}!
+<div class="card">
+  <div class="card-header">
+    Gérer mon compte
+  </div>
+  <div class="list-group list-group-flush">
+    <a class="list-group-item list-group-item-action" href="/">Test</a>
+    <a class="list-group-item list-group-item-action" href="/logout">Se déconnecter</a>
+  </div>
+</div>
+
 {{end}}
