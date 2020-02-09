@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"crypto/rand"
 	"crypto/tls"
 	"encoding/base64"
@@ -92,6 +93,7 @@ func main() {
 
 	http.HandleFunc("/", handleHome)
 	http.HandleFunc("/logout", handleLogout)
+	http.HandleFunc("/profile", handleProfile)
 
 	staticfiles := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", staticfiles))
@@ -108,6 +110,12 @@ type LoginInfo struct {
 	Password string
 }
 
+type LoginStatus struct {
+	Info *LoginInfo
+	conn *ldap.Conn
+	UserEntry *ldap.Entry
+}
+
 func logRequest(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
@@ -115,7 +123,7 @@ func logRequest(handler http.Handler) http.Handler {
 	})
 }
 
-func checkLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
+func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	session, err := store.Get(r, SESSION_NAME)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -125,14 +133,62 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 	username, ok := session.Values["login_username"]
 	password, ok2 := session.Values["login_password"]
 	user_dn, ok3 := session.Values["login_dn"]
+
+	var login_info *LoginInfo
 	if !(ok && ok2 && ok3) {
-		return handleLogin(w, r)
+		login_info = handleLogin(w, r)
+		if login_info == nil {
+			return nil
+		}
+	} else {
+		login_info = &LoginInfo{
+			DN:       user_dn.(string),
+			Username: username.(string),
+			Password: password.(string),
+		}
 	}
 
-	return &LoginInfo{
-		DN:       user_dn.(string),
-		Username: username.(string),
-		Password: password.(string),
+	l := ldapOpen(w)
+	if l == nil {
+		return nil
+	}
+
+	err = l.Bind(login_info.DN, login_info.Password)
+	if err != nil {
+		delete(session.Values, "login_username")
+		delete(session.Values, "login_password")
+		delete(session.Values, "login_dn")
+
+		err = session.Save(r, w)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return nil
+		}
+		return checkLogin(w, r)
+	}
+
+	searchRequest := ldap.NewSearchRequest(
+		login_info.DN,
+		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=organizationalPerson))"),
+		[]string{"dn", "displayname", "givenname", "sn", "mail"},
+		nil)
+
+	sr, err := l.Search(searchRequest)
+	if err!= nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return nil
+	}
+
+	if len(sr.Entries) != 1 {
+		http.Error(w, fmt.Sprintf("Multiple entries: %#v", sr.Entries), http.StatusInternalServerError)
+		return nil
+	}
+
+	return &LoginStatus{
+		Info: login_info,
+		conn: l,
+		UserEntry: sr.Entries[0],
 	}
 }
 
@@ -247,4 +303,58 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		http.Error(w, "Unsupported method", http.StatusBadRequest)
 		return nil
 	}
+}
+
+type ProfileTplData struct {
+	Status *LoginStatus
+	ErrorMessage string
+	Success bool
+	Mail string
+	DisplayName string
+	GivenName string
+	Surname string
+}
+
+func handleProfile(w http.ResponseWriter, r *http.Request) {
+	templateProfile := template.Must(template.ParseFiles("templates/layout.html", "templates/profile.html"))
+
+	login := checkLogin(w, r)
+	if login == nil {
+		return
+	}
+
+	data := &ProfileTplData{
+		Status: login,
+		ErrorMessage: "",
+		Success: false,
+	}
+
+	if r.Method == "POST" {
+		r.ParseForm()
+
+		data.Mail = strings.Join(r.Form["mail"], "")
+		data.DisplayName = strings.Join(r.Form["display_name"], "")
+		data.GivenName = strings.Join(r.Form["given_name"], "")
+		data.Surname = strings.Join(r.Form["surname"], "")
+
+		modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
+		modify_request.Replace("mail", []string{data.Mail})
+		modify_request.Replace("displayname", []string{data.DisplayName})
+		modify_request.Replace("givenname", []string{data.GivenName})
+		modify_request.Replace("sn", []string{data.Surname})
+
+		err := login.conn.Modify(modify_request)
+		if err != nil {
+			data.ErrorMessage = err.Error()
+		} else {
+			data.Success = true
+		}
+	} else {
+		data.Mail = login.UserEntry.GetAttributeValue("mail")
+		data.DisplayName = login.UserEntry.GetAttributeValue("displayname")
+		data.GivenName = login.UserEntry.GetAttributeValue("givenname")
+		data.Surname = login.UserEntry.GetAttributeValue("sn")
+	}
+
+	templateProfile.Execute(w, data)
 }

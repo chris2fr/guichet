@@ -1,17 +1,32 @@
-{{define "title"}}Guichet{{end}}
+{{define "title"}}{{end}}
 
 {{define "body"}}
 <div class="alert alert-success">
-  Bienvenue, <strong>{{ .Username }}</strong> !
+  <div class="d-flex">
+    <span>Bienvenue, <strong>{{ .UserEntry.GetAttributeValue "givenname" }}</strong> !</span>
+    <a class="ml-auto btn btn-sm btn-dark" href="/logout">Se déconnecter</a>
+  </div>
 </div>
 
 <div class="card">
   <div class="card-header">
-    Gérer mon compte
+    Mon compte
   </div>
   <div class="list-group list-group-flush">
-    <a class="list-group-item list-group-item-action" href="/">Test</a>
-    <a class="list-group-item list-group-item-action" href="/logout">Se déconnecter</a>
+    <a class="list-group-item list-group-item-action" href="/profile">Modifier mon profil</a>
+    <a class="list-group-item list-group-item-action" href="/passwd">Modifier mon mot de passe</a>
+    <a class="list-group-item list-group-item-action" href="/invite">Inviter quelqu'un</a>
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-header">
+    Administration
+  </div>
+  <div class="list-group list-group-flush">
+    <a class="list-group-item list-group-item-action" href="/admin/users">Utilisateurs</a>
+    <a class="list-group-item list-group-item-action" href="/admin/groups">Groupes</a>
+    <a class="list-group-item list-group-item-action" href="/admin/ldap">Explorateur LDAP</a>
   </div>
 </div>
 
