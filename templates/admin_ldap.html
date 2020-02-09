@@ -21,14 +21,6 @@
   </nav>
 </div>
 
-<div class="mt-4">
-  <div class="d-flex">
-    <a class="ml-auto btn btn-sm btn-success" href="/admin/create/user/{{.DN}}">+utilisateur</a>
-    <a class="ml-4 btn btn-sm btn-success" href="/admin/create/group/{{.DN}}">+groupe</a>
-    <a class="ml-4 btn btn-sm btn-success" href="/admin/create/generic/{{.DN}}">+objet</a>
-  </div>
-</div>
-
 <table class="table mt-4">
   <tbody>
     {{range .Children}}
@@ -43,6 +35,17 @@
     {{end}}
   </tbody>
 </table>
+
+{{if .CanAddChild}}
+  <div class="mt-4">
+    <div class="d-flex">
+      <a class="ml-auto btn btn-sm btn-success" href="/admin/create/user/{{.DN}}">+utilisateur</a>
+      <a class="ml-4 btn btn-sm btn-success" href="/admin/create/group/{{.DN}}">+groupe</a>
+      <a class="ml-4 btn btn-sm btn-success" href="/admin/create/generic/{{.DN}}">+objet</a>
+    </div>
+  </div>
+  <hr class="mt-4" />
+{{end}}
 
 {{if .Success}}
   <div class="alert alert-success mt-2">Modification enregistrée.</div>

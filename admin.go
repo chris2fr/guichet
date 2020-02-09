@@ -126,6 +126,7 @@ type AdminLDAPTplData struct {
 
 	Path     []PathItem
 	Children []Child
+	CanAddChild bool
 	Props    map[string]*PropValues
 
 	HasMembers bool
@@ -443,6 +444,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		Path:     path,
 		Children: children,
 		Props:    props,
+		CanAddChild: dn_last_attr == "ou",
 
 		HasMembers: len(members) > 0 || hasMembers,
 		Members:    members,
@@ -456,6 +458,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 type CreateData struct {
 	SuperDN string
+	Path     []PathItem
 
 	IdType                string
 	IdValue               string
@@ -477,8 +480,27 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 	template := mux.Vars(r)["template"]
 	super_dn := mux.Vars(r)["super_dn"]
 
+	// Build path
+	path := []PathItem{
+		PathItem{
+			DN:         config.BaseDN,
+			Identifier: config.BaseDN,
+		},
+	}
+
+	len_base_dn := len(strings.Split(config.BaseDN, ","))
+	dn_split := strings.Split(super_dn, ",")
+	for i := len_base_dn + 1; i <= len(dn_split); i++ {
+		path = append(path, PathItem{
+			DN:         strings.Join(dn_split[len(dn_split)-i:len(dn_split)], ","),
+			Identifier: dn_split[len(dn_split)-i],
+		})
+	}
+
+	// Handle data
 	data := &CreateData{
 		SuperDN: super_dn,
+		Path: path,
 	}
 	if template == "user" {
 		data.IdType = config.UserNameAttr
@@ -488,6 +510,9 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		data.IdType = config.UserNameAttr
 		data.StructuralObjectClass = "groupOfNames"
 		data.ObjectClass = "groupOfNames\ntop"
+	} else {
+		data.IdType = "cn"
+		data.ObjectClass = "top"
 	}
 
 	if r.Method == "POST" {
