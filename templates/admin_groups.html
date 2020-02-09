@@ -1,9 +1,9 @@
-{{define "title"}}Liste des utilisateurs |{{end}}
+{{define "title"}}Liste des groupes |{{end}}
 
 {{define "body"}}
 
 <div class="d-flex">
-  <h4>Liste des utilisateurs</h4>
+  <h4>Liste des groupes</h4>
   <a class="ml-auto btn btn-info" href="/">Retour</a>
 </div>
 
@@ -11,19 +11,17 @@
   <thead>
     <th scope="col">Identifiant</th>
     <th scope="col">Nom complet</th>
-    <th scope="col">Email</th>
   </thead>
   <tbody>
     {{with $root := .}}
-      {{range $user := $root.Users}}
+      {{range $group := $root.Groups}}
         <tr>
           <td>
-            <a href="/admin/ldap/{{$user.DN}}">
-              {{$user.GetAttributeValue $root.UserNameAttr}}
+            <a href="/admin/ldap/{{$group.DN}}">
+              {{$group.GetAttributeValue $root.GroupNameAttr}}
             </a>
           </td>
-          <td>{{$user.GetAttributeValue "displayname"}}</td>
-          <td>{{$user.GetAttributeValue "mail"}}</td>
+          <td>{{$group.GetAttributeValue "displayname"}}</td>
         </tr>
       {{end}}
     {{end}}

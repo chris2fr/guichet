@@ -16,6 +16,7 @@ import (
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/sessions"
+	"github.com/gorilla/mux"
 )
 
 type ConfigFile struct {
@@ -24,6 +25,7 @@ type ConfigFile struct {
 	LdapServerAddr string `json:"ldap_server_addr"`
 	LdapTLS        bool   `json:"ldap_tls"`
 
+	BaseDN		  string `json:"base_dn"`
 	UserBaseDN    string `json:"user_base_dn"`
 	UserNameAttr  string `json:"user_name_attr"`
 	GroupBaseDN   string `json:"group_base_dn"`
@@ -53,6 +55,7 @@ func readConfig() ConfigFile {
 		SessionKey:     base64.StdEncoding.EncodeToString(key_bytes),
 		LdapServerAddr: "ldap://127.0.0.1:389",
 		LdapTLS:        false,
+		BaseDN:		    "dc=example,dc=com",
 		UserBaseDN:     "ou=users,dc=example,dc=com",
 		UserNameAttr:   "uid",
 		GroupBaseDN:    "ou=groups,dc=example,dc=com",
@@ -103,19 +106,20 @@ func main() {
 	config = &config_file
 	store = sessions.NewFilesystemStore("", []byte(config.SessionKey))
 
-	http.HandleFunc("/", handleHome)
-	http.HandleFunc("/logout", handleLogout)
-	http.HandleFunc("/profile", handleProfile)
-	http.HandleFunc("/passwd", handlePasswd)
+	r := mux.NewRouter()
+	r.HandleFunc("/", handleHome)
+	r.HandleFunc("/logout", handleLogout)
+	r.HandleFunc("/profile", handleProfile)
+	r.HandleFunc("/passwd", handlePasswd)
 
-	http.HandleFunc("/admin/users", handleAdminUsers)
-	//http.HandleFunc("/admin/groups", handleAdminGroups)
-	//http.HandleFunc("/admin/ldap", handleAdminLDAP)
+	r.HandleFunc("/admin/users", handleAdminUsers)
+	r.HandleFunc("/admin/groups", handleAdminGroups)
+	r.HandleFunc("/admin/ldap/{dn}", handleAdminLDAP)
 
 	staticfiles := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", staticfiles))
+	r.Handle("/static/{file:.*}", http.StripPrefix("/static/", staticfiles))
 
-	err := http.ListenAndServe(config.HttpBindAddr, logRequest(http.DefaultServeMux))
+	err := http.ListenAndServe(config.HttpBindAddr, logRequest(r))
 	if err != nil {
 		log.Fatal("Cannot start http server: ", err)
 	}
@@ -233,6 +237,7 @@ type HomePageData struct {
 	Login     *LoginStatus
 	CanAdmin  bool
 	CanInvite bool
+	BaseDN	  string
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
@@ -258,6 +263,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		Login:     login,
 		CanAdmin:  can_admin,
 		CanInvite: can_invite,
+		BaseDN:	   config.BaseDN,
 	})
 }
 
