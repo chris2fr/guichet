@@ -3,43 +3,42 @@
 {{define "body"}}
 <h4>Modifier mon profil</h4>
 
-<form method="POST">
   {{if .ErrorMessage}}
-    <div class="alert alert-danger">Impossible de se connecter.
+    <div class="alert alert-danger">Impossible d'effectuer la modification.
       <div style="font-size: 0.8em">{{ .ErrorMessage }}</div>
     </div>
   {{end}}
   {{if .Success}}
     <div class="alert alert-success">
-      <div class="d-flex">
-        <span>Profil enregistré.</span>
-        <a class="ml-auto btn btn-sm btn-info" href="/">Retour</a>
-      </div>
+        Profil enregistré.
     </div>
+    <a class="ml-auto btn btn-info" href="/">Retour</a>
+  {{else}}
+    <form method="POST">
+      <div class="form-group">
+        <label>Nom d'utilisateur:</label>
+        <input type="text" disabled="true" class="form-control" value="{{ .Status.Info.Username }}" />
+      </div>
+      <div class="form-group">
+        <label for="mail">Adresse e-mail:</label>
+        <input type="text" id="mail" name="mail" class="form-control" value="{{ .Mail }}" />
+      </div>
+      <div class="form-group">
+        <label for="display_name">Nom complet:</label>
+        <input type="text" id="display_name" name="display_name" class="form-control" value="{{ .DisplayName }}" />
+      </div>
+      <div class="form-group">
+        <label for="given_name">Prénom:</label>
+        <input type="text" id="given_name" name="given_name" class="form-control" value="{{ .GivenName }}" />
+      </div>
+      <div class="form-group">
+        <label for="surname">Nom de famille:</label>
+        <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
+      </div>
+      <div class="d-flex">
+        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        <a class="ml-auto btn btn-danger" href="/">Annuler</a>
+      </div>
+    </form>
   {{end}}
-  <div class="form-group">
-    <label>Nom d'utilisateur:</label>
-    <input type="text" disabled="true" class="form-control" value="{{ .Status.Info.Username }}" />
-  </div>
-  <div class="form-group">
-    <label for="mail">Adresse e-mail:</label>
-    <input type="text" id="mail" name="mail" class="form-control" value="{{ .Mail }}" />
-  </div>
-  <div class="form-group">
-    <label for="display_name">Nom complet:</label>
-    <input type="text" id="display_name" name="display_name" class="form-control" value="{{ .DisplayName }}" />
-  </div>
-  <div class="form-group">
-    <label for="given_name">Prénom:</label>
-    <input type="text" id="given_name" name="given_name" class="form-control" value="{{ .GivenName }}" />
-  </div>
-  <div class="form-group">
-    <label for="surname">Nom de famille:</label>
-    <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
-  </div>
-  <div class="d-flex">
-    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-    <a class="ml-auto btn btn-danger" href="/">Annuler</a>
-  </div>
-</form>
 {{end}}

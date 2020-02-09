@@ -94,6 +94,7 @@ func main() {
 	http.HandleFunc("/", handleHome)
 	http.HandleFunc("/logout", handleLogout)
 	http.HandleFunc("/profile", handleProfile)
+	http.HandleFunc("/passwd", handlePasswd)
 
 	staticfiles := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", staticfiles))
@@ -357,4 +358,48 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	templateProfile.Execute(w, data)
+}
+
+type PasswdTplData struct {
+	Status *LoginStatus
+	ErrorMessage string
+	NoMatchError bool
+	Success bool
+}
+
+func handlePasswd(w http.ResponseWriter, r *http.Request) {
+	templatePasswd := template.Must(template.ParseFiles("templates/layout.html", "templates/passwd.html"))
+
+	login := checkLogin(w, r)
+	if login == nil {
+		return
+	}
+
+	data := &PasswdTplData{
+		Status: login,
+		ErrorMessage: "",
+		Success: false,
+	}
+
+	if r.Method == "POST" {
+		r.ParseForm()
+
+		password := strings.Join(r.Form["password"], "")
+		password2 := strings.Join(r.Form["password2"], "")
+
+		if password2 != password {
+			data.NoMatchError = true
+		} else {
+			modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
+			modify_request.Replace("userpassword", []string{SSHAEncode([]byte(password))})
+			err := login.conn.Modify(modify_request)
+			if err != nil {
+				data.ErrorMessage = err.Error()
+			} else {
+				data.Success = true
+			}
+		}
+	}
+
+	templatePasswd.Execute(w, data)
 }
