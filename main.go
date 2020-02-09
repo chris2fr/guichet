@@ -108,6 +108,10 @@ func main() {
 	http.HandleFunc("/profile", handleProfile)
 	http.HandleFunc("/passwd", handlePasswd)
 
+	http.HandleFunc("/admin/users", handleAdminUsers)
+	//http.HandleFunc("/admin/groups", handleAdminGroups)
+	//http.HandleFunc("/admin/ldap", handleAdminLDAP)
+
 	staticfiles := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", staticfiles))
 

@@ -1,0 +1,27 @@
+{{define "title"}}Liste des utilisateurs |{{end}}
+
+{{define "body"}}
+<div class="d-flex">
+  <a class="ml-auto btn btn-info" href="/">Retour</a>
+</div>
+
+<table class="table mt-4">
+  <thead>
+    <th scope="col">{{ .UserNameAttr }}</th>
+    <th scope="col">Nom complet</th>
+    <th scope="col">Email</th>
+  </thead>
+  <tbody>
+    {{with $root := .}}
+      {{range $user := $root.Users}}
+        <tr>
+          <td>{{$user.GetAttributeValue $root.UserNameAttr}}</td>
+          <td>{{$user.GetAttributeValue "displayname"}}</td>
+          <td>{{$user.GetAttributeValue "mail"}}</td>
+        </tr>
+      {{end}}
+    {{end}}
+  </tbody>
+</table>
+
+{{end}}
