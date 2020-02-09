@@ -21,6 +21,14 @@
   </nav>
 </div>
 
+<div class="mt-4">
+  <div class="d-flex">
+    <a class="ml-auto btn btn-sm btn-success" href="/admin/create/user/{{.DN}}">+utilisateur</a>
+    <a class="ml-4 btn btn-sm btn-success" href="/admin/create/group/{{.DN}}">+groupe</a>
+    <a class="ml-4 btn btn-sm btn-success" href="/admin/create/generic/{{.DN}}">+objet</a>
+  </div>
+</div>
+
 <table class="table mt-4">
   <tbody>
     {{range .Children}}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"strings"
 	"fmt"
 	"html/template"
@@ -452,4 +453,84 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		Error: dError,
 		Success: dSuccess,
 	})
+}
+
+type CreateData struct {
+	SuperDN string
+
+	IdType string
+	IdValue string
+	DisplayName string
+	StructuralObjectClass string
+	ObjectClass string
+
+	Error string
+}
+
+func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
+	templateAdminCreate := template.Must(template.ParseFiles("templates/layout.html", "templates/admin_create.html"))
+
+	login := checkAdminLogin(w, r)
+	if login == nil {
+		return
+	}
+
+	template := mux.Vars(r)["template"]
+	super_dn := mux.Vars(r)["super_dn"]
+
+	data := &CreateData{
+		SuperDN: super_dn,
+	}
+	if template == "user" {
+		data.IdType = config.UserNameAttr
+		data.StructuralObjectClass = "inetOrgPerson"
+		data.ObjectClass = "inetOrgPerson\norganizationalPerson\nperson\ntop"
+	} else if template == "group" {
+		data.IdType = config.UserNameAttr
+		data.StructuralObjectClass = "groupOfNames"
+		data.ObjectClass = "groupOfNames\ntop"
+	}
+
+	if r.Method == "POST" {
+		r.ParseForm()
+		data.IdType = strings.Join(r.Form["idtype"], "")
+		data.IdValue = strings.Join(r.Form["idvalue"], "")
+		data.DisplayName = strings.Join(r.Form["displayname"], "")
+		data.StructuralObjectClass = strings.Join(r.Form["soc"], "")
+		data.ObjectClass = strings.Join(r.Form["oc"], "")
+
+		object_class := []string{}
+		for _, oc := range strings.Split(data.ObjectClass, "\n") {
+			x := strings.TrimSpace(oc)
+			if x != "" {
+				object_class = append(object_class, x)
+			}
+		}
+
+		if len(object_class) == 0 {
+			data.Error = "No object class specified"
+		} else if match, err := regexp.MatchString("^[a-z]+$", data.IdType); err != nil || !match {
+			data.Error = "Invalid identifier type"
+		} else if len(data.IdValue) == 0 {
+			data.Error = "No identifier specified"
+		} else if match, err := regexp.MatchString("^[\\d\\w_-]+$", data.IdValue); err != nil || !match {
+			data.Error = "Invalid identifier"
+		} else {
+			dn := data.IdType + "=" + data.IdValue + "," + super_dn
+			req := ldap.NewAddRequest(dn, nil)
+			req.Attribute("objectClass", object_class)
+			req.Attribute("structuralObjectClass",
+				[]string{data.StructuralObjectClass})
+			req.Attribute("displayname", []string{data.DisplayName})
+			err := login.conn.Add(req)
+			if err != nil {
+				data.Error = err.Error()
+			} else {
+				http.Redirect(w, r, "/admin/ldap/" + dn, http.StatusFound)
+			}
+			
+		}
+	}
+
+	templateAdminCreate.Execute(w, data)
 }

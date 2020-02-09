@@ -1,0 +1,43 @@
+{{define "title"}}Nouvel objet |{{end}}
+
+{{define "body"}}
+<div class="d-flex">
+  <h4>Créer un objet</h4>
+  <a class="ml-auto btn btn-info" href="/">Retour</a>
+</div>
+
+{{if .Error}}
+  <div class="alert alert-danger mt-4">Impossible de créer l'objet.
+    <div style="font-size: 0.8em">{{ .Error }}</div>
+  </div>
+{{end}}
+
+<form method="POST" class="mt-4">
+  <div class="form-group">
+    <label>Parent:</label>
+    <input type="text" disabled="true" class="form-control" value="{{ .SuperDN }}" />
+  </div>
+  <div class="form-group">
+    <label for="idvalue">Identifiant:</label>
+    <input type="text" id="idvalue" name="idvalue" class="form-control" value="{{ .IdValue }}" />
+  </div>
+  <div class="form-group">
+    <label for="idtype">Type d'identifiant:</label>
+    <input type="text" id="idtype" name="idtype" class="form-control" value="{{ .IdType }}" />
+  </div>
+  <div class="form-group">
+    <label for="displayname">Nom:</label>
+    <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
+  </div>
+  <div class="form-group">
+    <label for="soc">StructuralObjectClass:</label>
+    <input type="text" id="soc" name="soc" class="form-control" value="{{ .StructuralObjectClass }}" />
+  </div>
+  <div class="form-group">
+    <label for="oc">ObjectClass:</label>
+    <textarea  rows="5" id="oc" name="oc" class="form-control">{{ .ObjectClass }}</textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Créer l'objet</button>
+</form>
+
+{{end}}

@@ -115,6 +115,7 @@ func main() {
 	r.HandleFunc("/admin/users", handleAdminUsers)
 	r.HandleFunc("/admin/groups", handleAdminGroups)
 	r.HandleFunc("/admin/ldap/{dn}", handleAdminLDAP)
+	r.HandleFunc("/admin/create/{template}/{super_dn}", handleAdminCreate)
 
 	staticfiles := http.FileServer(http.Dir("static"))
 	r.Handle("/static/{file:.*}", http.StripPrefix("/static/", staticfiles))
