@@ -1,12 +1,12 @@
 package main
 
 import (
-	"regexp"
-	"strings"
 	"fmt"
 	"html/template"
 	"net/http"
+	"regexp"
 	"sort"
+	"strings"
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
@@ -47,7 +47,6 @@ func (d EntryList) Less(i, j int) bool {
 	return d[i].DN < d[j].DN
 }
 
-
 type AdminUsersTplData struct {
 	Login        *LoginStatus
 	UserNameAttr string
@@ -86,7 +85,7 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 type AdminGroupsTplData struct {
-	Login        *LoginStatus
+	Login         *LoginStatus
 	GroupNameAttr string
 	Groups        EntryList
 }
@@ -113,7 +112,7 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &AdminGroupsTplData{
-		Login:        login,
+		Login:         login,
 		GroupNameAttr: config.GroupNameAttr,
 		Groups:        EntryList(sr.Entries),
 	}
@@ -125,39 +124,39 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 type AdminLDAPTplData struct {
 	DN string
 
-	Path []PathItem
+	Path     []PathItem
 	Children []Child
-	Props map[string]*PropValues
+	Props    map[string]*PropValues
 
 	HasMembers bool
-	Members []EntryName
-	HasGroups bool
-	Groups []EntryName
+	Members    []EntryName
+	HasGroups  bool
+	Groups     []EntryName
 
-	Error string
+	Error   string
 	Success bool
 }
 
 type EntryName struct {
-	DN string
+	DN          string
 	DisplayName string
 }
 
 type Child struct {
-	DN string
-	Identifier string
+	DN          string
+	Identifier  string
 	DisplayName string
 }
 
 type PathItem struct {
-	DN string
+	DN         string
 	Identifier string
-	Active bool
+	Active     bool
 }
 
 type PropValues struct {
-	Name string
-	Values []string
+	Name     string
+	Values   []string
 	Editable bool
 }
 
@@ -272,9 +271,9 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	// Build path
 	path := []PathItem{
 		PathItem{
-			DN: config.BaseDN,
+			DN:         config.BaseDN,
 			Identifier: config.BaseDN,
-			Active: dn == config.BaseDN,
+			Active:     dn == config.BaseDN,
 		},
 	}
 
@@ -283,9 +282,9 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	dn_last_attr := strings.Split(dn_split[0], "=")[0]
 	for i := len_base_dn + 1; i <= len(dn_split); i++ {
 		path = append(path, PathItem{
-			DN: strings.Join(dn_split[len(dn_split)-i:len(dn_split)], ","),
+			DN:         strings.Join(dn_split[len(dn_split)-i:len(dn_split)], ","),
 			Identifier: dn_split[len(dn_split)-i],
-			Active: i == len(dn_split),
+			Active:     i == len(dn_split),
 		})
 	}
 
@@ -328,8 +327,8 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 				props[name_lower] = &PropValues{
-					Name: attr.Name,
-					Values: attr.Values,
+					Name:     attr.Name,
+					Values:   attr.Values,
 					Editable: editable,
 				}
 			}
@@ -361,7 +360,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		}
 		for _, memdn := range members_dn {
 			members = append(members, EntryName{
-				DN: memdn,
+				DN:          memdn,
 				DisplayName: mapDnToName[memdn],
 			})
 		}
@@ -392,7 +391,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		}
 		for _, grpdn := range groups_dn {
 			groups = append(groups, EntryName{
-				DN: grpdn,
+				DN:          grpdn,
 				DisplayName: mapDnToName[grpdn],
 			})
 		}
@@ -417,8 +416,8 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	children := []Child{}
 	for _, item := range sr.Entries {
 		children = append(children, Child{
-			DN: item.DN,
-			Identifier: strings.Split(item.DN, ",")[0],
+			DN:          item.DN,
+			Identifier:  strings.Split(item.DN, ",")[0],
 			DisplayName: item.GetAttributeValue("displayname"),
 		})
 	}
@@ -441,16 +440,16 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	templateAdminLDAP.Execute(w, &AdminLDAPTplData{
 		DN: dn,
 
-		Path: path,
+		Path:     path,
 		Children: children,
-		Props: props,
+		Props:    props,
 
 		HasMembers: len(members) > 0 || hasMembers,
-		Members: members,
-		HasGroups: len(groups) > 0 || hasGroups,
-		Groups: groups,
+		Members:    members,
+		HasGroups:  len(groups) > 0 || hasGroups,
+		Groups:     groups,
 
-		Error: dError,
+		Error:   dError,
 		Success: dSuccess,
 	})
 }
@@ -458,11 +457,11 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 type CreateData struct {
 	SuperDN string
 
-	IdType string
-	IdValue string
-	DisplayName string
+	IdType                string
+	IdValue               string
+	DisplayName           string
 	StructuralObjectClass string
-	ObjectClass string
+	ObjectClass           string
 
 	Error string
 }
@@ -526,9 +525,9 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				data.Error = err.Error()
 			} else {
-				http.Redirect(w, r, "/admin/ldap/" + dn, http.StatusFound)
+				http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
 			}
-			
+
 		}
 	}
 

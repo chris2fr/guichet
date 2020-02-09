@@ -15,8 +15,8 @@ import (
 	"strings"
 
 	"github.com/go-ldap/ldap/v3"
-	"github.com/gorilla/sessions"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
 type ConfigFile struct {
@@ -25,7 +25,7 @@ type ConfigFile struct {
 	LdapServerAddr string `json:"ldap_server_addr"`
 	LdapTLS        bool   `json:"ldap_tls"`
 
-	BaseDN		  string `json:"base_dn"`
+	BaseDN        string `json:"base_dn"`
 	UserBaseDN    string `json:"user_base_dn"`
 	UserNameAttr  string `json:"user_name_attr"`
 	GroupBaseDN   string `json:"group_base_dn"`
@@ -55,7 +55,7 @@ func readConfig() ConfigFile {
 		SessionKey:     base64.StdEncoding.EncodeToString(key_bytes),
 		LdapServerAddr: "ldap://127.0.0.1:389",
 		LdapTLS:        false,
-		BaseDN:		    "dc=example,dc=com",
+		BaseDN:         "dc=example,dc=com",
 		UserBaseDN:     "ou=users,dc=example,dc=com",
 		UserNameAttr:   "uid",
 		GroupBaseDN:    "ou=groups,dc=example,dc=com",
@@ -238,7 +238,7 @@ type HomePageData struct {
 	Login     *LoginStatus
 	CanAdmin  bool
 	CanInvite bool
-	BaseDN	  string
+	BaseDN    string
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
@@ -264,7 +264,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		Login:     login,
 		CanAdmin:  can_admin,
 		CanInvite: can_invite,
-		BaseDN:	   config.BaseDN,
+		BaseDN:    config.BaseDN,
 	})
 }
 
