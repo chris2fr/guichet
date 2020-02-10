@@ -50,6 +50,7 @@ func (d EntryList) Less(i, j int) bool {
 type AdminUsersTplData struct {
 	Login        *LoginStatus
 	UserNameAttr string
+	UserBaseDN   string
 	Users        EntryList
 }
 
@@ -77,6 +78,7 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	data := &AdminUsersTplData{
 		Login:        login,
 		UserNameAttr: config.UserNameAttr,
+		UserBaseDN: config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
 	}
 	sort.Sort(data.Users)
@@ -87,6 +89,7 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 type AdminGroupsTplData struct {
 	Login         *LoginStatus
 	GroupNameAttr string
+	GroupBaseDN   string
 	Groups        EntryList
 }
 
@@ -114,6 +117,7 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 	data := &AdminGroupsTplData{
 		Login:         login,
 		GroupNameAttr: config.GroupNameAttr,
+		GroupBaseDN: config.GroupBaseDN,
 		Groups:        EntryList(sr.Entries),
 	}
 	sort.Sort(data.Groups)
@@ -439,13 +443,16 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	if val, ok := props["objectclass"]; ok {
 		objectClass = val.Values
 	}
-	hasMembers, hasGroups := false, false
+	hasMembers, hasGroups, isOrganization := false, false, false
 	for _, oc := range objectClass {
 		if strings.EqualFold(oc, "organizationalperson") || strings.EqualFold(oc, "person") {
 			hasGroups = true
 		}
 		if strings.EqualFold(oc, "groupOfNames") {
 			hasMembers = true
+		}
+		if strings.EqualFold(oc, "organization") {
+			isOrganization = true
 		}
 	}
 
@@ -455,7 +462,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		Path:     path,
 		Children: children,
 		Props:    props,
-		CanAddChild: dn_last_attr == "ou",
+		CanAddChild: dn_last_attr == "ou" || isOrganization,
 		CanDelete: dn != config.BaseDN && len(children) == 0,
 
 		HasMembers: len(members) > 0 || hasMembers,
@@ -477,6 +484,7 @@ type CreateData struct {
 	DisplayName           string
 	StructuralObjectClass string
 	ObjectClass           string
+	IsTemplated		bool
 
 	Error string
 }
@@ -518,10 +526,12 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		data.IdType = config.UserNameAttr
 		data.StructuralObjectClass = "inetOrgPerson"
 		data.ObjectClass = "inetOrgPerson\norganizationalPerson\nperson\ntop"
+		data.IsTemplated = true
 	} else if template == "group" {
 		data.IdType = config.UserNameAttr
 		data.StructuralObjectClass = "groupOfNames"
 		data.ObjectClass = "groupOfNames\ntop"
+		data.IsTemplated = true
 	} else {
 		data.IdType = "cn"
 		data.ObjectClass = "top"

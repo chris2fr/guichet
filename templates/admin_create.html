@@ -3,7 +3,7 @@
 {{define "body"}}
 <div class="d-flex">
   <h4>Créer un objet</h4>
-  <a class="ml-auto btn btn-info" href="/">Retour</a>
+  <a class="ml-auto btn btn-info" href="/">Menu principal</a>
 </div>
 
 <div class="mt-4">
@@ -36,7 +36,7 @@
   </div>
   <div class="form-group">
     <label for="idtype">Type d'identifiant:</label>
-    <input type="text" id="idtype" name="idtype" class="form-control" value="{{ .IdType }}" />
+    <input type="text" {{if .IsTemplated}}disabled="disabled"{{end}} id="idtype" name="idtype" class="form-control" value="{{ .IdType }}" />
   </div>
   <div class="form-group">
     <label for="displayname">Nom:</label>
@@ -44,11 +44,11 @@
   </div>
   <div class="form-group">
     <label for="soc">StructuralObjectClass:</label>
-    <input type="text" id="soc" name="soc" class="form-control" value="{{ .StructuralObjectClass }}" />
+    <input type="text" {{if .IsTemplated}}disabled="disabled"{{end}} id="soc" name="soc" class="form-control" value="{{ .StructuralObjectClass }}" />
   </div>
   <div class="form-group">
     <label for="oc">ObjectClass:</label>
-    <textarea  rows="5" id="oc" name="oc" class="form-control">{{ .ObjectClass }}</textarea>
+    <textarea  rows="5" {{if .IsTemplated}}disabled="disabled"{{end}} id="oc" name="oc" class="form-control">{{ .ObjectClass }}</textarea>
   </div>
   <button type="submit" class="btn btn-primary">Créer l'objet</button>
 </form>
