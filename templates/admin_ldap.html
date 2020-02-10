@@ -76,11 +76,13 @@
           </div>
 
           <div class="col-md-1">
-            <form method="POST" onsubmit="return confirm('Supprimer cet attribut ?');">
-              <input type="hidden" name="action" value="delete" />
-              <input type="hidden" name="attr" value="{{$key}}" />
-              <input type="submit" value="Suppr." class="form-control btn btn-danger btn-sm" />
-            </form>
+            {{if $value.Deletable}}
+              <form method="POST" onsubmit="return confirm('Supprimer cet attribut ?');">
+                <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="attr" value="{{$key}}" />
+                <input type="submit" value="Suppr." class="form-control btn btn-danger btn-sm" />
+              </form>
+            {{end}}
           </div>
         </div>
       {{end}}

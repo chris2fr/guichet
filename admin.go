@@ -164,6 +164,7 @@ type PropValues struct {
 	Name     string
 	Values   []string
 	Editable bool
+	Deletable bool
 }
 
 func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
@@ -342,10 +343,18 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 				}
+				deletable := true
+				for _, restricted := range []string{ "displayname", "objectclass", "structuralobjectclass" } {
+					if strings.EqualFold(attr.Name, restricted) {
+						deletable = false
+						break
+					}
+				}
 				props[name_lower] = &PropValues{
 					Name:     attr.Name,
 					Values:   attr.Values,
 					Editable: editable,
+					Deletable: deletable,
 				}
 			}
 		}
