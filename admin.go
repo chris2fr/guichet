@@ -539,11 +539,13 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 		r.ParseForm()
-		data.IdType = strings.Join(r.Form["idtype"], "")
+		if !data.IsTemplated {
+			data.IdType = strings.Join(r.Form["idtype"], "")
+			data.StructuralObjectClass = strings.Join(r.Form["soc"], "")
+			data.ObjectClass = strings.Join(r.Form["oc"], "")
+		}
 		data.IdValue = strings.Join(r.Form["idvalue"], "")
 		data.DisplayName = strings.Join(r.Form["displayname"], "")
-		data.StructuralObjectClass = strings.Join(r.Form["soc"], "")
-		data.ObjectClass = strings.Join(r.Form["oc"], "")
 
 		object_class := []string{}
 		for _, oc := range strings.Split(data.ObjectClass, "\n") {
