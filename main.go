@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/rand"
 	"crypto/tls"
-	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -21,7 +20,6 @@ import (
 
 type ConfigFile struct {
 	HttpBindAddr   string `json:"http_bind_addr"`
-	SessionKey     string `json:"session_key"`
 	LdapServerAddr string `json:"ldap_server_addr"`
 	LdapTLS        bool   `json:"ldap_tls"`
 
@@ -31,7 +29,7 @@ type ConfigFile struct {
 	GroupBaseDN   string `json:"group_base_dn"`
 	GroupNameAttr string `json:"group_name_attr"`
 
-	AdminAccount	   string `json:"admin_account"`
+	AdminAccount   string `json:"admin_account"`
 	GroupCanInvite string `json:"group_can_invite"`
 	GroupCanAdmin  string `json:"group_can_admin"`
 }
@@ -45,15 +43,8 @@ const SESSION_NAME = "guichet_session"
 var store sessions.Store = nil
 
 func readConfig() ConfigFile {
-	key_bytes := make([]byte, 32)
-	n, err := rand.Read(key_bytes)
-	if err != nil || n != 32 {
-		log.Fatal(err)
-	}
-
 	config_file := ConfigFile{
 		HttpBindAddr:   ":9991",
-		SessionKey:     base64.StdEncoding.EncodeToString(key_bytes),
 		LdapServerAddr: "ldap://127.0.0.1:389",
 		LdapTLS:        false,
 		BaseDN:         "dc=example,dc=com",
@@ -66,7 +57,7 @@ func readConfig() ConfigFile {
 		GroupCanAdmin:  "gid=admin,ou=groups,dc=example,dc=com",
 	}
 
-	_, err = os.Stat(*configFlag)
+	_, err := os.Stat(*configFlag)
 	if os.IsNotExist(err) {
 		// Generate default config file
 		log.Printf("Generating default config file as %s", *configFlag)
@@ -106,7 +97,13 @@ func main() {
 
 	config_file := readConfig()
 	config = &config_file
-	store = sessions.NewFilesystemStore("", []byte(config.SessionKey))
+
+	session_key := make([]byte, 32)
+	n, err := rand.Read(session_key)
+	if err != nil || n != 32 {
+		log.Fatal(err)
+	}
+	store = sessions.NewCookieStore(session_key)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleHome)
@@ -123,7 +120,7 @@ func main() {
 	r.Handle("/static/{file:.*}", http.StripPrefix("/static/", staticfiles))
 
 	log.Printf("Starting HTTP server on %s", config.HttpBindAddr)
-	err := http.ListenAndServe(config.HttpBindAddr, logRequest(r))
+	err = http.ListenAndServe(config.HttpBindAddr, logRequest(r))
 	if err != nil {
 		log.Fatal("Cannot start http server: ", err)
 	}
@@ -149,27 +146,27 @@ func logRequest(handler http.Handler) http.Handler {
 }
 
 func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
+	var login_info *LoginInfo
+
 	session, err := store.Get(r, SESSION_NAME)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return nil
+	if err == nil {
+		username, ok := session.Values["login_username"]
+		password, ok2 := session.Values["login_password"]
+		user_dn, ok3 := session.Values["login_dn"]
+
+		if ok && ok2 && ok3 {
+			login_info = &LoginInfo{
+				DN:       user_dn.(string),
+				Username: username.(string),
+				Password: password.(string),
+			}
+		}
 	}
 
-	username, ok := session.Values["login_username"]
-	password, ok2 := session.Values["login_password"]
-	user_dn, ok3 := session.Values["login_dn"]
-
-	var login_info *LoginInfo
-	if !(ok && ok2 && ok3) {
+	if login_info == nil {
 		login_info = handleLogin(w, r)
 		if login_info == nil {
 			return nil
-		}
-	} else {
-		login_info = &LoginInfo{
-			DN:       user_dn.(string),
-			Username: username.(string),
-			Password: password.(string),
 		}
 	}
 
@@ -193,8 +190,8 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	}
 
 	loginStatus := &LoginStatus{
-		Info:      login_info,
-		conn:      l,
+		Info: login_info,
+		conn: l,
 	}
 
 	requestKind := "(objectClass=organizationalPerson)"
@@ -245,11 +242,11 @@ func ldapOpen(w http.ResponseWriter) *ldap.Conn {
 // Page handlers ----
 
 type HomePageData struct {
-	Login     *LoginStatus
+	Login       *LoginStatus
 	WelcomeName string
-	CanAdmin  bool
-	CanInvite bool
-	BaseDN    string
+	CanAdmin    bool
+	CanInvite   bool
+	BaseDN      string
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
@@ -272,10 +269,10 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &HomePageData{
-		Login:     login,
-		CanAdmin:  can_admin,
-		CanInvite: can_invite,
-		BaseDN:    config.BaseDN,
+		Login:       login,
+		CanAdmin:    can_admin,
+		CanInvite:   can_invite,
+		BaseDN:      config.BaseDN,
 		WelcomeName: login.UserEntry.GetAttributeValue("givenname"),
 	}
 	if data.WelcomeName == "" {
@@ -346,8 +343,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		// Successfully logged in, save it to session
 		session, err := store.Get(r, SESSION_NAME)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return nil
+			session, _ = store.New(r, SESSION_NAME)
 		}
 
 		session.Values["login_username"] = username

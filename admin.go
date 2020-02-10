@@ -78,7 +78,7 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	data := &AdminUsersTplData{
 		Login:        login,
 		UserNameAttr: config.UserNameAttr,
-		UserBaseDN: config.UserBaseDN,
+		UserBaseDN:   config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
 	}
 	sort.Sort(data.Users)
@@ -117,7 +117,7 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 	data := &AdminGroupsTplData{
 		Login:         login,
 		GroupNameAttr: config.GroupNameAttr,
-		GroupBaseDN: config.GroupBaseDN,
+		GroupBaseDN:   config.GroupBaseDN,
 		Groups:        EntryList(sr.Entries),
 	}
 	sort.Sort(data.Groups)
@@ -128,11 +128,11 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 type AdminLDAPTplData struct {
 	DN string
 
-	Path     []PathItem
-	Children []Child
+	Path        []PathItem
+	Children    []Child
 	CanAddChild bool
-	Props    map[string]*PropValues
-	CanDelete bool
+	Props       map[string]*PropValues
+	CanDelete   bool
 
 	HasMembers bool
 	Members    []EntryName
@@ -161,9 +161,9 @@ type PathItem struct {
 }
 
 type PropValues struct {
-	Name     string
-	Values   []string
-	Editable bool
+	Name      string
+	Values    []string
+	Editable  bool
 	Deletable bool
 }
 
@@ -299,7 +299,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				dError = err.Error()
 			} else {
-				http.Redirect(w, r, "/admin/ldap/" + strings.Join(dn_split[1:], ","), http.StatusFound)
+				http.Redirect(w, r, "/admin/ldap/"+strings.Join(dn_split[1:], ","), http.StatusFound)
 				return
 			}
 		}
@@ -344,16 +344,16 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 				deletable := true
-				for _, restricted := range []string{ "displayname", "objectclass", "structuralobjectclass" } {
+				for _, restricted := range []string{"displayname", "objectclass", "structuralobjectclass"} {
 					if strings.EqualFold(attr.Name, restricted) {
 						deletable = false
 						break
 					}
 				}
 				props[name_lower] = &PropValues{
-					Name:     attr.Name,
-					Values:   attr.Values,
-					Editable: editable,
+					Name:      attr.Name,
+					Values:    attr.Values,
+					Editable:  editable,
 					Deletable: deletable,
 				}
 			}
@@ -468,11 +468,11 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	templateAdminLDAP.Execute(w, &AdminLDAPTplData{
 		DN: dn,
 
-		Path:     path,
-		Children: children,
-		Props:    props,
+		Path:        path,
+		Children:    children,
+		Props:       props,
 		CanAddChild: dn_last_attr == "ou" || isOrganization,
-		CanDelete: dn != config.BaseDN && len(children) == 0,
+		CanDelete:   dn != config.BaseDN && len(children) == 0,
 
 		HasMembers: len(members) > 0 || hasMembers,
 		Members:    members,
@@ -486,14 +486,14 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 type CreateData struct {
 	SuperDN string
-	Path     []PathItem
+	Path    []PathItem
 
 	IdType                string
 	IdValue               string
 	DisplayName           string
 	StructuralObjectClass string
 	ObjectClass           string
-	IsTemplated		bool
+	IsTemplated           bool
 
 	Error string
 }
@@ -548,7 +548,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 	// Handle data
 	data := &CreateData{
 		SuperDN: super_dn,
-		Path: path,
+		Path:    path,
 	}
 	if template == "user" {
 		data.IdType = config.UserNameAttr

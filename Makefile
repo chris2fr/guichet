@@ -1,5 +1,19 @@
-all: guichet
+BIN=guichet
+SRC=main.go ssha.go profile.go admin.go
+DOCKER=lxpz/guichet_amd64
 
-guichet: main.go ssha.go profile.go admin.go
-	go get -v
-	go build -v
+all: $(BIN)
+
+$(BIN): $(SRC)
+	go get -d -v
+	go build -v -o $(BIN)
+
+$(BIN).static: $(SRC)
+	go get -d -v
+	CGO_ENABLED=0 GOOS=linux go build -a -v -o $(BIN).static
+
+docker: $(BIN).static
+	docker build -t $(DOCKER):$(TAG) .
+	docker push $(DOCKER):$(TAG)
+	docker tag $(DOCKER):$(TAG) $(DOCKER):latest
+	docker push $(DOCKER):latest
