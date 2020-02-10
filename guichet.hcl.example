@@ -1,0 +1,62 @@
+job "guichet" {
+  datacenters = ["dc1"]
+  type = "service"
+
+  constraint {
+    attribute = "${attr.cpu.arch}"
+    value     = "amd64"
+  }
+
+  group "guichet" {
+    count = 1
+    task "server" {
+      driver = "docker"
+      config {
+        image = "lxpz/guichet_amd64:1"
+        readonly_rootfs = true
+        port_map {
+          web_port = 9991
+        }
+		volumes = [
+			"secrets/config.json:/config.json"
+		]
+      }
+
+      template {
+	    data = "{{ key \"configuration/directory/guichet/config.json\" }}"
+        destination = "secrets/config.json"
+      }
+
+      resources {
+        memory = 100
+        network {
+          port "web_port" {}
+        }
+      }
+
+      service {
+        name = "guichet"
+        tags = [
+			"guichet",
+			"traefik.enable=true",
+			  "traefik.frontend.entryPoints=https,http",
+			  "traefik.frontend.rule=Host:guichet.deuxfleurs.fr,guichet.deuxfleurs.org",
+		]
+        port = "web_port"
+        address_mode = "host"
+        check {
+          type = "tcp"
+          port = "web_port"
+          interval = "60s"
+          timeout = "5s"
+          check_restart {
+            limit = 3
+            grace = "90s"
+            ignore_warnings = false
+          }
+        }
+      }
+    }
+  }
+}
+
