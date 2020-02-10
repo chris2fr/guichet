@@ -2,7 +2,7 @@
 
 {{define "body"}}
 <div class="alert alert-info">
-    Bienvenue, <strong>{{ .Login.UserEntry.GetAttributeValue "givenname" }}</strong> !
+    Bienvenue, <strong>{{ .WelcomeName }}</strong> !
 </div>
 <div class="d-flex">
   <a class="ml-auto btn btn-sm btn-dark" href="/logout">Se déconnecter</a>

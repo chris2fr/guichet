@@ -35,10 +35,10 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseForm()
 
-		data.Mail = strings.Join(r.Form["mail"], "")
-		data.DisplayName = strings.Join(r.Form["display_name"], "")
-		data.GivenName = strings.Join(r.Form["given_name"], "")
-		data.Surname = strings.Join(r.Form["surname"], "")
+		data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
+		data.DisplayName = strings.TrimSpace(strings.Join(r.Form["display_name"], ""))
+		data.GivenName = strings.TrimSpace(strings.Join(r.Form["given_name"], ""))
+		data.Surname = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
 
 		modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
 		modify_request.Replace("mail", []string{data.Mail})

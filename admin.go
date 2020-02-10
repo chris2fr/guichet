@@ -18,7 +18,7 @@ func checkAdminLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		return nil
 	}
 
-	can_admin := false
+	can_admin := (login.Info.DN == config.AdminAccount)
 	for _, group := range login.UserEntry.GetAttributeValues("memberof") {
 		if config.GroupCanAdmin != "" && group == config.GroupCanAdmin {
 			can_admin = true
@@ -320,7 +320,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(sr.Entries) != 1 {
-		http.Error(w, fmt.Sprintf("%d objects found", len(sr.Entries)), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Object not found: %s", dn), http.StatusNotFound)
 		return
 	}
 
@@ -509,6 +509,25 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 	template := mux.Vars(r)["template"]
 	super_dn := mux.Vars(r)["super_dn"]
 
+	// Check that base DN exists
+	searchRequest := ldap.NewSearchRequest(
+		super_dn,
+		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(objectclass=*)"),
+		[]string{},
+		nil)
+
+	sr, err := login.conn.Search(searchRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if len(sr.Entries) != 1 {
+		http.Error(w, fmt.Sprintf("Parent object %s does not exist", super_dn), http.StatusNotFound)
+		return
+	}
+
 	// Build path
 	path := []PathItem{
 		PathItem{
@@ -541,6 +560,11 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		data.StructuralObjectClass = "groupOfNames"
 		data.ObjectClass = "groupOfNames\ntop"
 		data.IsTemplated = true
+	} else if template == "ou" {
+		data.IdType = "ou"
+		data.StructuralObjectClass = "organizationalUnit"
+		data.ObjectClass = "organizationalUnit\ntop"
+		data.IsTemplated = true
 	} else {
 		data.IdType = "cn"
 		data.ObjectClass = "top"
@@ -549,12 +573,12 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseForm()
 		if !data.IsTemplated {
-			data.IdType = strings.Join(r.Form["idtype"], "")
-			data.StructuralObjectClass = strings.Join(r.Form["soc"], "")
+			data.IdType = strings.TrimSpace(strings.Join(r.Form["idtype"], ""))
+			data.StructuralObjectClass = strings.TrimSpace(strings.Join(r.Form["soc"], ""))
 			data.ObjectClass = strings.Join(r.Form["oc"], "")
 		}
-		data.IdValue = strings.Join(r.Form["idvalue"], "")
-		data.DisplayName = strings.Join(r.Form["displayname"], "")
+		data.IdValue = strings.TrimSpace(strings.Join(r.Form["idvalue"], ""))
+		data.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
 
 		object_class := []string{}
 		for _, oc := range strings.Split(data.ObjectClass, "\n") {
@@ -578,7 +602,10 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			req.Attribute("objectClass", object_class)
 			req.Attribute("structuralObjectClass",
 				[]string{data.StructuralObjectClass})
-			req.Attribute("displayname", []string{data.DisplayName})
+			if data.DisplayName != "" {
+				req.Attribute("displayname", []string{data.DisplayName})
+			}
+
 			err := login.conn.Add(req)
 			if err != nil {
 				data.Error = err.Error()

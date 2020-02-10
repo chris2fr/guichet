@@ -31,6 +31,7 @@ type ConfigFile struct {
 	GroupBaseDN   string `json:"group_base_dn"`
 	GroupNameAttr string `json:"group_name_attr"`
 
+	AdminAccount	   string `json:"admin_account"`
 	GroupCanInvite string `json:"group_can_invite"`
 	GroupCanAdmin  string `json:"group_can_admin"`
 }
@@ -60,6 +61,7 @@ func readConfig() ConfigFile {
 		UserNameAttr:   "uid",
 		GroupBaseDN:    "ou=groups,dc=example,dc=com",
 		GroupNameAttr:  "gid",
+		AdminAccount:   "uid=admin,dc=example,dc=com",
 		GroupCanInvite: "",
 		GroupCanAdmin:  "gid=admin,ou=groups,dc=example,dc=com",
 	}
@@ -120,6 +122,7 @@ func main() {
 	staticfiles := http.FileServer(http.Dir("static"))
 	r.Handle("/static/{file:.*}", http.StripPrefix("/static/", staticfiles))
 
+	log.Printf("Starting HTTP server on %s", config.HttpBindAddr)
 	err := http.ListenAndServe(config.HttpBindAddr, logRequest(r))
 	if err != nil {
 		log.Fatal("Cannot start http server: ", err)
@@ -189,10 +192,19 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		return checkLogin(w, r)
 	}
 
+	loginStatus := &LoginStatus{
+		Info:      login_info,
+		conn:      l,
+	}
+
+	requestKind := "(objectClass=organizationalPerson)"
+	if login_info.DN == config.AdminAccount {
+		requestKind = "(objectclass=*)"
+	}
 	searchRequest := ldap.NewSearchRequest(
 		login_info.DN,
 		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf("(&(objectClass=organizationalPerson))"),
+		requestKind,
 		[]string{"dn", "displayname", "givenname", "sn", "mail", "memberof"},
 		nil)
 
@@ -203,15 +215,13 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	}
 
 	if len(sr.Entries) != 1 {
-		http.Error(w, fmt.Sprintf("Multiple entries: %#v", sr.Entries), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Unable to find entry for %s", login_info.DN), http.StatusInternalServerError)
 		return nil
 	}
 
-	return &LoginStatus{
-		Info:      login_info,
-		conn:      l,
-		UserEntry: sr.Entries[0],
-	}
+	loginStatus.UserEntry = sr.Entries[0]
+
+	return loginStatus
 }
 
 func ldapOpen(w http.ResponseWriter) *ldap.Conn {
@@ -236,6 +246,7 @@ func ldapOpen(w http.ResponseWriter) *ldap.Conn {
 
 type HomePageData struct {
 	Login     *LoginStatus
+	WelcomeName string
 	CanAdmin  bool
 	CanInvite bool
 	BaseDN    string
@@ -249,7 +260,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	can_admin := false
+	can_admin := (login.Info.DN == config.AdminAccount)
 	can_invite := false
 	for _, group := range login.UserEntry.GetAttributeValues("memberof") {
 		if config.GroupCanInvite != "" && group == config.GroupCanInvite {
@@ -260,12 +271,21 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	templateHome.Execute(w, &HomePageData{
+	data := &HomePageData{
 		Login:     login,
 		CanAdmin:  can_admin,
 		CanInvite: can_invite,
 		BaseDN:    config.BaseDN,
-	})
+		WelcomeName: login.UserEntry.GetAttributeValue("givenname"),
+	}
+	if data.WelcomeName == "" {
+		data.WelcomeName = login.UserEntry.GetAttributeValue("displayname")
+	}
+	if data.WelcomeName == "" {
+		data.WelcomeName = login.Info.Username
+	}
+
+	templateHome.Execute(w, data)
 }
 
 func handleLogout(w http.ResponseWriter, r *http.Request) {
@@ -305,6 +325,9 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		username := strings.Join(r.Form["username"], "")
 		password := strings.Join(r.Form["password"], "")
 		user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
+		if username == config.AdminAccount {
+			user_dn = username
+		}
 
 		l := ldapOpen(w)
 		if l == nil {
