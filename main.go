@@ -259,12 +259,16 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 
 	can_admin := (login.Info.DN == config.AdminAccount)
 	can_invite := false
-	for _, group := range login.UserEntry.GetAttributeValues("memberof") {
-		if config.GroupCanInvite != "" && group == config.GroupCanInvite {
-			can_invite = true
-		}
-		if config.GroupCanAdmin != "" && group == config.GroupCanAdmin {
-			can_admin = true
+	for _, attr := range login.UserEntry.Attributes {
+		if strings.EqualFold(attr.Name, "memberof") {
+			for _, group := range attr.Values {
+				if config.GroupCanInvite != "" && group == config.GroupCanInvite {
+					can_invite = true
+				}
+				if config.GroupCanAdmin != "" && group == config.GroupCanAdmin {
+					can_admin = true
+				}
+			}
 		}
 	}
 
