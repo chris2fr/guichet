@@ -18,20 +18,8 @@ func checkAdminLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		return nil
 	}
 
-	can_admin := (login.Info.DN == config.AdminAccount)
-	fmt.Printf("%#v", login.UserEntry)
-	for _, attr := range login.UserEntry.Attributes {
-		if strings.EqualFold(attr.Name, "memberof") {
-			for _, group := range attr.Values {
-				if config.GroupCanAdmin != "" && group == config.GroupCanAdmin {
-					can_admin = true
-				}
-			}
-		}
-	}
-
-	if !can_admin {
-		http.Redirect(w, r, "/", http.StatusFound)
+	if !login.CanAdmin {
+		http.Error(w, "Not authorized to perform administrative operations.", http.StatusUnauthorized)
 		return nil
 	}
 

@@ -16,13 +16,13 @@
   <div class="list-group list-group-flush">
     <a class="list-group-item list-group-item-action" href="/profile">Modifier mon profil</a>
     <a class="list-group-item list-group-item-action" href="/passwd">Modifier mon mot de passe</a>
-    {{if .CanInvite}}
+    {{if .Login.CanInvite}}
       <a class="list-group-item list-group-item-action" href="/invite">Inviter quelqu'un</a>
     {{end}}
   </div>
 </div>
 
-{{if .CanAdmin}}
+{{if .Login.CanAdmin}}
   <div class="card mt-3">
     <div class="card-header">
       Administration

@@ -136,6 +136,8 @@ type LoginStatus struct {
 	Info      *LoginInfo
 	conn      *ldap.Conn
 	UserEntry *ldap.Entry
+	CanAdmin  bool
+	CanInvite bool
 }
 
 func logRequest(handler http.Handler) http.Handler {
@@ -195,7 +197,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	}
 
 	requestKind := "(objectClass=organizationalPerson)"
-	if login_info.DN == config.AdminAccount {
+	if strings.EqualFold(login_info.DN, config.AdminAccount) {
 		requestKind = "(objectclass=*)"
 	}
 	searchRequest := ldap.NewSearchRequest(
@@ -217,6 +219,21 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	}
 
 	loginStatus.UserEntry = sr.Entries[0]
+
+	loginStatus.CanAdmin = strings.EqualFold(loginStatus.Info.DN, config.AdminAccount)
+	loginStatus.CanInvite = false
+	for _, attr := range loginStatus.UserEntry.Attributes {
+		if strings.EqualFold(attr.Name, "memberof") {
+			for _, group := range attr.Values {
+				if config.GroupCanInvite != "" && strings.EqualFold(group, config.GroupCanInvite) {
+					loginStatus.CanInvite = true
+				}
+				if config.GroupCanAdmin != "" && strings.EqualFold(group, config.GroupCanAdmin) {
+					loginStatus.CanAdmin = true
+				}
+			}
+		}
+	}
 
 	return loginStatus
 }
@@ -244,8 +261,6 @@ func ldapOpen(w http.ResponseWriter) *ldap.Conn {
 type HomePageData struct {
 	Login       *LoginStatus
 	WelcomeName string
-	CanAdmin    bool
-	CanInvite   bool
 	BaseDN      string
 }
 
@@ -257,25 +272,8 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	can_admin := (login.Info.DN == config.AdminAccount)
-	can_invite := false
-	for _, attr := range login.UserEntry.Attributes {
-		if strings.EqualFold(attr.Name, "memberof") {
-			for _, group := range attr.Values {
-				if config.GroupCanInvite != "" && group == config.GroupCanInvite {
-					can_invite = true
-				}
-				if config.GroupCanAdmin != "" && group == config.GroupCanAdmin {
-					can_admin = true
-				}
-			}
-		}
-	}
-
 	data := &HomePageData{
 		Login:       login,
-		CanAdmin:    can_admin,
-		CanInvite:   can_invite,
 		BaseDN:      config.BaseDN,
 		WelcomeName: login.UserEntry.GetAttributeValue("givenname"),
 	}
@@ -326,7 +324,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		username := strings.Join(r.Form["username"], "")
 		password := strings.Join(r.Form["password"], "")
 		user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
-		if username == config.AdminAccount {
+		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
 
