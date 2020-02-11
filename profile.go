@@ -32,16 +32,19 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		Success:      false,
 	}
 
+	data.Mail = login.UserEntry.GetAttributeValue("mail")
+	data.DisplayName = login.UserEntry.GetAttributeValue("displayname")
+	data.GivenName = login.UserEntry.GetAttributeValue("givenname")
+	data.Surname = login.UserEntry.GetAttributeValue("sn")
+
 	if r.Method == "POST" {
 		r.ParseForm()
 
-		data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		data.DisplayName = strings.TrimSpace(strings.Join(r.Form["display_name"], ""))
 		data.GivenName = strings.TrimSpace(strings.Join(r.Form["given_name"], ""))
 		data.Surname = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
 
 		modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
-		modify_request.Replace("mail", []string{data.Mail})
 		modify_request.Replace("displayname", []string{data.DisplayName})
 		modify_request.Replace("givenname", []string{data.GivenName})
 		modify_request.Replace("sn", []string{data.Surname})
@@ -52,11 +55,6 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		} else {
 			data.Success = true
 		}
-	} else {
-		data.Mail = login.UserEntry.GetAttributeValue("mail")
-		data.DisplayName = login.UserEntry.GetAttributeValue("displayname")
-		data.GivenName = login.UserEntry.GetAttributeValue("givenname")
-		data.Surname = login.UserEntry.GetAttributeValue("sn")
 	}
 
 	templateProfile.Execute(w, data)
