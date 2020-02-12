@@ -36,19 +36,28 @@
   </div>
   <div class="form-group">
     <label for="idtype">Type d'identifiant:</label>
-    <input type="text" {{if .IsTemplated}}disabled="disabled"{{end}} id="idtype" name="idtype" class="form-control" value="{{ .IdType }}" />
+    <input type="text" {{if .Template}}disabled="disabled"{{end}} id="idtype" name="idtype" class="form-control" value="{{ .IdType }}" />
   </div>
-  <div class="form-group">
-    <label for="displayname">Nom:</label>
-    <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
-  </div>
+  {{ if eq .Template "user" }}
+    <div class="form-group">
+      <label for="displayname">Nom:</label>
+      <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
+    </div>
+    <input type="hidden" name="description" value="" />
+  {{ else }}
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <input type="text" id="description" name="description" class="form-control" value="{{ .Description }}" />
+    </div>
+    <input type="hidden" name="displayname" value="" />
+  {{ end }}
   <div class="form-group">
     <label for="soc">StructuralObjectClass:</label>
-    <input type="text" {{if .IsTemplated}}disabled="disabled"{{end}} id="soc" name="soc" class="form-control" value="{{ .StructuralObjectClass }}" />
+    <input type="text" {{if .Template}}disabled="disabled"{{end}} id="soc" name="soc" class="form-control" value="{{ .StructuralObjectClass }}" />
   </div>
   <div class="form-group">
     <label for="oc">ObjectClass:</label>
-    <textarea  rows="5" {{if .IsTemplated}}disabled="disabled"{{end}} id="oc" name="oc" class="form-control">{{ .ObjectClass }}</textarea>
+    <textarea  rows="5" {{if .Template}}disabled="disabled"{{end}} id="oc" name="oc" class="form-control">{{ .ObjectClass }}</textarea>
   </div>
   <button type="submit" class="btn btn-primary">Créer l'objet</button>
 </form>

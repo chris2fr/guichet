@@ -30,7 +30,7 @@
               {{.Identifier}}
             </a>
           </td>
-          <td>{{.DisplayName}}</td>
+          <td>{{.Name}}</td>
         </tr>
     {{end}}
   </tbody>
@@ -125,7 +125,7 @@
     {{range .Members}}
       <div class="row mt-4">
         <div class="col-md-3">
-          <strong>{{.DisplayName}}</strong>
+          <strong>{{.Name}}</strong>
         </div>
         <div class="col-md-5">
           <a href="/admin/ldap/{{.DN}}">{{.DN}}</a>
@@ -162,7 +162,7 @@
     {{range .Groups}}
       <div class="row mt-4">
         <div class="col-md-3">
-          <strong>{{.DisplayName}}</strong>
+          <strong>{{.Name}}</strong>
         </div>
         <div class="col-md-5">
           <a href="/admin/ldap/{{.DN}}">{{.DN}}</a>

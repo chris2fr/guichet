@@ -98,7 +98,7 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 		config.GroupBaseDN,
 		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=groupOfNames))"),
-		[]string{config.GroupNameAttr, "dn", "displayname"},
+		[]string{config.GroupNameAttr, "dn", "description"},
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)
@@ -137,14 +137,14 @@ type AdminLDAPTplData struct {
 }
 
 type EntryName struct {
-	DN          string
-	DisplayName string
+	DN   string
+	Name string
 }
 
 type Child struct {
-	DN          string
-	Identifier  string
-	DisplayName string
+	DN         string
+	Identifier string
+	Name       string
 }
 
 type PathItem struct {
@@ -337,7 +337,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 				deletable := true
-				for _, restricted := range []string{"displayname", "objectclass", "structuralobjectclass"} {
+				for _, restricted := range []string{"objectclass", "structuralobjectclass"} {
 					if strings.EqualFold(attr.Name, restricted) {
 						deletable = false
 						break
@@ -366,7 +366,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			config.UserBaseDN,
 			ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 			fmt.Sprintf("(objectClass=organizationalPerson)"),
-			[]string{"dn", "displayname"},
+			[]string{"dn", "displayname", "description"},
 			nil)
 		sr, err := login.conn.Search(searchRequest)
 		if err != nil {
@@ -375,11 +375,14 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		}
 		for _, ent := range sr.Entries {
 			mapDnToName[ent.DN] = ent.GetAttributeValue("displayname")
+			if mapDnToName[ent.DN] == "" {
+				mapDnToName[ent.DN] = ent.GetAttributeValue("description")
+			}
 		}
 		for _, memdn := range members_dn {
 			members = append(members, EntryName{
-				DN:          memdn,
-				DisplayName: mapDnToName[memdn],
+				DN:   memdn,
+				Name: mapDnToName[memdn],
 			})
 		}
 	}
@@ -397,7 +400,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			config.GroupBaseDN,
 			ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 			fmt.Sprintf("(objectClass=groupOfNames)"),
-			[]string{"dn", "displayname"},
+			[]string{"dn", "description"},
 			nil)
 		sr, err := login.conn.Search(searchRequest)
 		if err != nil {
@@ -405,12 +408,12 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, ent := range sr.Entries {
-			mapDnToName[ent.DN] = ent.GetAttributeValue("displayname")
+			mapDnToName[ent.DN] = ent.GetAttributeValue("description")
 		}
 		for _, grpdn := range groups_dn {
 			groups = append(groups, EntryName{
-				DN:          grpdn,
-				DisplayName: mapDnToName[grpdn],
+				DN:   grpdn,
+				Name: mapDnToName[grpdn],
 			})
 		}
 	}
@@ -420,7 +423,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		dn,
 		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(objectclass=*)"),
-		[]string{"dn", "displayname"},
+		[]string{"dn", "displayname", "description"},
 		nil)
 
 	sr, err = login.conn.Search(searchRequest)
@@ -433,10 +436,14 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 	children := []Child{}
 	for _, item := range sr.Entries {
+		name := item.GetAttributeValue("displayname")
+		if name == "" {
+			name = item.GetAttributeValue("description")
+		}
 		children = append(children, Child{
-			DN:          item.DN,
-			Identifier:  strings.Split(item.DN, ",")[0],
-			DisplayName: item.GetAttributeValue("displayname"),
+			DN:         item.DN,
+			Identifier: strings.Split(item.DN, ",")[0],
+			Name:       name,
 		})
 	}
 
@@ -478,15 +485,16 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 }
 
 type CreateData struct {
-	SuperDN string
-	Path    []PathItem
+	SuperDN  string
+	Path     []PathItem
+	Template string
 
 	IdType                string
 	IdValue               string
 	DisplayName           string
+	Description           string
 	StructuralObjectClass string
 	ObjectClass           string
-	IsTemplated           bool
 
 	Error string
 }
@@ -543,35 +551,35 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		SuperDN: super_dn,
 		Path:    path,
 	}
+	data.Template = template
 	if template == "user" {
 		data.IdType = config.UserNameAttr
 		data.StructuralObjectClass = "inetOrgPerson"
 		data.ObjectClass = "inetOrgPerson\norganizationalPerson\nperson\ntop"
-		data.IsTemplated = true
 	} else if template == "group" {
 		data.IdType = config.UserNameAttr
 		data.StructuralObjectClass = "groupOfNames"
 		data.ObjectClass = "groupOfNames\ntop"
-		data.IsTemplated = true
 	} else if template == "ou" {
 		data.IdType = "ou"
 		data.StructuralObjectClass = "organizationalUnit"
 		data.ObjectClass = "organizationalUnit\ntop"
-		data.IsTemplated = true
 	} else {
 		data.IdType = "cn"
 		data.ObjectClass = "top"
+		data.Template = ""
 	}
 
 	if r.Method == "POST" {
 		r.ParseForm()
-		if !data.IsTemplated {
+		if data.Template == "" {
 			data.IdType = strings.TrimSpace(strings.Join(r.Form["idtype"], ""))
 			data.StructuralObjectClass = strings.TrimSpace(strings.Join(r.Form["soc"], ""))
 			data.ObjectClass = strings.Join(r.Form["oc"], "")
 		}
 		data.IdValue = strings.TrimSpace(strings.Join(r.Form["idvalue"], ""))
 		data.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
+		data.Description = strings.TrimSpace(strings.Join(r.Form["description"], ""))
 
 		object_class := []string{}
 		for _, oc := range strings.Split(data.ObjectClass, "\n") {
@@ -593,10 +601,14 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			dn := data.IdType + "=" + data.IdValue + "," + super_dn
 			req := ldap.NewAddRequest(dn, nil)
 			req.Attribute("objectClass", object_class)
-			req.Attribute("structuralObjectClass",
-				[]string{data.StructuralObjectClass})
+			if data.StructuralObjectClass != "" {
+				req.Attribute("structuralObjectClass", []string{data.StructuralObjectClass})
+			}
 			if data.DisplayName != "" {
 				req.Attribute("displayname", []string{data.DisplayName})
+			}
+			if data.Description != "" {
+				req.Attribute("description", []string{data.Description})
 			}
 
 			err := login.conn.Add(req)
