@@ -309,6 +309,8 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 
 type LoginFormData struct {
 	Username     string
+	WrongUser    bool
+	WrongPass    bool
 	ErrorMessage string
 }
 
@@ -335,10 +337,17 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 
 		err := l.Bind(user_dn, password)
 		if err != nil {
-			templateLogin.Execute(w, LoginFormData{
-				Username:     username,
-				ErrorMessage: err.Error(),
-			})
+			data := &LoginFormData{
+				Username: username,
+			}
+			if ldap.IsErrorWithCode(err, ldap.LDAPResultInvalidCredentials) {
+				data.WrongPass = true
+			} else if ldap.IsErrorWithCode(err, ldap.LDAPResultNoSuchObject) {
+				data.WrongUser = true
+			} else {
+				data.ErrorMessage = err.Error()
+			}
+			templateLogin.Execute(w, data)
 			return nil
 		}
 

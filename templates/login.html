@@ -4,6 +4,12 @@
 <h4>S'identifier</h4>
 
 <form method="POST">
+  {{if .WrongUser}}
+    <div class="alert alert-danger">Nom d'utilisateur invalide.</div>
+  {{end}}
+  {{if .WrongPass}}
+    <div class="alert alert-danger">Mot de passe invalide.</div>
+  {{end}}
   {{if .ErrorMessage}}
     <div class="alert alert-danger">Impossible de se connecter.
       <div style="font-size: 0.8em">{{ .ErrorMessage }}</div>
