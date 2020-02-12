@@ -12,7 +12,7 @@ job "guichet" {
     task "server" {
       driver = "docker"
       config {
-        image = "lxpz/guichet_amd64:4"
+        image = "lxpz/guichet_amd64:5"
         readonly_rootfs = true
         port_map {
           web_port = 9991
