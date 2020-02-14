@@ -600,9 +600,9 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		} else {
 			dn := data.IdType + "=" + data.IdValue + "," + super_dn
 			req := ldap.NewAddRequest(dn, nil)
-			req.Attribute("objectClass", object_class)
+			req.Attribute("objectclass", object_class)
 			if data.StructuralObjectClass != "" {
-				req.Attribute("structuralObjectClass", []string{data.StructuralObjectClass})
+				req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
 			}
 			if data.DisplayName != "" {
 				req.Attribute("displayname", []string{data.DisplayName})

@@ -1,14 +1,25 @@
 package main
 
 import (
+	"bytes"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
 
+	"github.com/emersion/go-sasl"
+	"github.com/emersion/go-smtp"
 	"github.com/go-ldap/ldap/v3"
+	"github.com/gorilla/mux"
 )
+
+var EMAIL_REGEXP = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
 func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	login := checkLogin(w, r)
@@ -23,6 +34,47 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 	return login
 }
+
+// New account creation directly from interface
+
+func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
+	login := checkInviterLogin(w, r)
+	if login == nil {
+		return
+	}
+
+	handleNewAccount(w, r, login.conn)
+}
+
+// New account creation using code
+
+func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
+	code := mux.Vars(r)["code"]
+	code_id, code_pw := readCode(code)
+
+	l := ldapOpen(w)
+	if l == nil {
+		return
+	}
+
+	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
+	err := l.Bind(inviteDn, code_pw)
+	if err != nil {
+		templateInviteInvalidCode := template.Must(template.ParseFiles("templates/layout.html", "templates/invite_invalid_code.html"))
+		templateInviteInvalidCode.Execute(w, nil)
+		return
+	}
+
+	if handleNewAccount(w, r, l) {
+		del_req := ldap.NewDelRequest(inviteDn, nil)
+		err = l.Del(del_req)
+		if err != nil {
+			log.Printf("Could not delete invitation %s: %s", inviteDn, err)
+		}
+	}
+}
+
+// Common functions for new account
 
 type NewAccountData struct {
 	Username    string
@@ -39,13 +91,8 @@ type NewAccountData struct {
 	Success               bool
 }
 
-func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
+func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn) bool {
 	templateInviteNewAccount := template.Must(template.ParseFiles("templates/layout.html", "templates/invite_new_account.html"))
-
-	login := checkInviterLogin(w, r)
-	if login == nil {
-		return
-	}
 
 	data := &NewAccountData{}
 
@@ -60,10 +107,11 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
 
-		tryCreateAccount(login.conn, data, password1, password2)
+		tryCreateAccount(l, data, password1, password2)
 	}
 
 	templateInviteNewAccount.Execute(w, data)
+	return data.Success
 }
 
 func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 string) {
@@ -140,5 +188,137 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 	data.Success = true
 }
 
+// ---- Code generation ----
+
+type SendCodeData struct {
+	ErrorMessage      string
+	ErrorInvalidEmail bool
+	Success           bool
+	CodeDisplay       string
+	CodeSentTo        string
+	WebBaseAddress    string
+}
+
+type CodeMailFields struct {
+	From           string
+	To             string
+	Code           string
+	InviteFrom     string
+	WebBaseAddress string
+}
+
 func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
+	templateInviteSendCode := template.Must(template.ParseFiles("templates/layout.html", "templates/invite_send_code.html"))
+
+	login := checkInviterLogin(w, r)
+	if login == nil {
+		return
+	}
+
+	data := &SendCodeData{
+		WebBaseAddress: config.WebAddress,
+	}
+
+	if r.Method == "POST" {
+		r.ParseForm()
+
+		choice := strings.Join(r.Form["choice"], "")
+		if choice != "display" && choice != "send" {
+			http.Error(w, "Invalid entry", http.StatusBadRequest)
+			return
+		}
+		sendto := strings.Join(r.Form["sendto"], "")
+
+		trySendCode(login, choice, sendto, data)
+	}
+
+	templateInviteSendCode.Execute(w, data)
+}
+
+func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCodeData) {
+	// Generate code
+	code, code_id, code_pw := genCode()
+
+	// Create invitation object in database
+	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
+	req := ldap.NewAddRequest(inviteDn, nil)
+	req.Attribute("userpassword", []string{SSHAEncode([]byte(code_pw))})
+	req.Attribute("objectclass", []string{"top", "invitationCode"})
+
+	err := login.conn.Add(req)
+	if err != nil {
+		data.ErrorMessage = err.Error()
+		return
+	}
+
+	// If we want to display it, do so
+	if choice == "display" {
+		data.Success = true
+		data.CodeDisplay = code
+		return
+	}
+
+	// Otherwise, we are sending a mail
+	if !EMAIL_REGEXP.MatchString(sendto) {
+		data.ErrorInvalidEmail = true
+		return
+	}
+
+	templateMail := template.Must(template.ParseFiles("templates/invite_mail.txt"))
+	buf := bytes.NewBuffer([]byte{})
+	templateMail.Execute(buf, &CodeMailFields{
+		To:             sendto,
+		From:           config.MailFrom,
+		InviteFrom:     login.WelcomeName(),
+		Code:           code,
+		WebBaseAddress: config.WebAddress,
+	})
+
+	log.Printf("Sending mail to: %s", sendto)
+	var auth sasl.Client = nil
+	if config.SMTPUsername != "" {
+		auth = sasl.NewPlainClient("", config.SMTPUsername, config.SMTPPassword)
+	}
+	err = smtp.SendMail(config.SMTPServer, auth, config.MailFrom, []string{sendto}, buf)
+	if err != nil {
+		data.ErrorMessage = err.Error()
+		return
+	}
+	log.Printf("Mail sent.")
+
+	data.Success = true
+	data.CodeSentTo = sendto
+}
+
+func genCode() (code string, code_id string, code_pw string) {
+	random := make([]byte, 32)
+	n, err := rand.Read(random)
+	if err != nil || n != 32 {
+		log.Fatalf("Could not generate random bytes: %s", err)
+	}
+
+	a := binary.BigEndian.Uint32(random[0:4])
+	b := binary.BigEndian.Uint32(random[4:8])
+	c := binary.BigEndian.Uint32(random[8:12])
+
+	code = fmt.Sprintf("%03d-%03d-%03d", a%1000, b%1000, c%1000)
+	code_id, code_pw = readCode(code)
+	return
+}
+
+func readCode(code string) (code_id string, code_pw string) {
+	// Strip everything that is not a digit
+	code_digits := ""
+	for _, c := range code {
+		if c >= '0' && c <= '9' {
+			code_digits = code_digits + string(c)
+		}
+	}
+
+	id_hash := sha256.Sum256([]byte("Guichet ID " + code_digits))
+	pw_hash := sha256.Sum256([]byte("Guichet PW " + code_digits))
+
+	code_id = hex.EncodeToString(id_hash[:8])
+	code_pw = hex.EncodeToString(pw_hash[:16])
+	return
 }

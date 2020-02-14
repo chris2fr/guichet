@@ -23,15 +23,22 @@ type ConfigFile struct {
 	LdapServerAddr string `json:"ldap_server_addr"`
 	LdapTLS        bool   `json:"ldap_tls"`
 
-	BaseDN             string   `json:"base_dn"`
-	UserBaseDN         string   `json:"user_base_dn"`
-	UserNameAttr       string   `json:"user_name_attr"`
-	GroupBaseDN        string   `json:"group_base_dn"`
-	GroupNameAttr      string   `json:"group_name_attr"`
+	BaseDN        string `json:"base_dn"`
+	UserBaseDN    string `json:"user_base_dn"`
+	UserNameAttr  string `json:"user_name_attr"`
+	GroupBaseDN   string `json:"group_base_dn"`
+	GroupNameAttr string `json:"group_name_attr"`
+
 	InvitationBaseDN   string   `json:"invitation_base_dn"`
 	InvitationNameAttr string   `json:"invitation_name_attr"`
 	InvitedMailFormat  string   `json:"invited_mail_format"`
 	InvitedAutoGroups  []string `json:"invited_auto_groups"`
+
+	WebAddress   string `json:"web_address"`
+	MailFrom     string `json:"mail_from"`
+	SMTPServer   string `json:"smtp_server"`
+	SMTPUsername string `json:"smtp_username"`
+	SMTPPassword string `json:"smtp_password"`
 
 	AdminAccount   string `json:"admin_account"`
 	GroupCanInvite string `json:"group_can_invite"`
@@ -51,11 +58,22 @@ func readConfig() ConfigFile {
 		HttpBindAddr:   ":9991",
 		LdapServerAddr: "ldap://127.0.0.1:389",
 		LdapTLS:        false,
-		BaseDN:         "dc=example,dc=com",
-		UserBaseDN:     "ou=users,dc=example,dc=com",
-		UserNameAttr:   "uid",
-		GroupBaseDN:    "ou=groups,dc=example,dc=com",
-		GroupNameAttr:  "gid",
+
+		BaseDN:        "dc=example,dc=com",
+		UserBaseDN:    "ou=users,dc=example,dc=com",
+		UserNameAttr:  "uid",
+		GroupBaseDN:   "ou=groups,dc=example,dc=com",
+		GroupNameAttr: "gid",
+
+		InvitationBaseDN:   "ou=invitations,dc=example,dc=com",
+		InvitationNameAttr: "cn",
+		InvitedMailFormat:  "{}@example.com",
+		InvitedAutoGroups:  []string{},
+
+		WebAddress: "https://guichet.example.com",
+		MailFrom:   "guichet@example.com",
+		SMTPServer: "smtp.example.com",
+
 		AdminAccount:   "uid=admin,dc=example,dc=com",
 		GroupCanInvite: "",
 		GroupCanAdmin:  "gid=admin,ou=groups,dc=example,dc=com",
@@ -117,6 +135,7 @@ func main() {
 
 	r.HandleFunc("/invite/new_account", handleInviteNewAccount)
 	r.HandleFunc("/invite/send_code", handleInviteSendCode)
+	r.HandleFunc("/invitation/{code}", handleInvitationCode)
 
 	r.HandleFunc("/admin/users", handleAdminUsers)
 	r.HandleFunc("/admin/groups", handleAdminGroups)
@@ -145,6 +164,17 @@ type LoginStatus struct {
 	UserEntry *ldap.Entry
 	CanAdmin  bool
 	CanInvite bool
+}
+
+func (login *LoginStatus) WelcomeName() string {
+	ret := login.UserEntry.GetAttributeValue("givenname")
+	if ret == "" {
+		ret = login.UserEntry.GetAttributeValue("displayname")
+	}
+	if ret == "" {
+		ret = login.Info.Username
+	}
+	return ret
 }
 
 func logRequest(handler http.Handler) http.Handler {
@@ -266,9 +296,8 @@ func ldapOpen(w http.ResponseWriter) *ldap.Conn {
 // Page handlers ----
 
 type HomePageData struct {
-	Login       *LoginStatus
-	WelcomeName string
-	BaseDN      string
+	Login  *LoginStatus
+	BaseDN string
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
@@ -280,15 +309,8 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &HomePageData{
-		Login:       login,
-		BaseDN:      config.BaseDN,
-		WelcomeName: login.UserEntry.GetAttributeValue("givenname"),
-	}
-	if data.WelcomeName == "" {
-		data.WelcomeName = login.UserEntry.GetAttributeValue("displayname")
-	}
-	if data.WelcomeName == "" {
-		data.WelcomeName = login.Info.Username
+		Login:  login,
+		BaseDN: config.BaseDN,
 	}
 
 	templateHome.Execute(w, data)

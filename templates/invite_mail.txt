@@ -1,0 +1,13 @@
+From: {{.From}}
+To: {{.To}}
+Subject: Code d'invitation Deuxfleurs
+Content-type: text/plain; charset=utf-8
+
+Vous avez été invité à créer un compte sur Deuxfleurs par {{.InviteFrom}} :)
+
+Pour créer votre compte, rendez-vous à l'addresse suivante:
+
+{{.WebBaseAddress}}/invite/{{.Code}}
+
+À bientôt sur Deuxfleurs !
+
