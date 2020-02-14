@@ -43,7 +43,7 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handleNewAccount(w, r, login.conn)
+	handleNewAccount(w, r, login.conn, login.Info.DN)
 }
 
 // New account creation using code
@@ -65,7 +65,25 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if handleNewAccount(w, r, l) {
+	sReq := ldap.NewSearchRequest(
+		inviteDn,
+		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(objectclass=*)"),
+		[]string{"dn", "creatorsname"},
+		nil)
+	sr, err := l.Search(sReq)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(sr.Entries) != 1 {
+		http.Error(w, fmt.Sprintf("Expected 1 entry, got %d", len(sr.Entries)), http.StatusInternalServerError)
+		return
+	}
+
+	invitedBy := sr.Entries[0].GetAttributeValue("creatorsname")
+
+	if handleNewAccount(w, r, l, invitedBy) {
 		del_req := ldap.NewDelRequest(inviteDn, nil)
 		err = l.Del(del_req)
 		if err != nil {
@@ -91,7 +109,7 @@ type NewAccountData struct {
 	Success               bool
 }
 
-func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn) bool {
+func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
 	templateInviteNewAccount := template.Must(template.ParseFiles("templates/layout.html", "templates/invite_new_account.html"))
 
 	data := &NewAccountData{}
@@ -107,14 +125,14 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn) bool
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
 
-		tryCreateAccount(l, data, password1, password2)
+		tryCreateAccount(l, data, password1, password2, invitedBy)
 	}
 
 	templateInviteNewAccount.Execute(w, data)
 	return data.Success
 }
 
-func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 string) {
+func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 string, invitedBy string) {
 	// Check if username is correct
 	if match, err := regexp.MatchString("^[a-zA-Z0-9._-]+$", data.Username); !(err == nil && match) {
 		data.ErrorInvalidUsername = true
@@ -156,6 +174,7 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 	req.Attribute("objectclass", []string{"inetOrgPerson", "organizationalPerson", "person", "top"})
 	req.Attribute("structuralobjectclass", []string{"inetOrgPerson"})
 	req.Attribute("userpassword", []string{SSHAEncode([]byte(pass1))})
+	req.Attribute("invitedby", []string{invitedBy})
 	if len(data.DisplayName) > 0 {
 		req.Attribute("displayname", []string{data.DisplayName})
 	}
