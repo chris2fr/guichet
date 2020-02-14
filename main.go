@@ -23,11 +23,15 @@ type ConfigFile struct {
 	LdapServerAddr string `json:"ldap_server_addr"`
 	LdapTLS        bool   `json:"ldap_tls"`
 
-	BaseDN        string `json:"base_dn"`
-	UserBaseDN    string `json:"user_base_dn"`
-	UserNameAttr  string `json:"user_name_attr"`
-	GroupBaseDN   string `json:"group_base_dn"`
-	GroupNameAttr string `json:"group_name_attr"`
+	BaseDN             string   `json:"base_dn"`
+	UserBaseDN         string   `json:"user_base_dn"`
+	UserNameAttr       string   `json:"user_name_attr"`
+	GroupBaseDN        string   `json:"group_base_dn"`
+	GroupNameAttr      string   `json:"group_name_attr"`
+	InvitationBaseDN   string   `json:"invitation_base_dn"`
+	InvitationNameAttr string   `json:"invitation_name_attr"`
+	InvitedMailFormat  string   `json:"invited_mail_format"`
+	InvitedAutoGroups  []string `json:"invited_auto_groups"`
 
 	AdminAccount   string `json:"admin_account"`
 	GroupCanInvite string `json:"group_can_invite"`
@@ -110,6 +114,9 @@ func main() {
 	r.HandleFunc("/logout", handleLogout)
 	r.HandleFunc("/profile", handleProfile)
 	r.HandleFunc("/passwd", handlePasswd)
+
+	r.HandleFunc("/invite/new_account", handleInviteNewAccount)
+	r.HandleFunc("/invite/send_code", handleInviteSendCode)
 
 	r.HandleFunc("/admin/users", handleAdminUsers)
 	r.HandleFunc("/admin/groups", handleAdminGroups)
@@ -290,8 +297,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 func handleLogout(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, SESSION_NAME)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		session, _ = store.New(r, SESSION_NAME)
 	}
 
 	delete(session.Values, "login_username")

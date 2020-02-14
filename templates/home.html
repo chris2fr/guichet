@@ -16,11 +16,20 @@
   <div class="list-group list-group-flush">
     <a class="list-group-item list-group-item-action" href="/profile">Modifier mon profil</a>
     <a class="list-group-item list-group-item-action" href="/passwd">Modifier mon mot de passe</a>
-    {{if .Login.CanInvite}}
-      <a class="list-group-item list-group-item-action" href="/invite">Inviter quelqu'un</a>
-    {{end}}
   </div>
 </div>
+
+{{if .Login.CanInvite}}
+<div class="card mt-3">
+  <div class="card-header">
+    Inviter des gens sur Deuxfleurs
+  </div>
+  <div class="list-group list-group-flush">
+    <a class="list-group-item list-group-item-action" href="/invite/send_code">Envoyer un code d'invitation</a>
+    <a class="list-group-item list-group-item-action" href="/invite/new_account">Créer un nouveau compte directement</a>
+  </div>
+</div>
+{{end}}
 
 {{if .Login.CanAdmin}}
   <div class="card mt-3">

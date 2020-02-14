@@ -1,0 +1,76 @@
+{{define "title"}}Créer un compte |{{end}}
+
+{{define "body"}}
+<div class="d-flex">
+  <h4>Création d'un nouveau compte</h4>
+  <a class="ml-auto btn btn-info" href="/">Retour</a>
+</div>
+
+  {{if .ErrorMessage}}
+    <div class="alert alert-danger mt-4">Impossible de créer le compte.
+      <div style="font-size: 0.8em">{{ .ErrorMessage }}</div>
+    </div>
+  {{end}}
+  {{if .WarningMessage}}
+    <div class="alert alert-danger mt-4">Des erreurs se sont produtes, le compte pourrait ne pas être totalement fonctionnel.
+      <div style="font-size: 0.8em">{{ .WarningMessage }}</div>
+    </div>
+  {{end}}
+  {{if .Success}}
+    <div class="alert alert-success mt-4">
+       Le compe a été créé !
+       Rendez-vous <a href="/logout">sur la page d'accueil</a> pour vous connecter avec ce nouveau compte.
+    </div>
+  {{else}}
+    <form method="POST" class="mt-4">
+      <h5>Renseignements obligatoires</h5>
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur souhaité :</label>
+        <input type="text" id="username" name="username" class="form-control" value="{{ .Username }}" />
+      </div>
+      {{if .ErrorInvalidUsername}}
+        <div class="alert alert-warning">
+          Nom d'utilisateur invalide. Ne peut contenir que les caractères suivants : chiffres, lettres, point, tiret bas (_) et tiret du milieu (-).
+        </div>
+      {{end}}
+      {{if .ErrorUsernameTaken}}
+        <div class="alert alert-warning">
+          Ce nom d'utilisateur est déjà pris.
+        </div>
+      {{end}}
+      <div class="form-group">
+        <label for="password">Mot de passe :</label>
+        <input type="password" id="password" name="password" class="form-control" />
+      </div>
+      {{if .ErrorPasswordTooShort}}
+        <div class="alert alert-warning">
+          Le mot de passe choisi est trop court (minimum 8 caractères).
+        </div>
+      {{end}}
+      <div class="form-group">
+        <label for="password2">Répéter le mot de passe :</label>
+        <input type="password" id="password2" name="password2" class="form-control" />
+      </div>
+      {{if .ErrorPasswordMismatch}}
+        <div class="alert alert-warning">
+          Les deux mots de passe entrés ne correspondent pas.
+        </div>
+      {{end}}
+
+      <h5>Renseignements optionnels</h5>
+      <div class="form-group">
+        <label for="displayname">Nom complet :</label>
+        <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
+      </div>
+      <div class="form-group">
+        <label for="givenname">Prénom :</label>
+        <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" />
+      </div>
+      <div class="form-group">
+        <label for="surname">Nom de famille :</label>
+        <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
+      </div>
+      <button type="submit" class="btn btn-primary">Créer le compte</button>
+    </form>
+  {{end}}
+{{end}}
