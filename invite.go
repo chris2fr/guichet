@@ -223,13 +223,11 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 
 		choice := strings.Join(r.Form["choice"], "")
-		if choice != "display" && choice != "send" {
-			http.Error(w, "Invalid entry", http.StatusBadRequest)
-			return
-		}
 		sendto := strings.Join(r.Form["sendto"], "")
 
-		trySendCode(login, choice, sendto, data)
+		if choice == "display" || choice == "send" {
+			trySendCode(login, choice, sendto, data)
+		}
 	}
 
 	templateInviteSendCode.Execute(w, data)
