@@ -34,24 +34,29 @@
       <div class="input-group mt-4">
         <div class="input-group-prepend">
           <div class="input-group-text">
-            <input type="radio" name="choice" value="display" id="choice_display" checked="true">
-          </div>
-        </div>
-        <label class="form-control" for="choice_display">
-                  Afficher le code et me laisser l'envoyer
-        </label>
-      </div>
-
-      <div class="input-group mt-4">
-        <div class="input-group-prepend">
-          <div class="input-group-text">
-            <input type="radio" name="choice" value="send" id="choice_send" aria-label="Checkbox for following text input">
+            <input type="radio" name="choice" value="send" id="choice_send" checked="true">
           </div>
         </div>
         <label class="form-control" for="choice_send">
                   Envoyer le code à l'addresse suivante:
         </label>
         <input class="form-control" type="text" name="sendto" id="sendto" placeholder="Addresse mail..." onclick="document.getElementById('choice_send').checked = true;" />
+      </div>
+      {{if .ErrorInvalidEmail}}
+        <div class="alert alert-warning mt-4">
+          Addresse mail invalide.
+        </div>
+      {{end}}
+
+      <div class="input-group mt-4">
+        <div class="input-group-prepend">
+          <div class="input-group-text">
+            <input type="radio" name="choice" value="display" id="choice_display">
+          </div>
+        </div>
+        <label class="form-control" for="choice_display">
+                  Afficher le code et me laisser l'envoyer
+        </label>
       </div>
 
       <div class="form-group mt-4">
