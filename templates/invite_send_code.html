@@ -17,12 +17,9 @@
         Un code d'invitation a bien été envoyé à <code>{{ .CodeSentTo }}</code>.
       {{end}}
       {{if .CodeDisplay}}
-        Le code généré est le suivant:
+        Lien d'invitation :
 
-        <p style="text-align: center; font-size: 1.6em;" class="mt-4 mb-4">
-          {{ .CodeDisplay }}
-        </p>
-        <p style="text-align: center" class="mt-4 mb-4">
+        <p style="text-align: center; font-size: 1.4em" class="mt-4 mb-4">
           <a href="{{.WebBaseAddress}}/invitation/{{ .CodeDisplay }}">{{.WebBaseAddress}}/invitation/{{.CodeDisplay}}</a>
         </p>
       {{end}}

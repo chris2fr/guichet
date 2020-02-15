@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"crypto/rand"
-	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
@@ -17,6 +16,7 @@ import (
 	"github.com/emersion/go-smtp"
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/argon2"
 )
 
 var EMAIL_REGEXP = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
@@ -332,8 +332,8 @@ func readCode(code string) (code_id string, code_pw string) {
 		}
 	}
 
-	id_hash := sha256.Sum256([]byte("Guichet ID " + code_digits))
-	pw_hash := sha256.Sum256([]byte("Guichet PW " + code_digits))
+	id_hash := argon2.IDKey([]byte(code_digits), []byte("Guichet ID"), 2, 64*1024, 4, 32)
+	pw_hash := argon2.IDKey([]byte(code_digits), []byte("Guichet PW"), 2, 64*1024, 4, 32)
 
 	code_id = hex.EncodeToString(id_hash[:8])
 	code_pw = hex.EncodeToString(pw_hash[:16])
