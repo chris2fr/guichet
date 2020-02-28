@@ -65,7 +65,7 @@ Invitation codes are created as temporary LDAP objects in a special folder.
 - `invitation_base_dn`: the LDAP folder in which invitation codes are stored
 - `invitation_name_attr`: just use `cn`
 - `invited_mail_format`: automatically set the invited user's email to this string, where `{}` is replaced by the created username (ex: `{}@deuxfleurs.fr`)
-- `invited_auto_groups` (list of strings): a list of DNs of LDAP groups to which newly created users are added
+- `invited_auto_groups` (list of strings): a list of DNs of LDAP groups
 
 #### Email configuration
 
@@ -78,7 +78,7 @@ Guichet can send an invitation link by email. To do so, an SMTP server must be c
 
 ## Example configuration
 
-This is a subset of the configuration we use on <deuxfleurs.fr>:
+This is a subset of the configuration we use on Deuxfleurs:
 
 ```
 {
