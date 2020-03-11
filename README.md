@@ -8,7 +8,7 @@ Guichet is a simple LDAP web interface for the following tasks:
 
 Guichet works well with the [Bottin](https://bottin.eu) LDAP server.
 Currently, Guichet's templates are only in French as it has been created for
-the [Deuxfleurs](deuxfleurs.fr) collective.
+the [Deuxfleurs](https://deuxfleurs.fr) collective.
 We would gladly merge a pull request with an English transaltion !
 
 A Docker image is provided on the [Docker hub](https://hub.docker.com/r/lxpz/guichet_amd64).
