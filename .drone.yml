@@ -1,0 +1,7 @@
+pipeline:
+  build:
+    image: golang:stretch
+    commands:
+      - go get -d -v
+      - go build -v
+
