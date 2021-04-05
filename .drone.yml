@@ -1,3 +1,4 @@
+---
 pipeline:
   build:
     image: golang:stretch
@@ -5,3 +6,8 @@ pipeline:
       - go get -d -v
       - go build -v
 
+---
+kind: signature
+hmac: 38948cd073f3a0b73ab7bb13ba1b5e18c64c02976abfd6dcd5bf7a4c34197e8c
+
+...
