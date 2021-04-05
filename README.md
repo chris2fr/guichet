@@ -1,6 +1,6 @@
 # Guichet
 
-[![Build Status](https://drone.deuxfleurs.fr/api/badges/Deuxfleurs/guichet/status.svg)](https://drone.deuxfleurs.fr/Deuxfleurs/guichet)
+[![Build Status](https://drone.deuxfleurs.fr/api/badges/Deuxfleurs/guichet/status.svg?ref=refs/heads/main)](https://drone.deuxfleurs.fr/Deuxfleurs/guichet)
 
 Guichet is a simple LDAP web interface for the following tasks:
 
