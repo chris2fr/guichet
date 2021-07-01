@@ -127,5 +127,5 @@ Here is an example of Bottin ACLs that may be used to support Guichet invitation
   ]
 ```
 
-Consult [this directory](https://git.deuxfleurs.fr/Deuxfleurs/deuxfleurs.fr/src/branch/master/consul/configuration/directory)
+Consult [this directory](https://git.deuxfleurs.fr/Deuxfleurs/infrastructure/src/branch/main/app/directory/config)
 to view the full configuration in use on Deuxfleurs.
