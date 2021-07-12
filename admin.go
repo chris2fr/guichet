@@ -132,6 +132,8 @@ type AdminLDAPTplData struct {
 	HasGroups  bool
 	Groups     []EntryName
 
+	ListMemGro map[string]string
+
 	Error   string
 	Success bool
 }
@@ -360,31 +362,29 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	members := []EntryName{}
-	if len(members_dn) > 0 {
-		mapDnToName := make(map[string]string)
-		searchRequest = ldap.NewSearchRequest(
-			config.UserBaseDN,
-			ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-			fmt.Sprintf("(objectClass=organizationalPerson)"),
-			[]string{"dn", "displayname", "description"},
-			nil)
-		sr, err := login.conn.Search(searchRequest)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+	mapDnToNameMember := make(map[string]string)
+	searchRequest = ldap.NewSearchRequest(
+		config.UserBaseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(objectClass=organizationalPerson)"),
+		[]string{"dn", "displayname", "description"},
+		nil)
+	sr, err = login.conn.Search(searchRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	for _, ent := range sr.Entries {
+		mapDnToNameMember[ent.DN] = ent.GetAttributeValue("displayname")
+		if mapDnToNameMember[ent.DN] == "" {
+			mapDnToNameMember[ent.DN] = ent.GetAttributeValue("description")
 		}
-		for _, ent := range sr.Entries {
-			mapDnToName[ent.DN] = ent.GetAttributeValue("displayname")
-			if mapDnToName[ent.DN] == "" {
-				mapDnToName[ent.DN] = ent.GetAttributeValue("description")
-			}
-		}
-		for _, memdn := range members_dn {
-			members = append(members, EntryName{
-				DN:   memdn,
-				Name: mapDnToName[memdn],
-			})
-		}
+	}
+	for _, memdn := range members_dn {
+		members = append(members, EntryName{
+			DN:   memdn,
+			Name: mapDnToNameMember[memdn],
+		})
 	}
 
 	groups_dn := []string{}
@@ -394,28 +394,26 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	groups := []EntryName{}
-	if len(groups_dn) > 0 {
-		mapDnToName := make(map[string]string)
-		searchRequest = ldap.NewSearchRequest(
-			config.GroupBaseDN,
-			ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-			fmt.Sprintf("(objectClass=groupOfNames)"),
-			[]string{"dn", "description"},
-			nil)
-		sr, err := login.conn.Search(searchRequest)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		for _, ent := range sr.Entries {
-			mapDnToName[ent.DN] = ent.GetAttributeValue("description")
-		}
-		for _, grpdn := range groups_dn {
-			groups = append(groups, EntryName{
-				DN:   grpdn,
-				Name: mapDnToName[grpdn],
-			})
-		}
+	mapDnToNameGroup := make(map[string]string)
+	searchRequest = ldap.NewSearchRequest(
+		config.GroupBaseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(objectClass=groupOfNames)"),
+		[]string{"dn", "description"},
+		nil)
+	sr, err = login.conn.Search(searchRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	for _, ent := range sr.Entries {
+		mapDnToNameGroup[ent.DN] = ent.GetAttributeValue("description")
+	}
+	for _, grpdn := range groups_dn {
+		groups = append(groups, EntryName{
+			DN:   grpdn,
+			Name: mapDnToNameGroup[grpdn],
+		})
 	}
 
 	// Get children
@@ -465,6 +463,23 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	//Get the members or groups existing
+	var ExistList map[string]string
+	if hasMembers {
+		ExistList = mapDnToNameMember
+		//Suppress the members already in the group
+		for _, value := range members {
+			delete(ExistList, value.DN)
+		}
+	} else if hasGroups {
+		ExistList = mapDnToNameGroup
+		//Delete the groups where the user is already a member
+		for _, value := range groups {
+			delete(ExistList, value.DN)
+		}
+	}
+
+
 	templateAdminLDAP.Execute(w, &AdminLDAPTplData{
 		DN: dn,
 
@@ -478,6 +493,8 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		Members:    members,
 		HasGroups:  len(groups) > 0 || hasGroups,
 		Groups:     groups,
+
+		ListMemGro: ExistList,
 
 		Error:   dError,
 		Success: dSuccess,

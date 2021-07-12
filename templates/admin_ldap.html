@@ -146,7 +146,12 @@
         <div class="col-md-3"><strong>Ajouter au groupe :</strong>
       </div>
       <div class="col-md-5">
-        <input class="form-control" type="text" name="values" placeholder="Utilisateur..." />
+        <input class="form-control" type="text" list="users" name="values" placeholder="Utilisateur..." />
+        <datalist id="users">
+          {{ range $key, $value := .ListMemGro}}
+            <option value={{$key}}>{{$value}}</option>
+          {{end}}
+        </datalist>
       </div>
       <div class="col-md-2">
           <input type="submit" value="Ajouter" class="form-control btn btn-success btn-sm" />
@@ -182,7 +187,12 @@
         <div class="col-md-3"><strong>Nouveau groupe :</strong>
       </div>
       <div class="col-md-5">
-        <input class="form-control" type="text" name="group" placeholder="Groupe..." />
+        <input class="form-control" list="groups" type="text" name="group" placeholder="Groupe..." />
+        <datalist id="groups">
+          {{ range $key, $value := .ListMemGro}}
+            <option value={{$key}}>{{$value}}</option>
+          {{end}}
+        </datalist>
       </div>
       <div class="col-md-2">
           <input type="submit" value="Ajouter" class="form-control btn btn-success btn-sm" />
