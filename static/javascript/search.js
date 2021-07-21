@@ -1,8 +1,8 @@
 function searchDirectory() {
     var input = document.getElementById("search").value;
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
+    if(input){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 201) {
         // Typical action to be performed when the document is ready:
             //Response from Request Ajax
@@ -26,10 +26,12 @@ function searchDirectory() {
             }
             old_table.parentNode.replaceChild(table, old_table)
         }
-    };
-    xhttp.overrideMimeType("application/json");
-    xhttp.open("GET", "/search/".concat(input), true);
-    xhttp.send();
+        };
+        xhttp.overrideMimeType("application/json");
+        xhttp.open("GET", "/search/".concat(input), true);
+        xhttp.send();
+    } 
+    
 
 
 
