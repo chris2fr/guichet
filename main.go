@@ -133,6 +133,9 @@ func main() {
 	r.HandleFunc("/profile", handleProfile)
 	r.HandleFunc("/passwd", handlePasswd)
 
+	r.HandleFunc("/directory", handleDirectory)
+	r.HandleFunc("/search/{input}", handleSearch)
+
 	r.HandleFunc("/invite/new_account", handleInviteNewAccount)
 	r.HandleFunc("/invite/send_code", handleInviteSendCode)
 	r.HandleFunc("/invitation/{code}", handleInvitationCode)
