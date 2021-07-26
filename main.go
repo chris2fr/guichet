@@ -244,7 +244,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		login_info.DN,
 		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
 		requestKind,
-		[]string{"dn", "displayname", "givenname", "sn", "mail", "memberof"},
+		[]string{"dn", "displayname", "givenname", "sn", "mail", "memberof", "visibility", "description"},
 		nil)
 
 	sr, err := l.Search(searchRequest)

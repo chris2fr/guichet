@@ -25,6 +25,7 @@ type SearchResult struct {
 	Identifiant string `json:"identifiant"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
+	Description string `json:"description"`
 	DN          string `json:"dn"`
 }
 
@@ -47,12 +48,12 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Search value with ldap and filter
+	//Search values with ldap and filter
 	searchRequest := ldap.NewSearchRequest(
 		config.UserBaseDN,
 		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
-		"(&(objectclass=organizationalPerson)(visibility=all))",
-		[]string{config.UserNameAttr, "displayname", "mail"},
+		"(&(objectclass=organizationalPerson)(visibility=on))",
+		[]string{config.UserNameAttr, "displayname", "mail", "description"},
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)
@@ -71,6 +72,7 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 					Identifiant: values.GetAttributeValue("cn"),
 					Name:        values.GetAttributeValue("displayname"),
 					Email:       values.GetAttributeValue("email"),
+					Description: values.GetAttributeValue("description"),
 					DN:          values.DN,
 				}),
 			}
@@ -78,7 +80,7 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	//Convert interface to uint32 with Type Assertions and not a simple convert
+	//Convert interface to uint32 with Type Assertions and not a simple convert for messageID
 	if val_Raw, ok_raw := session.Values["MessageID"]; ok_raw {
 		if val, ok := val_Raw.(uint32); ok {
 			val += 1

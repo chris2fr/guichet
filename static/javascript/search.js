@@ -23,9 +23,13 @@ function searchDirectory() {
                     var identifiant = row.insertCell(0);
                     var name = row.insertCell(1);
                     var email = row.insertCell(2);
+                    var description = row.insertCell(3);
+                    description.setAttribute("style", "word-break: break-all;");
+
                     identifiant.innerHTML = `<a href="/admin/ldap/${jsonResponse.search[i].dn}">${jsonResponse.search[i].identifiant}</a>`
                     name.innerHTML = jsonResponse.search[i].name
                     email.innerHTML = jsonResponse.search[i].email
+                    description.innerHTML = `${jsonResponse.search[i].description}`
 
                 }
                 old_table.parentNode.replaceChild(table, old_table)

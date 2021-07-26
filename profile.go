@@ -16,6 +16,8 @@ type ProfileTplData struct {
 	DisplayName  string
 	GivenName    string
 	Surname      string
+	Visibility   string
+	Description  string
 }
 
 func handleProfile(w http.ResponseWriter, r *http.Request) {
@@ -36,6 +38,8 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	data.DisplayName = login.UserEntry.GetAttributeValue("displayname")
 	data.GivenName = login.UserEntry.GetAttributeValue("givenname")
 	data.Surname = login.UserEntry.GetAttributeValue("sn")
+	data.Visibility = login.UserEntry.GetAttributeValue("visibility")
+	data.Description = login.UserEntry.GetAttributeValue("description")
 
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -43,11 +47,15 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		data.DisplayName = strings.TrimSpace(strings.Join(r.Form["display_name"], ""))
 		data.GivenName = strings.TrimSpace(strings.Join(r.Form["given_name"], ""))
 		data.Surname = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
+		data.Description = strings.Trim(strings.Join(r.Form["description"], ""), "")
+		data.Visibility = strings.TrimSpace(strings.Join(r.Form["visibility"], ""))
 
 		modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
 		modify_request.Replace("displayname", []string{data.DisplayName})
 		modify_request.Replace("givenname", []string{data.GivenName})
 		modify_request.Replace("sn", []string{data.Surname})
+		modify_request.Replace("description", []string{data.Description})
+		modify_request.Replace("visibility", []string{data.Visibility})
 
 		err := login.conn.Modify(modify_request)
 		if err != nil {

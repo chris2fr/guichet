@@ -37,6 +37,18 @@
       <label for="surname">Nom de famille:</label>
       <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
     </div>
+    <div class="form-group">
+      <label for="description">Description (180 caractères maximum)</label>
+      <textarea id="description" name="description" class="form-control" maxlength="180">{{ .Description }}</textarea>
+    </div>
+    <div class="form-group form-check">
+      {{if .Visibility}}
+        <input class="form-check-input" name="visibility" type="checkbox" id="visibility" checked>
+      {{else}}
+        <input class="form-check-input" name="visibility" type="checkbox" id="visibility">
+      {{end}}
+      <label class="form-check-label" for="visibility">Apparaît sur l'annuaire</label>
+    </div>
     <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
   </form>
 {{end}}
