@@ -28,7 +28,10 @@ type SearchResult struct {
 	DN          string `json:"dn"`
 }
 
-type Results []SearchResult
+type Results struct {
+	Search    []SearchResult `json:"search"`
+	MessageID uint32         `json:"id"`
+}
 
 func handleSearch(w http.ResponseWriter, r *http.Request) {
 	//Get input value by user
@@ -36,6 +39,11 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 	//Log to allow the research
 	login := checkLogin(w, r)
 	if login == nil {
+		return
+	}
+
+	session, err := store.Get(r, SESSION_NAME)
+	if err != nil {
 		return
 	}
 
@@ -58,14 +66,30 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 	for _, values := range sr.Entries {
 
 		if strings.Contains(values.GetAttributeValue("cn"), input) {
-			result = append(result, SearchResult{
-				Identifiant: values.GetAttributeValue("cn"),
-				Name:        values.GetAttributeValue("displayname"),
-				Email:       values.GetAttributeValue("email"),
-				DN:          values.DN,
-			})
+			result = Results{
+				Search: append(result.Search, SearchResult{
+					Identifiant: values.GetAttributeValue("cn"),
+					Name:        values.GetAttributeValue("displayname"),
+					Email:       values.GetAttributeValue("email"),
+					DN:          values.DN,
+				}),
+			}
 		}
 
+	}
+
+	//Convert interface to uint32 with Type Assertions and not a simple convert
+	if val_Raw, ok_raw := session.Values["MessageID"]; ok_raw {
+		if val, ok := val_Raw.(uint32); ok {
+			val += 1
+			session.Values["MessageID"] = val
+			result.MessageID = val
+			err = session.Save(r, w)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
 	}
 
 	//Send JSON through xhttp

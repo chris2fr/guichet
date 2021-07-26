@@ -392,6 +392,9 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		session.Values["login_password"] = password
 		session.Values["login_dn"] = user_dn
 
+		//Add Value MessageID
+		session.Values["MessageID"] = uint32(0)
+
 		err = session.Save(r, w)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
