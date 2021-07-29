@@ -34,6 +34,10 @@ type Results struct {
 	MessageID uint32         `json:"id"`
 }
 
+type UniqueID struct {
+	Id int `json:"id"`
+}
+
 func handleSearch(w http.ResponseWriter, r *http.Request) {
 	//Get input value by user
 	input := mux.Vars(r)["input"]
@@ -43,10 +47,10 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := store.Get(r, SESSION_NAME)
+	/**session, err := store.Get(r, SESSION_NAME)
 	if err != nil {
 		return
-	}
+	}**/
 
 	//Search values with ldap and filter
 	searchRequest := ldap.NewSearchRequest(
@@ -79,20 +83,26 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-
-	//Convert interface to uint32 with Type Assertions and not a simple convert for messageID
-	if val_Raw, ok_raw := session.Values["MessageID"]; ok_raw {
-		if val, ok := val_Raw.(uint32); ok {
-			val += 1
-			session.Values["MessageID"] = val
-			result.MessageID = val
-			err = session.Save(r, w)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+	if result.Search == nil {
+		result = Results{
+			Search: append(result.Search, SearchResult{
+				Identifiant: "",
+				Name:        "",
+				Email:       "",
+				Description: "",
+				DN:          "",
+			}),
 		}
 	}
+
+	var id UniqueID
+	//Decode JSON body
+	err = json.NewDecoder(r.Body).Decode(&id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	result.MessageID = uint32(id.Id)
 
 	//Send JSON through xhttp
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
