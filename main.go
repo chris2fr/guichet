@@ -43,6 +43,10 @@ type ConfigFile struct {
 	AdminAccount   string `json:"admin_account"`
 	GroupCanInvite string `json:"group_can_invite"`
 	GroupCanAdmin  string `json:"group_can_admin"`
+
+	Endpoint  string `json:"endpoint"`
+	AccesKey  string `json:"acces_key"`
+	SecretKey string `json:"secret_key"`
 }
 
 var configFlag = flag.String("config", "./config.json", "Configuration file path")
@@ -132,6 +136,8 @@ func main() {
 	r.HandleFunc("/logout", handleLogout)
 	r.HandleFunc("/profile", handleProfile)
 	r.HandleFunc("/passwd", handlePasswd)
+
+	r.HandleFunc("/image/{name}/{size}", handleDownloadImage)
 
 	r.HandleFunc("/directory", handleDirectory)
 	r.HandleFunc("/search/{input}", handleSearch)
@@ -244,7 +250,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		login_info.DN,
 		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
 		requestKind,
-		[]string{"dn", "displayname", "givenname", "sn", "mail", "memberof", "visibility", "description"},
+		[]string{"dn", "displayname", "givenname", "sn", "mail", "memberof", "visibility", "description", "profilImage"},
 		nil)
 
 	sr, err := l.Search(searchRequest)

@@ -7,8 +7,12 @@ require (
 	github.com/emersion/go-smtp v0.12.1
 	github.com/go-ldap/ldap v3.0.3+incompatible
 	github.com/go-ldap/ldap/v3 v3.1.6
+	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/sessions v1.2.0
-	github.com/sirupsen/logrus v1.4.2
+	github.com/minio/minio-go/v7 v7.0.0
+	github.com/sirupsen/logrus v1.6.0
+	github.com/stretchr/objx v0.1.1 // indirect
 	golang.org/x/crypto v0.0.0-20200214034016-1d94cc7ab1c6
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 )

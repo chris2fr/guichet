@@ -21,12 +21,18 @@ function searchDirectory() {
             
                 for (let i =0; i < Object.keys(jsonResponse.search).length; i++) {
                     var row = table.insertRow(0);
-                    var identifiant = row.insertCell(0);
-                    var name = row.insertCell(1);
-                    var email = row.insertCell(2);
-                    var description = row.insertCell(3);
+                    var urlName = row.insertCell(0);
+                    var identifiant = row.insertCell(1);
+                    var name = row.insertCell(2);
+                    var email = row.insertCell(3);
+                    var description = row.insertCell(4);
                     description.setAttribute("style", "word-break: break-all;");
 
+                    if (jsonResponse.search[i].dn.localeCompare("")!=0) {
+                        urlName.innerHTML = `<object data="/image/${jsonResponse.search[i].dn}/little" class=".img-thumbnail"><image src="/image/unknown_profile/little" class=".img-thumbnail"></object>`
+                    }else {
+                        urlName.innerHTML=""
+                    }                
                     identifiant.innerHTML = `<a href="/admin/ldap/${jsonResponse.search[i].dn}">${jsonResponse.search[i].identifiant}</a>`
                     name.innerHTML = jsonResponse.search[i].name
                     email.innerHTML = jsonResponse.search[i].email

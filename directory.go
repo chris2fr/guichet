@@ -47,11 +47,6 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/**session, err := store.Get(r, SESSION_NAME)
-	if err != nil {
-		return
-	}**/
-
 	//Search values with ldap and filter
 	searchRequest := ldap.NewSearchRequest(
 		config.UserBaseDN,

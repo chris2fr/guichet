@@ -18,6 +18,7 @@ type ProfileTplData struct {
 	Surname      string
 	Visibility   string
 	Description  string
+	NameImage    string
 }
 
 func handleProfile(w http.ResponseWriter, r *http.Request) {
@@ -42,13 +43,27 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	data.Description = login.UserEntry.GetAttributeValue("description")
 
 	if r.Method == "POST" {
-		r.ParseForm()
+		//5MB maximum size files
+		r.ParseMultipartForm(5 << 20)
 
 		data.DisplayName = strings.TrimSpace(strings.Join(r.Form["display_name"], ""))
 		data.GivenName = strings.TrimSpace(strings.Join(r.Form["given_name"], ""))
 		data.Surname = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
 		data.Description = strings.Trim(strings.Join(r.Form["description"], ""), "")
-		data.Visibility = strings.TrimSpace(strings.Join(r.Form["visibility"], ""))
+		visible := strings.TrimSpace(strings.Join(r.Form["visibility"], ""))
+		if visible != "" {
+			visible = "on"
+		}
+		data.Visibility = visible
+
+		ok, name, err := uploadImage(w, r, login)
+		if err != nil {
+			data.ErrorMessage = err.Error()
+		}
+
+		if ok {
+			data.NameImage = name
+		}
 
 		modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
 		modify_request.Replace("displayname", []string{data.DisplayName})
@@ -56,13 +71,17 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		modify_request.Replace("sn", []string{data.Surname})
 		modify_request.Replace("description", []string{data.Description})
 		modify_request.Replace("visibility", []string{data.Visibility})
+		if ok {
+			modify_request.Replace("profilImage", []string{data.NameImage})
+		}
 
-		err := login.conn.Modify(modify_request)
+		err = login.conn.Modify(modify_request)
 		if err != nil {
 			data.ErrorMessage = err.Error()
 		} else {
 			data.Success = true
 		}
+
 	}
 
 	templateProfile.Execute(w, data)

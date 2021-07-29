@@ -5,7 +5,10 @@
   <h4>Modifier mon profil</h4>
   <a class="ml-auto btn btn-info" href="/">Retour</a>
 </div>
-
+<h5>Photo de profil</h5>
+<object data="/image/{{ .Status.Info.DN}}/full" class=".img-thumbnail">
+  <img src="/image/unknown_profile/full" alt="Stack Overflow logo and icons and such">
+</object>
   {{if .ErrorMessage}}
     <div class="alert alert-danger mt-4">Impossible d'effectuer la modification.
       <div style="font-size: 0.8em">{{ .ErrorMessage }}</div>
@@ -16,7 +19,7 @@
         Profil enregistré.
     </div>
   {{end}}
-  <form method="POST" class="mt-4">
+  <form method="POST" class="mt-4" enctype="multipart/form-data">
     <div class="form-group">
       <label>Nom d'utilisateur:</label>
       <input type="text" disabled="true" class="form-control" value="{{ .Status.Info.Username }}" />
@@ -43,12 +46,19 @@
     </div>
     <div class="form-group form-check">
       {{if .Visibility}}
-        <input class="form-check-input" name="visibility" type="checkbox" id="visibility" checked>
+        <input class="form-check-input" name="visibility" type="checkbox" id="visibility" value="on" checked>
       {{else}}
         <input class="form-check-input" name="visibility" type="checkbox" id="visibility">
       {{end}}
       <label class="form-check-label" for="visibility">Apparaît sur l'annuaire</label>
     </div>
+    <div class="form-group input-group mb-3">
+      <div class="form-group custom-file">
+        <input type="file" name="image" class="custom-file-input" id="image">
+        <label class="custom-file-label" for="image">Choose picture (jpeg, jpg or png)</label>
+      </div>
+    </div>
     <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
   </form>
+  <script src="/static/javascript/minio.js"></script>
 {{end}}
