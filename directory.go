@@ -22,8 +22,8 @@ func handleDirectory(w http.ResponseWriter, r *http.Request) {
 }
 
 type SearchResult struct {
-	Identifiant string `json:"identifiant"`
-	Name        string `json:"name"`
+	Id          string `json:"id"`
+	Displayname string `json:"displayname"`
 	Email       string `json:"email"`
 	Description string `json:"description"`
 	DN          string `json:"dn"`
@@ -61,15 +61,16 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Transform the researh's result in a correct struct to send HSON
+	//Transform the researh's result in a correct struct to send JSON
 	var result Results
 	for _, values := range sr.Entries {
 
-		if strings.Contains(values.GetAttributeValue("cn"), input) {
+		if strings.Contains(values.GetAttributeValue(config.UserNameAttr), input) || strings.Contains(values.GetAttributeValue("displayname"), input) ||
+			(values.GetAttributeValue("email") != "" && strings.Contains(values.GetAttributeValue("email"), input)) {
 			result = Results{
 				Search: append(result.Search, SearchResult{
-					Identifiant: values.GetAttributeValue("cn"),
-					Name:        values.GetAttributeValue("displayname"),
+					Id:          values.GetAttributeValue(config.UserNameAttr),
+					Displayname: values.GetAttributeValue("displayname"),
 					Email:       values.GetAttributeValue("email"),
 					Description: values.GetAttributeValue("description"),
 					DN:          values.DN,
@@ -80,13 +81,7 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 	}
 	if result.Search == nil {
 		result = Results{
-			Search: append(result.Search, SearchResult{
-				Identifiant: "",
-				Name:        "",
-				Email:       "",
-				Description: "",
-				DN:          "",
-			}),
+			Search: append(result.Search, SearchResult{}),
 		}
 	}
 

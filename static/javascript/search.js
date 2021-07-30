@@ -23,20 +23,20 @@ function searchDirectory() {
                     var row = table.insertRow(0);
                     var urlName = row.insertCell(0);
                     var identifiant = row.insertCell(1);
-                    var name = row.insertCell(2);
+                    var displayname = row.insertCell(2);
                     var email = row.insertCell(3);
                     var description = row.insertCell(4);
                     description.setAttribute("style", "word-break: break-all;");
 
                     if (jsonResponse.search[i].dn.localeCompare("")!=0) {
-                        urlName.innerHTML = `<object data="/image/${jsonResponse.search[i].dn}/little" class=".img-thumbnail"><image src="/image/unknown_profile/little" class=".img-thumbnail"></object>`
+                        urlName.innerText = `<object data="/image/${jsonResponse.search[i].dn}/little" class=".img-thumbnail"><image src="/image/unknown_profile/little" class=".img-thumbnail"></object>`
                     }else {
-                        urlName.innerHTML=""
+                        urlName.innerText=""    
                     }                
-                    identifiant.innerHTML = `<a href="/admin/ldap/${jsonResponse.search[i].dn}">${jsonResponse.search[i].identifiant}</a>`
-                    name.innerHTML = jsonResponse.search[i].name
-                    email.innerHTML = jsonResponse.search[i].email
-                    description.innerHTML = jsonResponse.search[i].description
+                    identifiant.innerText = `<a href="/admin/ldap/${jsonResponse.search[i].dn}">${jsonResponse.search[i].id}</a>`
+                    displayname.innerText = jsonResponse.search[i].displayname
+                    email.innerText = jsonResponse.search[i].email
+                    description.innerText = jsonResponse.search[i].description
 
                 }
                 old_table.parentNode.replaceChild(table, old_table)

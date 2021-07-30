@@ -44,9 +44,11 @@ type ConfigFile struct {
 	GroupCanInvite string `json:"group_can_invite"`
 	GroupCanAdmin  string `json:"group_can_admin"`
 
-	Endpoint  string `json:"endpoint"`
-	AccesKey  string `json:"acces_key"`
-	SecretKey string `json:"secret_key"`
+	S3_Endpoint  string `json:"s3_endpoint"`
+	S3_AccesKey  string `json:"s3_acces_key"`
+	S3_SecretKey string `json:"s3_secret_key"`
+	S3_Region    string `json:"s3_region"`
+	S3_Bucket    string `json:"s3_bucket"`
 }
 
 var configFlag = flag.String("config", "./config.json", "Configuration file path")
@@ -250,7 +252,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		login_info.DN,
 		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
 		requestKind,
-		[]string{"dn", "displayname", "givenname", "sn", "mail", "memberof", "visibility", "description", "profilImage"},
+		[]string{"dn", "displayname", "givenname", "sn", "mail", "memberof", "visibility", "description", PROFILE_PICTURE_FIELD_NAME},
 		nil)
 
 	sr, err := l.Search(searchRequest)
@@ -397,9 +399,6 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		session.Values["login_username"] = username
 		session.Values["login_password"] = password
 		session.Values["login_dn"] = user_dn
-
-		//Add Value MessageID
-		session.Values["MessageID"] = uint32(0)
 
 		err = session.Save(r, w)
 		if err != nil {

@@ -24,43 +24,39 @@ import (
 	"github.com/nfnt/resize"
 )
 
+const PROFILE_PICTURE_FIELD_NAME = "profilePicture"
+
 //Upload image through guichet server.
-func uploadImage(w http.ResponseWriter, r *http.Request, login *LoginStatus) (bool, string, error) {
+func uploadImage(w http.ResponseWriter, r *http.Request, login *LoginStatus) (string, error) {
 	file, _, err := r.FormFile("image")
 
 	if err == http.ErrMissingFile {
-		return false, "", nil
+		return "", nil
 	}
 	if err != nil {
-		return false, "", err
+		return "", err
 	}
 	defer file.Close()
-	fileType, err := checkImage(file)
+	err = checkImage(file)
 	if err != nil {
-		return false, "", err
-	}
-	if fileType == "" {
-		return false, "", nil
+		return "", err
 	}
 
 	buff := bytes.NewBuffer([]byte{})
 	buff_thumbnail := bytes.NewBuffer([]byte{})
 	err = resizeThumb(file, buff, buff_thumbnail)
 	if err != nil {
-		return false, "", err
+		return "", err
 	}
 
-	mc, err := newMimioClient()
-	if err != nil {
-		return false, "", err
-	}
-	if mc == nil {
-		return false, "", err
+	mc, err := newMinioClient()
+	if err != nil || mc == nil {
+		return "", err
 	}
 
 	var name, nameFull string
 
-	if nameConsul := login.UserEntry.GetAttributeValue("profilImage"); nameConsul != "" {
+	if nameConsul := login.UserEntry.GetAttributeValue(PROFILE_PICTURE_FIELD_NAME); nameConsul != "" {
 		name = nameConsul
 		nameFull = "full_" + name
 	} else {
@@ -68,34 +64,34 @@ func uploadImage(w http.ResponseWriter, r *http.Request, login *LoginStatus) (bo
 		nameFull = "full_" + name
 	}
 
-	_, err = mc.PutObject(context.Background(), "bottin-pictures", name, buff_thumbnail, int64(buff_thumbnail.Len()), minio.PutObjectOptions{
+	_, err = mc.PutObject(context.Background(), config.S3_Bucket, name, buff_thumbnail, int64(buff_thumbnail.Len()), minio.PutObjectOptions{
 		ContentType: "image/jpeg",
 	})
 	if err != nil {
-		return false, "", err
+		return "", err
 	}
 
-	_, err = mc.PutObject(context.Background(), "bottin-pictures", nameFull, buff, int64(buff.Len()), minio.PutObjectOptions{
+	_, err = mc.PutObject(context.Background(), config.S3_Bucket, nameFull, buff, int64(buff.Len()), minio.PutObjectOptions{
 		ContentType: "image/jpeg",
 	})
 	if err != nil {
-		return false, "", err
+		return "", err
 	}
 
-	return true, name, nil
+	return name, nil
 }
 
-func newMimioClient() (*minio.Client, error) {
-	endpoint := config.Endpoint
-	accessKeyID := config.AccesKey
-	secretKeyID := config.SecretKey
+func newMinioClient() (*minio.Client, error) {
+	endpoint := config.S3_Endpoint
+	accessKeyID := config.S3_AccesKey
+	secretKeyID := config.S3_SecretKey
 	useSSL := true
 
 	//Initialize Minio
 	minioCLient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretKeyID, ""),
 		Secure: useSSL,
-		Region: "garage",
+		Region: config.S3_Region,
 	})
 
 	if err != nil {
@@ -106,11 +102,11 @@ func newMimioClient() (*minio.Client, error) {
 
 }
 
-func checkImage(file multipart.File) (string, error) {
+func checkImage(file multipart.File) error {
 	buff := make([]byte, 512) //Detect read only the first 512 bytes
 	_, err := file.Read(buff)
 	if err != nil {
-		return "", err
+		return err
 	}
 	file.Seek(0, 0)
 
@@ -118,9 +114,9 @@ func checkImage(file multipart.File) (string, error) {
 	fileType = strings.Split(fileType, "/")[0]
 	switch fileType {
 	case "image":
-		return fileType, nil
+		return nil
 	default:
-		return "", errors.New("bad type")
+		return errors.New("bad type")
 	}
 
 }
@@ -128,17 +124,6 @@ func checkImage(file multipart.File) (string, error) {
 func resizeThumb(file multipart.File, buff, buff_thumbnail *bytes.Buffer) error {
 	file.Seek(0, 0)
 	images, _, err := image.Decode(file)
-	if err != nil {
-		return errors.New("Decode: " + err.Error())
-	}
-	//Encode image to jpeg a first time to eliminate all problems
-	err = jpeg.Encode(buff, images, &jpeg.Options{
-		Quality: 100, //Between 1 to 100, higher is better
-	})
-	if err != nil {
-		return err
-	}
-	images, _, err = image.Decode(buff)
 	if err != nil {
 		return err
 	}
@@ -164,7 +149,6 @@ func handleDownloadImage(w http.ResponseWriter, r *http.Request) {
 	//Get input value by user
 	dn := mux.Vars(r)["name"]
 	size := mux.Vars(r)["size"]
-
 	//Check login
 	login := checkLogin(w, r)
 	if login == nil {
@@ -173,11 +157,12 @@ func handleDownloadImage(w http.ResponseWriter, r *http.Request) {
 	var imageName string
 	if dn != "unknown_profile" {
 		//Search values with ldap and filter
+
 		searchRequest := ldap.NewSearchRequest(
 			dn,
 			ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
 			"(objectclass=*)",
-			[]string{"profilImage"},
+			[]string{PROFILE_PICTURE_FIELD_NAME},
 			nil)
 
 		sr, err := login.conn.Search(searchRequest)
@@ -189,9 +174,9 @@ func handleDownloadImage(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, fmt.Sprintf("Not found user: %s cn: %s and numberEntries: %d", dn, strings.Split(dn, ",")[0], len(sr.Entries)), http.StatusInternalServerError)
 			return
 		}
-		imageName = sr.Entries[0].GetAttributeValue("profilImage")
+		imageName = sr.Entries[0].GetAttributeValue(PROFILE_PICTURE_FIELD_NAME)
 		if imageName == "" {
-			http.Error(w, "User doesn't have profile image", http.StatusInternalServerError)
+			http.Error(w, "User doesn't have profile image", http.StatusNotFound)
 			return
 		}
 	} else {
@@ -201,9 +186,8 @@ func handleDownloadImage(w http.ResponseWriter, r *http.Request) {
 	if size == "full" {
 		imageName = "full_" + imageName
 	}
-
 	//Get the object after connect MC
-	mc, err := newMimioClient()
+	mc, err := newMinioClient()
 	if err != nil {
 		http.Error(w, "MinioClient: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -216,29 +200,17 @@ func handleDownloadImage(w http.ResponseWriter, r *http.Request) {
 	defer obj.Close()
 	objStat, err := obj.Stat()
 	if err != nil {
-		http.Error(w, "MinioObjet: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "MiniObjet: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	//Send JSON through xhttp
 	w.Header().Set("Content-Type", objStat.ContentType)
 	w.Header().Set("Content-Length", strconv.Itoa(int(objStat.Size)))
-	//http.Error(w, fmt.Sprintf("Length buffer: %d", objStat.Size), http.StatusInternalServerError)
-	buff := make([]byte, objStat.Size)
-
-	obj.Seek(0, 0)
-	n, err := obj.Read(buff)
-	if err != nil && err != io.EOF {
-		http.Error(w, fmt.Sprintf("Read Error: %s, bytes Read: %d, bytes in file: %d", err.Error(), n, objStat.Size), http.StatusInternalServerError)
-		return
-	}
-	if int64(n) != objStat.Size {
-		http.Error(w, fmt.Sprintf("Read %d bytes on %d bytes", n, objStat.Size), http.StatusInternalServerError)
+	//Copy obj in w
+	writting, err := io.Copy(w, obj)
+	if writting != objStat.Size || err != nil {
+		http.Error(w, fmt.Sprintf("WriteBody: %s, bytes wrote %d on %d", err.Error(), writting, objStat.Size), http.StatusInternalServerError)
 		return
 	}
 
-	if _, err := w.Write(buff); err != nil {
-		http.Error(w, "WriteBody: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
 }

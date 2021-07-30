@@ -56,12 +56,12 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		data.Visibility = visible
 
-		ok, name, err := uploadImage(w, r, login)
+		name, err := uploadImage(w, r, login)
 		if err != nil {
 			data.ErrorMessage = err.Error()
 		}
 
-		if ok {
+		if name != "" {
 			data.NameImage = name
 		}
 
@@ -71,8 +71,8 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		modify_request.Replace("sn", []string{data.Surname})
 		modify_request.Replace("description", []string{data.Description})
 		modify_request.Replace("visibility", []string{data.Visibility})
-		if ok {
-			modify_request.Replace("profilImage", []string{data.NameImage})
+		if name != "" {
+			modify_request.Replace(PROFILE_PICTURE_FIELD_NAME, []string{data.NameImage})
 		}
 
 		err = login.conn.Modify(modify_request)
