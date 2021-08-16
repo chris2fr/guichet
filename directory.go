@@ -1,13 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"html/template"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/go-ldap/ldap/v3"
-	"github.com/gorilla/mux"
 )
 
 const FIELD_NAME_PROFILE_PICTURE = "profilePicture"
@@ -25,28 +24,34 @@ func handleDirectory(w http.ResponseWriter, r *http.Request) {
 }
 
 type SearchResult struct {
-	Id          string `json:"id"`
-	Displayname string `json:"displayname"`
-	Email       string `json:"email"`
-	Description string `json:"description"`
-	DN          string `json:"dn"`
+	DN          string
+	Id          string
+	DisplayName string
+	Email       string
+	Description string
+	ProfilePicture string
 }
 
-type Results struct {
-	Search    []SearchResult `json:"search"`
-	MessageID uint32         `json:"id"`
+type SearchResults struct {
+	Results []SearchResult
 }
 
-type UniqueID struct {
-	Id int `json:"id"`
-}
+func handleDirectorySearch(w http.ResponseWriter, r *http.Request) {
+	templateDirectoryResults := template.Must(template.ParseFiles("templates/directory_results.html"))
 
-func handleSearch(w http.ResponseWriter, r *http.Request) {
 	//Get input value by user
-	input := mux.Vars(r)["input"]
+	r.ParseMultipartForm(1024)
+	input := strings.TrimSpace(strings.Join(r.Form["query"], ""))
+
+	if r.Method != "POST" || input == "" {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
 	//Log to allow the research
 	login := checkLogin(w, r)
 	if login == nil {
+		http.Error(w, "Login required", http.StatusUnauthorized)
 		return
 	}
 
@@ -71,42 +76,46 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Transform the researh's result in a correct struct to send JSON
-	var result Results
+	results := []SearchResult{}
+
 	for _, values := range sr.Entries {
-
-		if strings.Contains(values.GetAttributeValue(config.UserNameAttr), input) || strings.Contains(values.GetAttributeValue("displayname"), input) ||
-			(values.GetAttributeValue("email") != "" && strings.Contains(values.GetAttributeValue("email"), input)) {
-			result = Results{
-				Search: append(result.Search, SearchResult{
-					Id:          values.GetAttributeValue(config.UserNameAttr),
-					Displayname: values.GetAttributeValue("displayname"),
-					Email:       values.GetAttributeValue("email"),
-					Description: values.GetAttributeValue("description"),
-					DN:          values.DN,
-				}),
-			}
-		}
-
-	}
-	if result.Search == nil {
-		result = Results{
-			Search: append(result.Search, SearchResult{}),
+		if ContainsI(values.GetAttributeValue(config.UserNameAttr), input) ||
+			ContainsI(values.GetAttributeValue("displayname"), input) ||
+			ContainsI(values.GetAttributeValue("mail"), input) {
+			results = append(results, SearchResult{
+				DN:          values.DN,
+				Id:          values.GetAttributeValue(config.UserNameAttr),
+				DisplayName: values.GetAttributeValue("displayname"),
+				Email:       values.GetAttributeValue("mail"),
+				Description: values.GetAttributeValue("description"),
+				ProfilePicture: values.GetAttributeValue(FIELD_NAME_PROFILE_PICTURE),
+			})
 		}
 	}
 
-	var id UniqueID
-	//Decode JSON body
-	err = json.NewDecoder(r.Body).Decode(&id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	search_results := SearchResults{
+		Results: results,
 	}
-	result.MessageID = uint32(id.Id)
+	sort.Sort(&search_results)
 
-	//Send JSON through xhttp
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(result); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	templateDirectoryResults.Execute(w, search_results)
+}
+
+func ContainsI(a string, b string) bool {
+	return strings.Contains(
+		strings.ToLower(a),
+		strings.ToLower(b),
+	)
+}
+
+func (r *SearchResults) Len() int {
+	return len(r.Results)
+}
+
+func (r *SearchResults) Less(i, j int) bool {
+	return r.Results[i].Id < r.Results[j].Id
+}
+
+func (r *SearchResults) Swap(i, j int) {
+	r.Results[i], r.Results[j] = r.Results[j], r.Results[i]
 }

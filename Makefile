@@ -1,5 +1,5 @@
 BIN=guichet
-SRC=main.go ssha.go profile.go admin.go invite.go
+SRC=main.go ssha.go profile.go admin.go invite.go directory.go picture.go
 DOCKER=lxpz/guichet_amd64
 
 all: $(BIN)

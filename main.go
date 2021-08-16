@@ -115,8 +115,8 @@ func main() {
 	r.HandleFunc("/passwd", handlePasswd)
 	r.HandleFunc("/picture/{name}", handleDownloadPicture)
 
+	r.HandleFunc("/directory/search", handleDirectorySearch)
 	r.HandleFunc("/directory", handleDirectory)
-	r.HandleFunc("/directory/search/{input}", handleSearch)
 
 	r.HandleFunc("/invite/new_account", handleInviteNewAccount)
 	r.HandleFunc("/invite/send_code", handleInviteSendCode)
