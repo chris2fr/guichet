@@ -24,5 +24,11 @@
   "admin_account": "uid=admin,dc=example,dc=com",
   "group_can_admin": "gid=admin,ou=groups,dc=example,dc=com",
   "group_can_invite": ""
+
+  "s3_endpoint": "garage.example.com",
+  "s3_access_key": "",
+  "s3_secret_key": "",
+  "s3_region": "garage",
+  "s3_bucket": "bottin-pictures"
 }
 

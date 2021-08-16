@@ -44,11 +44,11 @@ type ConfigFile struct {
 	GroupCanInvite string `json:"group_can_invite"`
 	GroupCanAdmin  string `json:"group_can_admin"`
 
-	S3_Endpoint  string `json:"s3_endpoint"`
-	S3_AccesKey  string `json:"s3_acces_key"`
-	S3_SecretKey string `json:"s3_secret_key"`
-	S3_Region    string `json:"s3_region"`
-	S3_Bucket    string `json:"s3_bucket"`
+	S3Endpoint  string `json:"s3_endpoint"`
+	S3AccessKey string `json:"s3_access_key"`
+	S3SecretKey string `json:"s3_secret_key"`
+	S3Region    string `json:"s3_region"`
+	S3Bucket    string `json:"s3_bucket"`
 }
 
 var configFlag = flag.String("config", "./config.json", "Configuration file path")
@@ -110,13 +110,13 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleHome)
 	r.HandleFunc("/logout", handleLogout)
+
 	r.HandleFunc("/profile", handleProfile)
 	r.HandleFunc("/passwd", handlePasswd)
-
-	r.HandleFunc("/image/{name}/{size}", handleDownloadImage)
+	r.HandleFunc("/picture/{name}", handleDownloadPicture)
 
 	r.HandleFunc("/directory", handleDirectory)
-	r.HandleFunc("/search/{input}", handleSearch)
+	r.HandleFunc("/directory/search/{input}", handleSearch)
 
 	r.HandleFunc("/invite/new_account", handleInviteNewAccount)
 	r.HandleFunc("/invite/send_code", handleInviteSendCode)
@@ -226,7 +226,17 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		login_info.DN,
 		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
 		requestKind,
-		[]string{"dn", "displayname", "givenname", "sn", "mail", "memberof", "visibility", "description", PROFILE_PICTURE_FIELD_NAME},
+		[]string{
+			"dn",
+			"displayname",
+			"givenname",
+			"sn",
+			"mail",
+			"memberof",
+			"description",
+			FIELD_NAME_DIRECTORY_VISIBILITY,
+			FIELD_NAME_PROFILE_PICTURE,
+		},
 		nil)
 
 	sr, err := l.Search(searchRequest)

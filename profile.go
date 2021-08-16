@@ -9,16 +9,16 @@ import (
 )
 
 type ProfileTplData struct {
-	Status       *LoginStatus
-	ErrorMessage string
-	Success      bool
-	Mail         string
-	DisplayName  string
-	GivenName    string
-	Surname      string
-	Visibility   string
-	Description  string
-	NameImage    string
+	Status         *LoginStatus
+	ErrorMessage   string
+	Success        bool
+	Mail           string
+	DisplayName    string
+	GivenName      string
+	Surname        string
+	Visibility     string
+	Description    string
+	ProfilePicture string
 }
 
 func handleProfile(w http.ResponseWriter, r *http.Request) {
@@ -39,8 +39,9 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	data.DisplayName = login.UserEntry.GetAttributeValue("displayname")
 	data.GivenName = login.UserEntry.GetAttributeValue("givenname")
 	data.Surname = login.UserEntry.GetAttributeValue("sn")
-	data.Visibility = login.UserEntry.GetAttributeValue("visibility")
+	data.Visibility = login.UserEntry.GetAttributeValue(FIELD_NAME_DIRECTORY_VISIBILITY)
 	data.Description = login.UserEntry.GetAttributeValue("description")
+	data.ProfilePicture = login.UserEntry.GetAttributeValue(FIELD_NAME_PROFILE_PICTURE)
 
 	if r.Method == "POST" {
 		//5MB maximum size files
@@ -56,13 +57,13 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		data.Visibility = visible
 
-		name, err := uploadImage(w, r, login)
+		profilePicture, err := uploadProfilePicture(w, r, login)
 		if err != nil {
 			data.ErrorMessage = err.Error()
 		}
 
-		if name != "" {
-			data.NameImage = name
+		if profilePicture != "" {
+			data.ProfilePicture = profilePicture
 		}
 
 		modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
@@ -70,9 +71,9 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		modify_request.Replace("givenname", []string{data.GivenName})
 		modify_request.Replace("sn", []string{data.Surname})
 		modify_request.Replace("description", []string{data.Description})
-		modify_request.Replace("visibility", []string{data.Visibility})
-		if name != "" {
-			modify_request.Replace(PROFILE_PICTURE_FIELD_NAME, []string{data.NameImage})
+		modify_request.Replace(FIELD_NAME_DIRECTORY_VISIBILITY, []string{data.Visibility})
+		if data.ProfilePicture != "" {
+			modify_request.Replace(FIELD_NAME_PROFILE_PICTURE, []string{data.ProfilePicture})
 		}
 
 		err = login.conn.Modify(modify_request)

@@ -10,6 +10,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const FIELD_NAME_PROFILE_PICTURE = "profilePicture"
+const FIELD_NAME_DIRECTORY_VISIBILITY = "directoryVisibility"
+
 func handleDirectory(w http.ResponseWriter, r *http.Request) {
 	templateDirectory := template.Must(template.ParseFiles("templates/layout.html", "templates/directory.html"))
 
@@ -51,8 +54,14 @@ func handleSearch(w http.ResponseWriter, r *http.Request) {
 	searchRequest := ldap.NewSearchRequest(
 		config.UserBaseDN,
 		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
-		"(&(objectclass=organizationalPerson)(visibility=on))",
-		[]string{config.UserNameAttr, "displayname", "mail", "description"},
+		"(&(objectclass=organizationalPerson)("+FIELD_NAME_DIRECTORY_VISIBILITY+"=on))",
+		[]string{
+			config.UserNameAttr,
+			"displayname",
+			"mail",
+			"description",
+			FIELD_NAME_PROFILE_PICTURE,
+		},
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)
