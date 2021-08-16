@@ -148,8 +148,8 @@
       <div class="col-md-5">
         <input class="form-control" type="text" list="users" name="values" placeholder="Utilisateur..." />
         <datalist id="users">
-          {{ range $key, $value := .ListMemGro}}
-            <option value={{$key}}>{{$value}}</option>
+          {{range .PossibleNewMembers}}
+            <option value="{{.DN}}">{{.Name}}</option>
           {{end}}
         </datalist>
       </div>
@@ -189,8 +189,8 @@
       <div class="col-md-5">
         <input class="form-control" list="groups" type="text" name="group" placeholder="Groupe..." />
         <datalist id="groups">
-          {{ range $key, $value := .ListMemGro}}
-            <option value={{$key}}>{{$value}}</option>
+          {{range .PossibleNewGroups}}
+            <option value="{{.DN}}">{{.Name}}</option>
           {{end}}
         </datalist>
       </div>
