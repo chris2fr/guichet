@@ -60,47 +60,21 @@ const SESSION_NAME = "guichet_session"
 var store sessions.Store = nil
 
 func readConfig() ConfigFile {
+	// Default configuration values for certain fields
 	config_file := ConfigFile{
 		HttpBindAddr:   ":9991",
 		LdapServerAddr: "ldap://127.0.0.1:389",
-		LdapTLS:        false,
 
-		BaseDN:        "dc=example,dc=com",
-		UserBaseDN:    "ou=users,dc=example,dc=com",
 		UserNameAttr:  "uid",
-		GroupBaseDN:   "ou=groups,dc=example,dc=com",
 		GroupNameAttr: "gid",
 
-		InvitationBaseDN:   "ou=invitations,dc=example,dc=com",
 		InvitationNameAttr: "cn",
-		InvitedMailFormat:  "{}@example.com",
 		InvitedAutoGroups:  []string{},
-
-		WebAddress: "https://guichet.example.com",
-		MailFrom:   "guichet@example.com",
-		SMTPServer: "smtp.example.com",
-
-		AdminAccount:   "uid=admin,dc=example,dc=com",
-		GroupCanInvite: "",
-		GroupCanAdmin:  "gid=admin,ou=groups,dc=example,dc=com",
 	}
 
 	_, err := os.Stat(*configFlag)
 	if os.IsNotExist(err) {
-		// Generate default config file
-		log.Printf("Generating default config file as %s", *configFlag)
-
-		bytes, err := json.MarshalIndent(&config_file, "", "  ")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = ioutil.WriteFile(*configFlag, bytes, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		return config_file
+		log.Fatalf("Could not find Guichet configuration file at %s. Please create this file, for example starting with config.json.example and customizing it for your deployment.", *configFlag)
 	}
 
 	if err != nil {

@@ -1,0 +1,28 @@
+{
+  "http_bind_addr": ":9991",
+  "ldap_server_addr": "ldap://127.0.0.1:389",
+
+  "base_dn": "dc=example,dc=com",
+  "user_base_dn": "ou=users,dc=example,dc=com",
+  "user_name_attr": "uid",
+  "group_base_dn": "ou=groups,dc=example,dc=com",
+  "group_name_attr": "gid",
+
+  "invitation_base_dn": "ou=invitations,dc=example,dc=com",
+  "invitation_name_attr": "cn",
+  "invited_mail_format": "{}@example.com",
+  "invited_auto_groups": [
+    "cn=email,ou=groups,dc=example,dc=com"
+  ],
+
+  "web_address": "https://guichet.example.com",
+  "mail_from": "welcome@example.com",
+  "smtp_server": "smtp.example.com",
+  "smtp_username": "guichet",
+  "smtp_password": "",
+
+  "admin_account": "uid=admin,dc=example,dc=com",
+  "group_can_admin": "gid=admin,ou=groups,dc=example,dc=com",
+  "group_can_invite": ""
+}
+
