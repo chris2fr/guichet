@@ -24,11 +24,11 @@ func handleDirectory(w http.ResponseWriter, r *http.Request) {
 }
 
 type SearchResult struct {
-	DN          string
-	Id          string
-	DisplayName string
-	Email       string
-	Description string
+	DN             string
+	Id             string
+	DisplayName    string
+	Email          string
+	Description    string
 	ProfilePicture string
 }
 
@@ -83,11 +83,11 @@ func handleDirectorySearch(w http.ResponseWriter, r *http.Request) {
 			ContainsI(values.GetAttributeValue("displayname"), input) ||
 			ContainsI(values.GetAttributeValue("mail"), input) {
 			results = append(results, SearchResult{
-				DN:          values.DN,
-				Id:          values.GetAttributeValue(config.UserNameAttr),
-				DisplayName: values.GetAttributeValue("displayname"),
-				Email:       values.GetAttributeValue("mail"),
-				Description: values.GetAttributeValue("description"),
+				DN:             values.DN,
+				Id:             values.GetAttributeValue(config.UserNameAttr),
+				DisplayName:    values.GetAttributeValue("displayname"),
+				Email:          values.GetAttributeValue("mail"),
+				Description:    values.GetAttributeValue("description"),
 				ProfilePicture: values.GetAttributeValue(FIELD_NAME_PROFILE_PICTURE),
 			})
 		}
