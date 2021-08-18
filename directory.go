@@ -43,7 +43,7 @@ func handleDirectorySearch(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(1024)
 	input := strings.TrimSpace(strings.Join(r.Form["query"], ""))
 
-	if r.Method != "POST" || input == "" {
+	if r.Method != "POST" {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
@@ -79,7 +79,8 @@ func handleDirectorySearch(w http.ResponseWriter, r *http.Request) {
 	results := []SearchResult{}
 
 	for _, values := range sr.Entries {
-		if ContainsI(values.GetAttributeValue(config.UserNameAttr), input) ||
+		if input == "" ||
+			ContainsI(values.GetAttributeValue(config.UserNameAttr), input) ||
 			ContainsI(values.GetAttributeValue("displayname"), input) ||
 			ContainsI(values.GetAttributeValue("mail"), input) {
 			results = append(results, SearchResult{
