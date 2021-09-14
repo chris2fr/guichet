@@ -646,8 +646,6 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			data.Error = "Invalid identifier type"
 		} else if len(data.IdValue) == 0 {
 			data.Error = "No identifier specified"
-		} else if match, err := regexp.MatchString("^[\\d\\w_-]+$", data.IdValue); err != nil || !match {
-			data.Error = "Invalid identifier"
 		} else {
 			dn := data.IdType + "=" + data.IdValue + "," + super_dn
 			req := ldap.NewAddRequest(dn, nil)
