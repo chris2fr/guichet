@@ -4,9 +4,9 @@
 
   "base_dn": "dc=example,dc=com",
   "user_base_dn": "ou=users,dc=example,dc=com",
-  "user_name_attr": "uid",
+  "user_name_attr": "cn",
   "group_base_dn": "ou=groups,dc=example,dc=com",
-  "group_name_attr": "gid",
+  "group_name_attr": "cn",
 
   "invitation_base_dn": "ou=invitations,dc=example,dc=com",
   "invitation_name_attr": "cn",
@@ -21,7 +21,7 @@
   "smtp_username": "guichet",
   "smtp_password": "",
 
-  "admin_account": "uid=admin,dc=example,dc=com",
+  "admin_account": "cn=admin,dc=example,dc=com",
   "group_can_admin": "gid=admin,ou=groups,dc=example,dc=com",
   "group_can_invite": "",
 

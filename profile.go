@@ -122,12 +122,17 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 			data.NoMatchError = true
 		} else {
 			modify_request := ldap.NewModifyRequest(login.Info.DN, nil)
-			modify_request.Replace("userpassword", []string{SSHAEncode([]byte(password))})
-			err := login.conn.Modify(modify_request)
-			if err != nil {
-				data.ErrorMessage = err.Error()
+			pw, err := SSHAEncode(password); 
+			if err == nil {
+				modify_request.Replace("userpassword", []string{pw})
+				err := login.conn.Modify(modify_request)
+				if err != nil {
+					data.ErrorMessage = err.Error()
+				} else {
+					data.Success = true
+				}
 			} else {
-				data.Success = true
+				data.ErrorMessage = err.Error()
 			}
 		}
 	}

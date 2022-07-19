@@ -12,7 +12,7 @@
     </div>
   {{end}}
   {{if .WarningMessage}}
-    <div class="alert alert-danger mt-4">Des erreurs se sont produtes, le compte pourrait ne pas être totalement fonctionnel.
+    <div class="alert alert-danger mt-4">Des erreurs se sont produites, le compte pourrait ne pas être totalement fonctionnel.
       <div style="font-size: 0.8em">{{ .WarningMessage }}</div>
     </div>
   {{end}}
@@ -25,12 +25,15 @@
     <form method="POST" class="mt-4">
       <h5>Renseignements obligatoires</h5>
       <div class="form-group">
-        <label for="username">Nom d'utilisateur souhaité :</label>
+        <label for="username">Identifiant souhaité :</label>
         <input type="text" id="username" name="username" class="form-control" value="{{ .Username }}" />
+	<small class="form-text text-muted">
+	  Votre identifiant doit être en minuscule.
+	</small>
       </div>
       {{if .ErrorInvalidUsername}}
         <div class="alert alert-warning">
-          Nom d'utilisateur invalide. Ne peut contenir que les caractères suivants : chiffres, lettres, point, tiret bas (_) et tiret du milieu (-).
+          Nom d'utilisateur invalide. Ne peut contenir que les caractères suivants : chiffres, lettres minuscules, point, tiret bas (_) et tiret du milieu (-).
         </div>
       {{end}}
       {{if .ErrorUsernameTaken}}
@@ -41,6 +44,9 @@
       <div class="form-group">
         <label for="password">Mot de passe :</label>
         <input type="password" id="password" name="password" class="form-control" />
+	<small class="form-text text-muted">
+	  La seule contrainte est que votre mot de passe doit faire au moins 8 caractères. Utilisez chiffres, majuscules, et caractères spéciaux sans modération !
+	</small>
       </div>
       {{if .ErrorPasswordTooShort}}
         <div class="alert alert-warning">
@@ -58,6 +64,9 @@
       {{end}}
 
       <h5>Renseignements optionnels</h5>
+      <small class="form-text text-muted">
+        Ces informations sont utilisées exclusivement pour "pré-configurer" les services que vous utiliserez, elles n'ont pas besoin de correspondre à votre état civil.
+      </small>
       <div class="form-group">
         <label for="displayname">Nom complet :</label>
         <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />

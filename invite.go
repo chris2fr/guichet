@@ -133,9 +133,12 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 }
 
 func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 string, invitedBy string) {
+	checkFailed := false
+
 	// Check if username is correct
-	if match, err := regexp.MatchString("^[a-zA-Z0-9._-]+$", data.Username); !(err == nil && match) {
+	if match, err := regexp.MatchString("^[a-z0-9._-]+$", data.Username); !(err == nil && match) {
 		data.ErrorInvalidUsername = true
+		checkFailed = true
 	}
 
 	// Check if user exists
@@ -150,30 +153,39 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 	sr, err := l.Search(searchRq)
 	if err != nil {
 		data.ErrorMessage = err.Error()
-		return
+		checkFailed = true
 	}
 
 	if len(sr.Entries) > 0 {
 		data.ErrorUsernameTaken = true
-		return
+		checkFailed = true
 	}
 
 	// Check that password is long enough
 	if len(pass1) < 8 {
 		data.ErrorPasswordTooShort = true
-		return
+		checkFailed = true
 	}
 
 	if pass1 != pass2 {
 		data.ErrorPasswordMismatch = true
-		return
+		checkFailed = true
 	}
+
+	if checkFailed {
+		return
+	}	
 
 	// Actually create user
 	req := ldap.NewAddRequest(userDn, nil)
 	req.Attribute("objectclass", []string{"inetOrgPerson", "organizationalPerson", "person", "top"})
 	req.Attribute("structuralobjectclass", []string{"inetOrgPerson"})
-	req.Attribute("userpassword", []string{SSHAEncode([]byte(pass1))})
+	pw, err := SSHAEncode(pass1)
+	if err != nil {
+		data.ErrorMessage = err.Error()
+		return
+	}
+	req.Attribute("userpassword", []string{pw})
 	req.Attribute("invitedby", []string{invitedBy})
 	if len(data.DisplayName) > 0 {
 		req.Attribute("displayname", []string{data.DisplayName})
@@ -259,10 +271,15 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// Create invitation object in database
 	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
 	req := ldap.NewAddRequest(inviteDn, nil)
-	req.Attribute("userpassword", []string{SSHAEncode([]byte(code_pw))})
+	pw, err := SSHAEncode(code_pw)
+	if err != nil {
+		data.ErrorMessage = err.Error()
+		return
+	}
+	req.Attribute("userpassword", []string{pw})
 	req.Attribute("objectclass", []string{"top", "invitationCode"})
 
-	err := login.conn.Add(req)
+	err = login.conn.Add(req)
 	if err != nil {
 		data.ErrorMessage = err.Error()
 		return
