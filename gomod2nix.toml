@@ -16,9 +16,6 @@ schema = 3
   [mod."github.com/go-asn1-ber/asn1-ber"]
     version = "v1.3.1"
     hash = "sha256-Alh6bUq9HoBDhY+n6W7xNBto/dUMxPGvucA6guarrjc="
-  [mod."github.com/go-ldap/ldap"]
-    version = "v3.0.3+incompatible"
-    hash = "sha256-SQuiphWJcUVdk+GVYfzYpmW4MI1DtK9Ixo6A/PcCmAI="
   [mod."github.com/go-ldap/ldap/v3"]
     version = "v3.1.6"
     hash = "sha256-UPUdYKOoCQWgl2Onbq1Oql7XU4TeYQA/+j4atwhdKbE="
@@ -40,6 +37,9 @@ schema = 3
   [mod."github.com/gorilla/sessions"]
     version = "v1.2.0"
     hash = "sha256-4V7yd/vf03CEsb3pz5dbLWwv7t9QgKkEhVXtc1/z5s8="
+  [mod."github.com/jsimonetti/pwscheme"]
+    version = "v0.0.0-20220125093853-4d9895f5db73"
+    hash = "sha256-YF3RKU/4CWvLPgGzUd7Hk/2+41OUFuRWZgzQuqcsKg0="
   [mod."github.com/json-iterator/go"]
     version = "v1.1.10"
     hash = "sha256-jdS2C0WsgsWREBSj+YUzSqdZofMfUMecaOQ/lB9Mu6k="
@@ -86,8 +86,8 @@ schema = 3
     version = "v0.0.0-20190330032615-68dc04aab96a"
     hash = "sha256-HD+AZE1agl1pVbQTFUKLKtjg3XdVSVLwRSu4u+UVV2M="
   [mod."github.com/stretchr/objx"]
-    version = "v0.1.1"
-    hash = "sha256-HdGVZCuy7VprC5W9UxGbDmXqsKADMjpEDht7ilGVLco="
+    version = "v0.1.0"
+    hash = "sha256-az0Vd4MG3JXfaYbj0Q6AOmNkrXgmXDeQm8+BBiDXmdA="
   [mod."github.com/stretchr/testify"]
     version = "v1.3.0"
     hash = "sha256-+mSebBNccNcxbY462iKTNTWmd5ZuUkUqFebccn3EtIA="
