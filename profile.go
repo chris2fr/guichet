@@ -1,7 +1,6 @@
 package main
 
 import (
-	"html/template"
 	"net/http"
 	"strings"
 
@@ -22,7 +21,7 @@ type ProfileTplData struct {
 }
 
 func handleProfile(w http.ResponseWriter, r *http.Request) {
-	templateProfile := template.Must(template.ParseFiles("templates/layout.html", "templates/profile.html"))
+	templateProfile := getTemplate("profile.html")
 
 	login := checkLogin(w, r)
 	if login == nil {
@@ -97,7 +96,7 @@ type PasswdTplData struct {
 }
 
 func handlePasswd(w http.ResponseWriter, r *http.Request) {
-	templatePasswd := template.Must(template.ParseFiles("templates/layout.html", "templates/passwd.html"))
+	templatePasswd := getTemplate("passwd.html")
 
 	login := checkLogin(w, r)
 	if login == nil {

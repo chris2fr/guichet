@@ -57,6 +57,9 @@ var config *ConfigFile
 
 const SESSION_NAME = "guichet_session"
 
+var staticPath = "./static"
+var templatePath = "./templates"
+
 var store sessions.Store = nil
 
 func readConfig() ConfigFile {
@@ -94,6 +97,10 @@ func readConfig() ConfigFile {
 	return config_file
 }
 
+func getTemplate(name string) *template.Template {
+	return template.Must(template.ParseFiles(templatePath+"/layout.html", templatePath+"/"+name))
+}
+
 func main() {
 	flag.Parse()
 
@@ -127,7 +134,7 @@ func main() {
 	r.HandleFunc("/admin/ldap/{dn}", handleAdminLDAP)
 	r.HandleFunc("/admin/create/{template}/{super_dn}", handleAdminCreate)
 
-	staticfiles := http.FileServer(http.Dir("static"))
+	staticfiles := http.FileServer(http.Dir(staticPath))
 	r.Handle("/static/{file:.*}", http.StripPrefix("/static/", staticfiles))
 
 	log.Printf("Starting HTTP server on %s", config.HttpBindAddr)
@@ -296,7 +303,7 @@ type HomePageData struct {
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
-	templateHome := template.Must(template.ParseFiles("templates/layout.html", "templates/home.html"))
+	templateHome := getTemplate("home.html")
 
 	login := checkLogin(w, r)
 	if login == nil {
@@ -338,7 +345,7 @@ type LoginFormData struct {
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
-	templateLogin := template.Must(template.ParseFiles("templates/layout.html", "templates/login.html"))
+	templateLogin := getTemplate("login.html")
 
 	if r.Method == "GET" {
 		templateLogin.Execute(w, LoginFormData{})

@@ -60,7 +60,7 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
 	err := l.Bind(inviteDn, code_pw)
 	if err != nil {
-		templateInviteInvalidCode := template.Must(template.ParseFiles("templates/layout.html", "templates/invite_invalid_code.html"))
+		templateInviteInvalidCode := getTemplate("invite_invalid_code.html")
 		templateInviteInvalidCode.Execute(w, nil)
 		return
 	}
@@ -110,7 +110,7 @@ type NewAccountData struct {
 }
 
 func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
-	templateInviteNewAccount := template.Must(template.ParseFiles("templates/layout.html", "templates/invite_new_account.html"))
+	templateInviteNewAccount := getTemplate("invite_new_account.html")
 
 	data := &NewAccountData{}
 
@@ -239,7 +239,7 @@ type CodeMailFields struct {
 }
 
 func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
-	templateInviteSendCode := template.Must(template.ParseFiles("templates/layout.html", "templates/invite_send_code.html"))
+	templateInviteSendCode := getTemplate("invite_send_code.html")
 
 	login := checkInviterLogin(w, r)
 	if login == nil {
@@ -298,7 +298,7 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 		return
 	}
 
-	templateMail := template.Must(template.ParseFiles("templates/invite_mail.txt"))
+	templateMail := template.Must(template.ParseFiles(templatePath + "/invite_mail.txt"))
 	buf := bytes.NewBuffer([]byte{})
 	templateMail.Execute(buf, &CodeMailFields{
 		To:             sendto,

@@ -13,7 +13,7 @@ const FIELD_NAME_PROFILE_PICTURE = "profilePicture"
 const FIELD_NAME_DIRECTORY_VISIBILITY = "directoryVisibility"
 
 func handleDirectory(w http.ResponseWriter, r *http.Request) {
-	templateDirectory := template.Must(template.ParseFiles("templates/layout.html", "templates/directory.html"))
+	templateDirectory := getTemplate("directory.html")
 
 	login := checkLogin(w, r)
 	if login == nil {
@@ -37,7 +37,7 @@ type SearchResults struct {
 }
 
 func handleDirectorySearch(w http.ResponseWriter, r *http.Request) {
-	templateDirectoryResults := template.Must(template.ParseFiles("templates/directory_results.html"))
+	templateDirectoryResults := template.Must(template.ParseFiles(templatePath + "/directory_results.html"))
 
 	//Get input value by user
 	r.ParseMultipartForm(1024)

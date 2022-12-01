@@ -43,7 +43,7 @@ func newMinioClient() (*minio.Client, error) {
 	return minioCLient, nil
 }
 
-//Upload image through guichet server.
+// Upload image through guichet server.
 func uploadProfilePicture(w http.ResponseWriter, r *http.Request, login *LoginStatus) (string, error) {
 	file, _, err := r.FormFile("image")
 

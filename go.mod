@@ -1,4 +1,4 @@
-module deuxfleurs.fr/Deuxfleurs/guichet
+module git.deuxfleurs.fr/Deuxfleurs/guichet
 
 go 1.13
 

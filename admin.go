@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"regexp"
 	"sort"
@@ -48,7 +47,7 @@ type AdminUsersTplData struct {
 }
 
 func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
-	templateAdminUsers := template.Must(template.ParseFiles("templates/layout.html", "templates/admin_users.html"))
+	templateAdminUsers := getTemplate("admin_users.html")
 
 	login := checkAdminLogin(w, r)
 	if login == nil {
@@ -87,7 +86,7 @@ type AdminGroupsTplData struct {
 }
 
 func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
-	templateAdminGroups := template.Must(template.ParseFiles("templates/layout.html", "templates/admin_groups.html"))
+	templateAdminGroups := getTemplate("admin_groups.html")
 
 	login := checkAdminLogin(w, r)
 	if login == nil {
@@ -165,7 +164,7 @@ type PropValues struct {
 }
 
 func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
-	templateAdminLDAP := template.Must(template.ParseFiles("templates/layout.html", "templates/admin_ldap.html"))
+	templateAdminLDAP := getTemplate("admin_ldap.html")
 
 	login := checkAdminLogin(w, r)
 	if login == nil {
@@ -551,7 +550,7 @@ type CreateData struct {
 }
 
 func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
-	templateAdminCreate := template.Must(template.ParseFiles("templates/layout.html", "templates/admin_create.html"))
+	templateAdminCreate := getTemplate("admin_create.html")
 
 	login := checkAdminLogin(w, r)
 	if login == nil {
