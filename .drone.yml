@@ -1,13 +1,26 @@
 ---
-pipeline:
-  build:
-    image: golang:stretch
+kind: pipeline
+name: default
+
+node:
+  nix-daemon: 1
+
+steps:
+  - name: build
+    image: nixpkgs/nix:nixos-22.05
     commands:
-      - go get -d -v
-      - go build -v
+      - nix build --extra-experimental-features nix-command --extra-experimental-features flakes .
+
+trigger:
+  event:
+  - custom
+  - push
+  - pull_request
+  - tag
+  - cron
 
 ---
 kind: signature
-hmac: 38948cd073f3a0b73ab7bb13ba1b5e18c64c02976abfd6dcd5bf7a4c34197e8c
+hmac: 7fc9d4362327e769e2454229ceb91f587eb11755f1f96207f733e41cc650f693
 
 ...
