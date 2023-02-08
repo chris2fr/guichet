@@ -20,6 +20,10 @@
   </div>
 {{end}}
 
+{{with $desc := .MailingList.GetAttributeValue "description"}}{{if $desc}}
+  <p class="mt-4">{{$desc}}</p>
+{{end}}{{end}}
+
 <table class="table mt-4">
   <thead>
     <th scope="col">Adresse</th>
@@ -46,16 +50,20 @@
         </tr>
       {{end}}
     {{end}}
+    {{if not .Members}}
+      <tr><td>(aucun abonné)</td></tr>
+    {{end}}
   </tbody>
 </table>
 
-  <hr class="mt-4" />
-  <h5 class="mt-4">Ajouter un destinataire</h5>
-    <form method="POST">
-      <input type="hidden" name="action" value="add-member" />
-      <div class="row mt-4">
-        <div class="col-md-3"><strong>Utilisateur existant :</strong>
-      </div>
+<hr class="mt-4" />
+<h5 class="mt-4">Ajouter un destinataire</h5>
+
+<div class="container">
+  <form method="POST">
+    <input type="hidden" name="action" value="add-member" />
+    <div class="row mt-4">
+      <div class="col-md-3"><strong>Utilisateur existant :</strong> </div>
       <div class="col-md-5">
         <input class="form-control" type="text" list="users" name="member" placeholder="Utilisateur..." />
         <datalist id="users">
@@ -67,7 +75,43 @@
         </datalist>
       </div>
       <div class="col-md-2">
-          <input type="submit" value="Ajouter" class="form-control btn btn-success btn-sm" />
+        <input type="submit" value="Ajouter" class="form-control btn btn-success btn-sm" />
       </div>
-    </form>
+    </div>
+  </form>
+
+  {{if .AllowGuest}}
+  <div class="row mt-4">
+    <div class="col-md-10">OU</div>
+  </div>
+
+  <form method="POST">
+    <input type="hidden" name="action" value="add-external" />
+    <div class="row mt-4">
+      <div class="col-md-3"><strong>E-mail :</strong></div>
+      <div class="col-md-5">
+        <input class="form-control" type="text"  name="mail" placeholder="machin@truc.net..." />
+      </div>
+      <div class="col-md-2">
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-3"><strong>Nom (optionnel) :</strong></div>
+      <div class="col-md-5">
+        <input class="form-control" type="text"  name="displayname" placeholder="Machin Truc..." />
+      </div>
+      <div class="col-md-2">
+        <input type="submit" value="Ajouter" class="form-control btn btn-success btn-sm" />
+      </div>
+    </div>
+    <div class="row">
+      <small class="form-text text-muted col-md-10">
+        Si un utilisateur existe déjà avec l'email spécifiée, celui-ci sera ajouté à la liste.
+        Sinon, un utilisateur invité sera créé.
+      </small>
+    </div>
+  </form>
+  {{end}}
+</div>
+
 {{end}}

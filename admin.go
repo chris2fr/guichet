@@ -164,6 +164,7 @@ type AdminMailingListTplData struct {
 	MailingList        *ldap.Entry
 	Members            EntryList
 	PossibleNewMembers EntryList
+	AllowGuest         bool
 
 	Error   string
 	Success bool
@@ -198,6 +199,60 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 			} else {
 				dSuccess = true
 			}
+		} else if action == "add-external" {
+			mail := strings.Join(r.Form["mail"], "")
+			displayname := strings.Join(r.Form["displayname"], "")
+
+			searchRequest := ldap.NewSearchRequest(
+				config.UserBaseDN,
+				ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+				fmt.Sprintf("(&(objectClass=organizationalPerson)(mail=%s))", mail),
+				[]string{"dn", "displayname", "mail"},
+				nil)
+			sr, err := login.conn.Search(searchRequest)
+			if err != nil {
+				dError = err.Error()
+			} else {
+				if len(sr.Entries) == 0 {
+					if config.MailingGuestsBaseDN != "" {
+						guestDn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, mail, config.MailingGuestsBaseDN)
+						req := ldap.NewAddRequest(guestDn, nil)
+						req.Attribute("objectclass", []string{"inetOrgPerson", "organizationalPerson", "person", "top"})
+						req.Attribute("mail", []string{mail})
+						if displayname != "" {
+							req.Attribute("displayname", []string{displayname})
+						}
+						err := login.conn.Add(req)
+						if err != nil {
+							dError = err.Error()
+						} else {
+							modify_request := ldap.NewModifyRequest(dn, nil)
+							modify_request.Add("member", []string{guestDn})
+
+							err := login.conn.Modify(modify_request)
+							if err != nil {
+								dError = err.Error()
+							} else {
+								dSuccess = true
+							}
+						}
+					} else {
+						dError = "Adding guest users not supported, the user must already have an LDAP account."
+					}
+				} else if len(sr.Entries) == 1 {
+					modify_request := ldap.NewModifyRequest(dn, nil)
+					modify_request.Add("member", []string{sr.Entries[0].DN})
+
+					err := login.conn.Modify(modify_request)
+					if err != nil {
+						dError = err.Error()
+					} else {
+						dSuccess = true
+					}
+				} else {
+					dError = fmt.Sprintf("Multiple users exist with email address %s", mail)
+				}
+			}
 		} else if action == "delete-member" {
 			member := strings.Join(r.Form["member"], "")
 			modify_request := ldap.NewModifyRequest(dn, nil)
@@ -217,7 +272,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 		dn,
 		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(objectclass=groupOfNames)"),
-		[]string{"dn", config.MailingNameAttr, "member"},
+		[]string{"dn", config.MailingNameAttr, "member", "description"},
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)
@@ -274,6 +329,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 		MailingList:        ml,
 		Members:            members,
 		PossibleNewMembers: possibleNewMembers,
+		AllowGuest:         config.MailingGuestsBaseDN != "",
 
 		Error:   dError,
 		Success: dSuccess,
@@ -785,7 +841,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		data.IdType = config.UserNameAttr
 		data.StructuralObjectClass = "inetOrgPerson"
 		data.ObjectClass = "inetOrgPerson\norganizationalPerson\nperson\ntop"
-	} else if template == "group" {
+	} else if template == "group" || template == "ml" {
 		data.IdType = config.UserNameAttr
 		data.StructuralObjectClass = "groupOfNames"
 		data.ObjectClass = "groupOfNames\ntop"
@@ -842,7 +898,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				data.Error = err.Error()
 			} else {
-				if super_dn == config.MailingBaseDN && data.IdType == config.MailingNameAttr {
+				if template == "ml" {
 					http.Redirect(w, r, "/admin/mailing/"+data.IdValue, http.StatusFound)
 				} else {
 					http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)

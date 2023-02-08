@@ -23,13 +23,15 @@ type ConfigFile struct {
 	LdapServerAddr string `json:"ldap_server_addr"`
 	LdapTLS        bool   `json:"ldap_tls"`
 
-	BaseDN          string `json:"base_dn"`
-	UserBaseDN      string `json:"user_base_dn"`
-	UserNameAttr    string `json:"user_name_attr"`
-	GroupBaseDN     string `json:"group_base_dn"`
-	GroupNameAttr   string `json:"group_name_attr"`
-	MailingBaseDN   string `json:"mailing_list_base_dn"`
-	MailingNameAttr string `json:"mailing_list_name_attr"`
+	BaseDN        string `json:"base_dn"`
+	UserBaseDN    string `json:"user_base_dn"`
+	UserNameAttr  string `json:"user_name_attr"`
+	GroupBaseDN   string `json:"group_base_dn"`
+	GroupNameAttr string `json:"group_name_attr"`
+
+	MailingBaseDN       string `json:"mailing_list_base_dn"`
+	MailingNameAttr     string `json:"mailing_list_name_attr"`
+	MailingGuestsBaseDN string `json:"mailing_list_guest_user_base_dn"`
 
 	InvitationBaseDN   string   `json:"invitation_base_dn"`
 	InvitationNameAttr string   `json:"invitation_name_attr"`
