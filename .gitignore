@@ -2,3 +2,4 @@ guichet
 guichet.static
 config.json
 result
+.direnv/

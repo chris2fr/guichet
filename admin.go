@@ -117,15 +117,186 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 	templateAdminGroups.Execute(w, data)
 }
 
+type AdminMailingTplData struct {
+	Login           *LoginStatus
+	MailingNameAttr string
+	MailingBaseDN   string
+	MailingLists    EntryList
+}
+
+func handleAdminMailing(w http.ResponseWriter, r *http.Request) {
+	templateAdminMailing := getTemplate("admin_mailing.html")
+
+	login := checkAdminLogin(w, r)
+	if login == nil {
+		return
+	}
+
+	searchRequest := ldap.NewSearchRequest(
+		config.MailingBaseDN,
+		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=groupOfNames))"),
+		[]string{config.MailingNameAttr, "dn", "description"},
+		nil)
+
+	sr, err := login.conn.Search(searchRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data := &AdminMailingTplData{
+		Login:           login,
+		MailingNameAttr: config.MailingNameAttr,
+		MailingBaseDN:   config.MailingBaseDN,
+		MailingLists:    EntryList(sr.Entries),
+	}
+	sort.Sort(data.MailingLists)
+
+	templateAdminMailing.Execute(w, data)
+}
+
+type AdminMailingListTplData struct {
+	Login           *LoginStatus
+	MailingNameAttr string
+	MailingBaseDN   string
+
+	MailingList        *ldap.Entry
+	Members            EntryList
+	PossibleNewMembers EntryList
+
+	Error   string
+	Success bool
+}
+
+func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
+	templateAdminMailingList := getTemplate("admin_mailing_list.html")
+
+	login := checkAdminLogin(w, r)
+	if login == nil {
+		return
+	}
+
+	id := mux.Vars(r)["id"]
+	dn := fmt.Sprintf("%s=%s,%s", config.MailingNameAttr, id, config.MailingBaseDN)
+
+	// handle modifications
+	dError := ""
+	dSuccess := false
+
+	if r.Method == "POST" {
+		r.ParseForm()
+		action := strings.Join(r.Form["action"], "")
+		if action == "add-member" {
+			member := strings.Join(r.Form["member"], "")
+			modify_request := ldap.NewModifyRequest(dn, nil)
+			modify_request.Add("member", []string{member})
+
+			err := login.conn.Modify(modify_request)
+			if err != nil {
+				dError = err.Error()
+			} else {
+				dSuccess = true
+			}
+		} else if action == "delete-member" {
+			member := strings.Join(r.Form["member"], "")
+			modify_request := ldap.NewModifyRequest(dn, nil)
+			modify_request.Delete("member", []string{member})
+
+			err := login.conn.Modify(modify_request)
+			if err != nil {
+				dError = err.Error()
+			} else {
+				dSuccess = true
+			}
+		}
+	}
+
+	// Retrieve mailing list
+	searchRequest := ldap.NewSearchRequest(
+		dn,
+		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(objectclass=groupOfNames)"),
+		[]string{"dn", config.MailingNameAttr, "member"},
+		nil)
+
+	sr, err := login.conn.Search(searchRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if len(sr.Entries) != 1 {
+		http.Error(w, fmt.Sprintf("Object not found: %s", dn), http.StatusNotFound)
+		return
+	}
+
+	ml := sr.Entries[0]
+
+	memberDns := make(map[string]bool)
+	for _, attr := range ml.Attributes {
+		if attr.Name == "member" {
+			for _, v := range attr.Values {
+				memberDns[v] = true
+			}
+		}
+	}
+
+	// Retrieve list of current and possible new members
+	members := []*ldap.Entry{}
+	possibleNewMembers := []*ldap.Entry{}
+
+	searchRequest = ldap.NewSearchRequest(
+		config.UserBaseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(objectClass=organizationalPerson)"),
+		[]string{"dn", "displayname", "mail"},
+		nil)
+	sr, err = login.conn.Search(searchRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	for _, ent := range sr.Entries {
+		if _, ok := memberDns[ent.DN]; ok {
+			members = append(members, ent)
+		} else {
+			possibleNewMembers = append(possibleNewMembers, ent)
+		}
+	}
+
+	data := &AdminMailingListTplData{
+		Login:           login,
+		MailingNameAttr: config.MailingNameAttr,
+		MailingBaseDN:   config.MailingBaseDN,
+
+		MailingList:        ml,
+		Members:            members,
+		PossibleNewMembers: possibleNewMembers,
+
+		Error:   dError,
+		Success: dSuccess,
+	}
+	sort.Sort(data.Members)
+	sort.Sort(data.PossibleNewMembers)
+
+	templateAdminMailingList.Execute(w, data)
+}
+
+// ===================================================
+// 					   LDAP EXPLORER
+// ===================================================
+
 type AdminLDAPTplData struct {
 	DN string
 
-	Path        []PathItem
-	ChildrenOU  []Child
-	ChildrenOther    []Child
-	CanAddChild bool
-	Props       map[string]*PropValues
-	CanDelete   bool
+	Path          []PathItem
+	ChildrenOU    []Child
+	ChildrenOther []Child
+	CanAddChild   bool
+	Props         map[string]*PropValues
+	CanDelete     bool
 
 	HasMembers         bool
 	Members            []EntryName
@@ -523,12 +694,12 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	templateAdminLDAP.Execute(w, &AdminLDAPTplData{
 		DN: dn,
 
-		Path:        path,
+		Path:          path,
 		ChildrenOU:    childrenOU,
-		ChildrenOther:    childrenOther,
-		Props:       props,
-		CanAddChild: dn_last_attr == "ou" || isOrganization,
-		CanDelete:   dn != config.BaseDN && len(childrenOU) == 0 && len(childrenOther) == 0,
+		ChildrenOther: childrenOther,
+		Props:         props,
+		CanAddChild:   dn_last_attr == "ou" || isOrganization,
+		CanDelete:     dn != config.BaseDN && len(childrenOU) == 0 && len(childrenOther) == 0,
 
 		HasMembers:         len(members) > 0 || hasMembers,
 		Members:            members,
@@ -671,9 +842,12 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				data.Error = err.Error()
 			} else {
-				http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
+				if super_dn == config.MailingBaseDN && data.IdType == config.MailingNameAttr {
+					http.Redirect(w, r, "/admin/mailing/"+data.IdValue, http.StatusFound)
+				} else {
+					http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
+				}
 			}
-
 		}
 	}
 

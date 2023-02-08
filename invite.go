@@ -174,7 +174,7 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 
 	if checkFailed {
 		return
-	}	
+	}
 
 	// Actually create user
 	req := ldap.NewAddRequest(userDn, nil)

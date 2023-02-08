@@ -23,11 +23,13 @@ type ConfigFile struct {
 	LdapServerAddr string `json:"ldap_server_addr"`
 	LdapTLS        bool   `json:"ldap_tls"`
 
-	BaseDN        string `json:"base_dn"`
-	UserBaseDN    string `json:"user_base_dn"`
-	UserNameAttr  string `json:"user_name_attr"`
-	GroupBaseDN   string `json:"group_base_dn"`
-	GroupNameAttr string `json:"group_name_attr"`
+	BaseDN          string `json:"base_dn"`
+	UserBaseDN      string `json:"user_base_dn"`
+	UserNameAttr    string `json:"user_name_attr"`
+	GroupBaseDN     string `json:"group_base_dn"`
+	GroupNameAttr   string `json:"group_name_attr"`
+	MailingBaseDN   string `json:"mailing_list_base_dn"`
+	MailingNameAttr string `json:"mailing_list_name_attr"`
 
 	InvitationBaseDN   string   `json:"invitation_base_dn"`
 	InvitationNameAttr string   `json:"invitation_name_attr"`
@@ -131,6 +133,8 @@ func main() {
 
 	r.HandleFunc("/admin/users", handleAdminUsers)
 	r.HandleFunc("/admin/groups", handleAdminGroups)
+	r.HandleFunc("/admin/mailing", handleAdminMailing)
+	r.HandleFunc("/admin/mailing/{id}", handleAdminMailingList)
 	r.HandleFunc("/admin/ldap/{dn}", handleAdminLDAP)
 	r.HandleFunc("/admin/create/{template}/{super_dn}", handleAdminCreate)
 
