@@ -23,7 +23,17 @@
 
 <table class="table mt-4">
   <tbody>
-    {{range .Children}}
+    {{range .ChildrenOU}}
+        <tr>
+          <td>
+            <a href="/admin/ldap/{{.DN}}">
+              🗀 {{.Identifier}}
+            </a>
+          </td>
+          <td>{{.Name}}</td>
+        </tr>
+    {{end}}
+    {{range .ChildrenOther}}
         <tr>
           <td>
             <a href="/admin/ldap/{{.DN}}">
@@ -94,7 +104,11 @@
           <div class="col-md-3"><strong>{{$key}}</strong></div>
           <div class="col-md-9">
           {{range $value.Values}}
-            <div>{{.}}</div>
+            {{if eq $key "creatorsname" "modifiersname" }}
+              <div><a href="/admin/ldap/{{.}}">{{.}}</a></div>
+            {{else}}
+              <div>{{.}}</div>
+            {{end}}
           {{end}}
           </div>
         </div>

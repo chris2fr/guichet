@@ -121,7 +121,8 @@ type AdminLDAPTplData struct {
 	DN string
 
 	Path        []PathItem
-	Children    []Child
+	ChildrenOU  []Child
+	ChildrenOther    []Child
 	CanAddChild bool
 	Props       map[string]*PropValues
 	CanDelete   bool
@@ -499,17 +500,23 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 	sort.Sort(EntryList(sr.Entries))
 
-	children := []Child{}
+	childrenOU := []Child{}
+	childrenOther := []Child{}
 	for _, item := range sr.Entries {
 		name := item.GetAttributeValue("displayname")
 		if name == "" {
 			name = item.GetAttributeValue("description")
 		}
-		children = append(children, Child{
+		child := Child{
 			DN:         item.DN,
 			Identifier: strings.Split(item.DN, ",")[0],
 			Name:       name,
-		})
+		}
+		if strings.HasPrefix(item.DN, "ou=") {
+			childrenOU = append(childrenOU, child)
+		} else {
+			childrenOther = append(childrenOther, child)
+		}
 	}
 
 	// Run template, finally!
@@ -517,10 +524,11 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		DN: dn,
 
 		Path:        path,
-		Children:    children,
+		ChildrenOU:    childrenOU,
+		ChildrenOther:    childrenOther,
 		Props:       props,
 		CanAddChild: dn_last_attr == "ou" || isOrganization,
-		CanDelete:   dn != config.BaseDN && len(children) == 0,
+		CanDelete:   dn != config.BaseDN && len(childrenOU) == 0 && len(childrenOther) == 0,
 
 		HasMembers:         len(members) > 0 || hasMembers,
 		Members:            members,
