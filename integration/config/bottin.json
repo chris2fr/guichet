@@ -1,0 +1,13 @@
+{
+  "suffix": "dc=bottin,dc=eu",
+  "bind": "bottin:389",
+  "consul_host": "consul:8500",
+  "acl": [
+		"ANONYMOUS::bind:*,ou=users,dc=bottin,dc=eu:",
+		"ANONYMOUS::bind:cn=admin,dc=bottin,dc=eu:",
+		"*,dc=bottin,dc=eu::read:*:* !userpassword",
+		"*::read modify:SELF:*",
+		"cn=admin,dc=bottin,dc=eu::read add modify delete:*:*",
+		"*:cn=admin,ou=groups,dc=bottin,dc=eu:read add modify delete:*:*"
+  ]
+}
