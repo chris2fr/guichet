@@ -1,0 +1,34 @@
+{
+  "http_bind_addr": ":9991",
+  "ldap_server_addr": "ldap://127.0.0.1:389",
+
+  "base_dn": "dc=bottin,dc=eu",
+  "user_base_dn": "ou=users,dc=bottin,dc=eu",
+  "user_name_attr": "cn",
+  "group_base_dn": "ou=groups,dc=bottin,dc=eu",
+  "group_name_attr": "cn",
+
+  "invitation_base_dn": "ou=invitations,dc=bottin,dc=eu",
+  "invitation_name_attr": "cn",
+  "invited_mail_format": "{}@bottin.eu",
+  "invited_auto_groups": [
+    "cn=email,ou=groups,dc=bottin,dc=eu"
+  ],
+
+  "web_address": "https://guichet.bottin.eu",
+  "mail_from": "welcome@bottin.eu",
+  "smtp_server": "smtp.bottin.eu",
+  "smtp_username": "guichet",
+  "smtp_password": "",
+
+  "admin_account": "cn=admin,dc=bottin,dc=eu",
+  "group_can_admin": "gid=admin,ou=groups,dc=bottin,dc=eu",
+  "group_can_invite": "",
+
+  "s3_endpoint": "garage.bottin.eu",
+  "s3_access_key": "",
+  "s3_secret_key": "",
+  "s3_region": "garage",
+  "s3_bucket": "bottin-pictures"
+}
+

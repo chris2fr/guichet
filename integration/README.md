@@ -9,3 +9,8 @@ On ne met pas Guichet dans le `compose` pour pouvoir itérer plus rapidement : u
 ## Notes
 
 * Bien récupérer le password `admin` dans les logs de 1er lancement de Bottin : il ne sera pas réaffiché.
+* Identifiant de l'admin sur Guichet : `cn=admin,dc=bottin,dc=eu` because il n'est pas dans `ou=users,dc=bottin,dc=eu` qui est l'organisation par défaut dans laquelle on va chercher les utilisateurs.
+
+## TODO 
+
+* Bridger Garage/S3 (pour le moment ne sert que pour les avatars dans l'annuaire)
