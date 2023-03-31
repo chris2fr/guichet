@@ -1,0 +1,16 @@
+version: '3'
+services:
+  consul:
+    image: consul
+    restart: "always"
+    expose:
+      - 8500
+  bottin:
+    image: dxflrs/bottin:dnp41vp8w24h4mbh0xg1mybzr1f46k41
+    command: "-config /etc/bottin.json"
+    restart: "always"
+    depends_on: ["consul"]
+    ports: 
+      - "389:389"
+    volumes:
+      - "./config/bottin.json:/etc/bottin.json"
