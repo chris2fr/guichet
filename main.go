@@ -48,6 +48,9 @@ type ConfigFile struct {
 	GroupCanInvite string `json:"group_can_invite"`
 	GroupCanAdmin  string `json:"group_can_admin"`
 
+    S3AdminEndpoint string `json:"s3_admin_endpoint"`
+    S3AdminToken    string `json:"s3_admin_token"`
+
 	S3Endpoint  string `json:"s3_endpoint"`
 	S3AccessKey string `json:"s3_access_key"`
 	S3SecretKey string `json:"s3_secret_key"`

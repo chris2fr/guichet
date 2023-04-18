@@ -25,6 +25,9 @@
   "group_can_admin": "gid=admin,ou=groups,dc=bottin,dc=eu",
   "group_can_invite": "",
 
+  "s3_admin_endpoint": "localhost:3903",
+  "s3_admin_token": "GlXP43PWH3LuvEGSNxKYzZCyUss8VqZmarBU+HUlrxw=",
+
   "s3_endpoint": "localhost",
   "s3_access_key": "",
   "s3_secret_key": "",
