@@ -2,30 +2,30 @@
   "http_bind_addr": ":9991",
   "ldap_server_addr": "ldap://127.0.0.1:389",
 
-  "base_dn": "dc=example,dc=com",
-  "user_base_dn": "ou=users,dc=example,dc=com",
+  "base_dn": "dc=bottin,dc=eu",
+  "user_base_dn": "ou=users,dc=bottin,dc=eu",
   "user_name_attr": "cn",
-  "group_base_dn": "ou=groups,dc=example,dc=com",
+  "group_base_dn": "ou=groups,dc=bottin,dc=eu",
   "group_name_attr": "cn",
 
-  "invitation_base_dn": "ou=invitations,dc=example,dc=com",
+  "invitation_base_dn": "ou=invitations,dc=bottin,dc=eu",
   "invitation_name_attr": "cn",
   "invited_mail_format": "{}@example.com",
   "invited_auto_groups": [
-    "cn=email,ou=groups,dc=example,dc=com"
+    "cn=email,ou=groups,dc=bottin,dc=eu"
   ],
 
-  "web_address": "https://guichet.example.com",
+  "web_address": "http://guichet.localhost:9991",
   "mail_from": "welcome@example.com",
   "smtp_server": "smtp.example.com",
   "smtp_username": "guichet",
   "smtp_password": "",
 
-  "admin_account": "cn=admin,dc=example,dc=com",
-  "group_can_admin": "gid=admin,ou=groups,dc=example,dc=com",
+  "admin_account": "cn=admin,dc=bottin,dc=eu",
+  "group_can_admin": "gid=admin,ou=groups,dc=bottin,dc=eu",
   "group_can_invite": "",
 
-  "s3_endpoint": "garage.example.com",
+  "s3_endpoint": "localhost",
   "s3_access_key": "",
   "s3_secret_key": "",
   "s3_region": "garage",

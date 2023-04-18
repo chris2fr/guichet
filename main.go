@@ -129,6 +129,11 @@ func main() {
 	r.HandleFunc("/directory/search", handleDirectorySearch)
 	r.HandleFunc("/directory", handleDirectory)
 
+    r.HandleFunc("/garage/key", handleGarageKey)
+    r.HandleFunc("/garage/website", handleGarageWebsiteList)
+    r.HandleFunc("/garage/website/new", handleGarageWebsiteNew)
+    r.HandleFunc("/garage/website/b/{bucket}", handleGarageWebsiteInspect)
+
 	r.HandleFunc("/invite/new_account", handleInviteNewAccount)
 	r.HandleFunc("/invite/send_code", handleInviteSendCode)
 	r.HandleFunc("/invitation/{code}", handleInvitationCode)
