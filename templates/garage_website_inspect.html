@@ -1,0 +1,43 @@
+{{define "title"}}Inspecter le site web |{{end}}
+
+{{define "body"}}
+<div class="d-flex">
+  <h4>Inspecter le site web</h4>
+  <a class="ml-auto btn btn-link" href="/garage/key">Mes identifiants</a>
+  <a class="ml-4 btn btn-success" href="/garage/website/new">Nouveau site web</a>
+  <a class="ml-4 btn btn-info" href="/garage/website">Mes sites webs</a>
+</div>
+
+<table class="table mt-4">
+  <tbody>
+      <tr>
+          <th scope="row">ID</th>
+          <td>afa8f0a22b40b1247ccd0affb869b0af5cff980924a20e4b5e0720a44deb8d39</td>
+      </tr>
+      <tr>
+          <th scope="row">URLs</th>
+          <td>nix.web.deuxfleurs.fr</td>
+      </tr>
+      <tr>
+          <th scope="row">Document d'index</th>
+          <td>index.html</td>
+      </tr>
+      <tr>
+          <th scope="row">Document d'erreur</th>
+          <td>error/400.html</td>
+      </tr>
+      <tr>
+          <th scope="row">Nombre de fichiers</th>
+          <td>488/infini</td>
+      </tr>
+      <tr>
+          <th scope="row">Espace utilisé</th>
+          <td>83216486/infini</td>
+      </tr>
+  </tbody>
+</table>
+
+<h4>Configurer le nom de domaine</h4>
+
+<p>Le nom de domaine est géré par deuxfleurs, il n'y a rien à configurer.</p>
+{{end}}
