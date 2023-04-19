@@ -39,6 +39,8 @@
       };
     in {
       packages.x86_64-linux.bottin = bottin;
+      packages.x86_64-linux.default = bottin;
+      
       devShell.x86_64-linux = pkgs.mkShell { nativeBuildInputs = [ pkgs.go ]; };
     };
 }
