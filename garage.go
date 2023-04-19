@@ -6,7 +6,9 @@ import (
 	"net/http"
     "context"
     "fmt"
+    "strings"
 	"github.com/go-ldap/ldap/v3"
+	"github.com/gorilla/mux"
      garage "git.deuxfleurs.fr/garage-sdk/garage-admin-sdk-golang"
 )
 
@@ -45,6 +47,67 @@ func grgGetKey(accessKey string) (*garage.KeyInfo, error) {
         return nil, err
     }
     return resp, nil
+}
+
+func grgCreateWebsite(gkey, bucket string) (*garage.BucketInfo, error) {
+    client, ctx := gadmin()
+
+    br := garage.NewCreateBucketRequest()
+    br.SetGlobalAlias(bucket)
+    
+    // Create Bucket
+    binfo, _, err := client.BucketApi.CreateBucket(ctx).CreateBucketRequest(*br).Execute()
+    if err != nil {
+        fmt.Printf("%+v\n", err)
+        return nil, err
+    }
+
+    // Allow user's key
+    ar := garage.AllowBucketKeyRequest{
+        BucketId: *binfo.Id, 
+        AccessKeyId: gkey, 
+        Permissions: *garage.NewAllowBucketKeyRequestPermissions(true, true, true),
+    } 
+    binfo, _, err = client.BucketApi.AllowBucketKey(ctx).AllowBucketKeyRequest(ar).Execute()
+    if err != nil {
+        fmt.Printf("%+v\n", err)
+        return nil, err
+    }
+
+    // Expose website and set quota
+    wr := garage.NewUpdateBucketRequestWebsiteAccess()
+    wr.SetEnabled(true)
+    wr.SetIndexDocument("index.html")
+    wr.SetErrorDocument("error.html")
+
+    qr := garage.NewUpdateBucketRequestQuotas()
+    qr.SetMaxSize(1024 * 1024 * 50) // 50MB
+    qr.SetMaxObjects(10000) //10k objects
+
+    ur := garage.NewUpdateBucketRequest()
+    ur.SetWebsiteAccess(*wr)
+    ur.SetQuotas(*qr)
+
+    binfo, _, err = client.BucketApi.UpdateBucket(ctx, *binfo.Id).UpdateBucketRequest(*ur).Execute()
+    if err != nil {
+        fmt.Printf("%+v\n", err)
+        return nil, err
+    }
+
+    // Return updated binfo
+    return binfo, nil
+}
+
+func grgGetBucket(bid string) (*garage.BucketInfo, error) {
+    client, ctx := gadmin()
+
+    resp, _, err := client.BucketApi.GetBucketInfo(ctx, bid).Execute()
+    if err != nil {
+        fmt.Printf("%+v\n", err)
+        return nil, err
+    }
+    return resp, nil
+
 }
 
 
@@ -109,18 +172,80 @@ func handleGarageWebsiteList(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGarageWebsiteNew(w http.ResponseWriter, r *http.Request) {
+    _, s3key, err := checkLoginAndS3(w, r)    
+    if err != nil {
+        log.Println(err)
+        return
+    }
+
     tWebsiteNew := getTemplate("garage_website_new.html")
+	if r.Method == "POST" {
+        r.ParseForm()
+        log.Println(r.Form)
+
+		bucket := strings.Join(r.Form["bucket"], "")
+        if bucket == "" {
+		    bucket = strings.Join(r.Form["bucket2"], "")
+        }
+        if bucket == "" {
+            log.Println("Form empty")
+            // @FIXME we need to return the error to the user
+	        tWebsiteNew.Execute(w, nil)
+            return
+        }
+
+        binfo, err := grgCreateWebsite(*s3key.AccessKeyId, bucket)
+        if err != nil {
+            log.Println(err)
+            // @FIXME we need to return the error to the user
+	        tWebsiteNew.Execute(w, nil)
+            return
+        }
+
+        http.Redirect(w, r, "/garage/website/b/" + *binfo.Id, http.StatusFound)
+        return
+    }
+
 	tWebsiteNew.Execute(w, nil)
 }
 
+type webInspectView struct {
+	Status         *LoginStatus
+    Key            *garage.KeyInfo
+    Bucket         *garage.BucketInfo
+    IndexDoc string
+    ErrorDoc string
+    MaxObjects int64
+    MaxSize int64
+    UsedSizePct float64
+}
 func handleGarageWebsiteInspect(w http.ResponseWriter, r *http.Request) {
     login, s3key, err := checkLoginAndS3(w, r)
     if err != nil {
         log.Println(err)
         return
     }
-    log.Println(login, s3key)
+
+	bucketId := mux.Vars(r)["bucket"]
+    binfo, err := grgGetBucket(bucketId)
+    if err != nil {
+        log.Println(err)
+        return
+    }
+
+    wc := binfo.GetWebsiteConfig()
+    q := binfo.GetQuotas()
+
+    view := webInspectView {
+      Status: login,
+      Key: s3key,
+      Bucket: binfo,
+      IndexDoc: (&wc).GetIndexDocument(),
+      ErrorDoc: (&wc).GetErrorDocument(),
+      MaxObjects: (&q).GetMaxObjects(),
+      MaxSize: (&q).GetMaxSize(),
+    }
 
     tWebsiteInspect := getTemplate("garage_website_inspect.html")
-	tWebsiteInspect.Execute(w, nil)
+	tWebsiteInspect.Execute(w, &view)
 }

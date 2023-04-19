@@ -12,32 +12,47 @@
   <tbody>
       <tr>
           <th scope="row">ID</th>
-          <td>afa8f0a22b40b1247ccd0affb869b0af5cff980924a20e4b5e0720a44deb8d39</td>
+          <td>{{ .Bucket.Id }}</td>
       </tr>
       <tr>
           <th scope="row">URLs</th>
-          <td>nix.web.deuxfleurs.fr</td>
+          <td>
+              {{ range $alias := .Bucket.GlobalAliases }}
+              {{ if contains $alias "." }}
+              https://{{ $alias }}
+              {{ else }}
+              https://{{ $alias }}.web.deuxfleurs.fr
+              {{ end }}
+              {{ end }}
+          </td>
       </tr>
       <tr>
           <th scope="row">Document d'index</th>
-          <td>index.html</td>
+          <td> {{ .IndexDoc }}</td>
       </tr>
       <tr>
           <th scope="row">Document d'erreur</th>
-          <td>error/400.html</td>
+          <td>{{ .ErrorDoc }}</td>
       </tr>
       <tr>
           <th scope="row">Nombre de fichiers</th>
-          <td>488/infini</td>
+          <td>{{ .Bucket.Objects }} / {{ .MaxObjects }}</td>
       </tr>
       <tr>
           <th scope="row">Espace utilisé</th>
-          <td>83216486/infini</td>
+          <td>{{ .Bucket.Bytes }} / {{ .MaxSize }} octets</td>
       </tr>
   </tbody>
 </table>
 
 <h4>Configurer le nom de domaine</h4>
 
-<p>Le nom de domaine est géré par deuxfleurs, il n'y a rien à configurer.</p>
+{{ range $alias := .Bucket.GlobalAliases }}
+{{ if contains $alias "." }}
+<p> Le nom de domaine {{ $alias }} n'est pas géré par Deuxfleurs, il vous revient donc de configurer la zone DNS. Vous devez ajouter une entrée <code>CNAME garage.deuxfleurs.fr</code> ou <code>ALIAS garage.deuxfleurs.fr</code> auprès de votre hébergeur DNS, qui est souvent aussi le bureau d'enregistrement (eg. Gandi, GoDaddy, BookMyName, etc.).</p>
+{{ else }}
+<p> Le nom de domaine https://{{ $alias }}.web.deuxfleurs.fr est fourni par Deuxfleurs, il n'y a pas de configuration à faire.</p>
+{{ end }}
+{{ end }}
+
 {{end}}
