@@ -15,12 +15,24 @@
     <th scope="col">URLs</th>
   </thead>
   <tbody>
+      {{ range $buck := .Key.Buckets }}
+      {{ if $buck.GlobalAliases }}
       <tr>
           <td>
-              <a href="/garage/website/b/aa">aa</a>
+              <a href="/garage/website/b/{{$buck.Id}}">{{$buck.Id}}</a>
           </td>
-          <td>aa</td>
+          <td>
+              {{ range $alias := $buck.GlobalAliases }}
+              {{ if contains $alias "." }}
+              https://{{ $alias }}
+              {{ else }}
+              https://{{ $alias }}.web.deuxfleurs.fr
+              {{ end }}
+              {{ end }}
+          </td>
       </tr>
+      {{ end }}
+      {{ end }}
   </tbody>
 </table>
 {{end}}

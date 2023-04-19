@@ -92,16 +92,20 @@ func handleGarageKey(w http.ResponseWriter, r *http.Request) {
 	tKey.Execute(w, &view)
 }
 
+type webListView struct {
+	Status         *LoginStatus
+    Key            *garage.KeyInfo
+}
 func handleGarageWebsiteList(w http.ResponseWriter, r *http.Request) {
     login, s3key, err := checkLoginAndS3(w, r)    
     if err != nil {
         log.Println(err)
         return
     }
-    log.Println(login, s3key)
+    view := webListView{Status: login, Key: s3key}
 
     tWebsiteList := getTemplate("garage_website_list.html")
-	tWebsiteList.Execute(w, nil)
+	tWebsiteList.Execute(w, &view)
 }
 
 func handleGarageWebsiteNew(w http.ResponseWriter, r *http.Request) {

@@ -105,7 +105,12 @@ func readConfig() ConfigFile {
 }
 
 func getTemplate(name string) *template.Template {
-	return template.Must(template.ParseFiles(templatePath+"/layout.html", templatePath+"/"+name))
+    return template.Must(template.New("layout.html").Funcs(template.FuncMap {
+            "contains": strings.Contains,
+        }).ParseFiles(
+            templatePath+"/layout.html", 
+            templatePath+"/"+name,
+        ))
 }
 
 func main() {
