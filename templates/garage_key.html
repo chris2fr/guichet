@@ -22,11 +22,11 @@
             <tbody>
                 <tr>
                     <th scope="row">Identifiant de clé</th>
-                    <td>GKxxx</td>
+                    <td>{{ .Key.AccessKeyId }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Clé secrète</th>
-                    <td>...</td>
+                    <td>{{ .Key.SecretAccessKey }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Région</th>
@@ -62,8 +62,8 @@
                     <div class="card-body">
                         <p>Créez un fichier nommé <code>~/.awsrc</code> :</p>
                         <pre>
-export AWS_ACCESS_KEY_ID=GK...
-export AWS_SECRET_ACCESS_KEY=...
+export AWS_ACCESS_KEY_ID={{ .Key.AccessKeyId }}
+export AWS_SECRET_ACCESS_KEY={{ .Key.SecretAccessKey }}
 export AWS_DEFAULT_REGION='garage'
 
 function aws { command aws --endpoint-url https://garage.deuxfleurs.fr $@ ; }
@@ -97,8 +97,8 @@ aws s3 cp /tmp/a.txt s3://my-bucket
 mc alias set \
   garage \
   https://garage.deuxfleurs.fr \
-  GK... \
-  ... \
+  {{ .Key.AccessKeyId }} \
+  {{ .Key.SecretAccessKey }} \
   --api S3v4
                         </pre>
                         <p>Et ensuite pour utiliser Minio CLI avec :</p>
@@ -176,7 +176,7 @@ hugo deploy
             <tbody>
                 <tr>
                     <th scope="row">Nom d'utilisateur-ice</th>
-                    <td>(votre username guichet)</td>
+                    <td>{{ .Status.Info.Username }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Mot de passe</th>
@@ -207,7 +207,7 @@ hugo deploy
                     <div class="card-body">
                         <p>Un exemple avec SCP :</p>
                         <pre>
-scp -oHostKeyAlgorithms=+ssh-rsa -P2222 -r ./public bagage.deuxfleurs.fr:mon_bucket/
+scp -oHostKeyAlgorithms=+ssh-rsa -P2222 -r ./public {{ .Status.Info.Username }}@bagage.deuxfleurs.fr:mon_bucket/
                         </pre>
                     </div>
                 </div>

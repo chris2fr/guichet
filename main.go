@@ -255,6 +255,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 			"mail",
 			"memberof",
 			"description",
+            "garage_s3_access_key",
 			FIELD_NAME_DIRECTORY_VISIBILITY,
 			FIELD_NAME_PROFILE_PICTURE,
 		},
