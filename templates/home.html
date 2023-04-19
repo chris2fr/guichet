@@ -7,17 +7,30 @@
 <div class="d-flex">
   <a class="ml-auto btn btn-sm btn-dark" href="/logout">Se déconnecter</a>
 </div>
-<div class="mt-3"></div>
 
-<div class="card">
-  <div class="card-header">
-    Mon compte
-  </div>
-  <div class="list-group list-group-flush">
-    <a class="list-group-item list-group-item-action" href="/profile">Modifier mon profil</a>
-    <a class="list-group-item list-group-item-action" href="/passwd">Modifier mon mot de passe</a>
-    <a class="list-group-item list-group-item-action" href="/directory">Annuaire</a>
-  </div>
+<div class="mt-3">
+    <div class="card">
+        <div class="card-header">
+            Mon compte
+        </div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action" href="/profile">Modifier mon profil</a>
+            <a class="list-group-item list-group-item-action" href="/passwd">Modifier mon mot de passe</a>
+            <a class="list-group-item list-group-item-action" href="/directory">Annuaire</a>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <div class="card">
+        <div class="card-header">
+            Garage
+        </div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action" href="/garage/key">Mes identifiants</a>
+            <a class="list-group-item list-group-item-action" href="/garage/website">Mes sites webs</a>
+        </div>
+    </div>
 </div>
 
 {{if .Login.CanInvite}}

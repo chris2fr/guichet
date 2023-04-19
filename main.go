@@ -48,6 +48,9 @@ type ConfigFile struct {
 	GroupCanInvite string `json:"group_can_invite"`
 	GroupCanAdmin  string `json:"group_can_admin"`
 
+	S3AdminEndpoint string `json:"s3_admin_endpoint"`
+	S3AdminToken    string `json:"s3_admin_token"`
+
 	S3Endpoint  string `json:"s3_endpoint"`
 	S3AccessKey string `json:"s3_access_key"`
 	S3SecretKey string `json:"s3_secret_key"`
@@ -102,7 +105,12 @@ func readConfig() ConfigFile {
 }
 
 func getTemplate(name string) *template.Template {
-	return template.Must(template.ParseFiles(templatePath+"/layout.html", templatePath+"/"+name))
+	return template.Must(template.New("layout.html").Funcs(template.FuncMap{
+		"contains": strings.Contains,
+	}).ParseFiles(
+		templatePath+"/layout.html",
+		templatePath+"/"+name,
+	))
 }
 
 func main() {
@@ -128,6 +136,11 @@ func main() {
 
 	r.HandleFunc("/directory/search", handleDirectorySearch)
 	r.HandleFunc("/directory", handleDirectory)
+
+	r.HandleFunc("/garage/key", handleGarageKey)
+	r.HandleFunc("/garage/website", handleGarageWebsiteList)
+	r.HandleFunc("/garage/website/new", handleGarageWebsiteNew)
+	r.HandleFunc("/garage/website/b/{bucket}", handleGarageWebsiteInspect)
 
 	r.HandleFunc("/invite/new_account", handleInviteNewAccount)
 	r.HandleFunc("/invite/send_code", handleInviteSendCode)
@@ -247,6 +260,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 			"mail",
 			"memberof",
 			"description",
+			"garage_s3_access_key",
 			FIELD_NAME_DIRECTORY_VISIBILITY,
 			FIELD_NAME_PROFILE_PICTURE,
 		},
