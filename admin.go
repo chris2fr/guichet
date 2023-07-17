@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+  "log"
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
@@ -194,6 +195,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 			modify_request.Add("member", []string{member})
 
 			err := login.conn.Modify(modify_request)
+      log.Printf(fmt.Sprintf("198: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -201,6 +203,9 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 			}
 		} else if action == "add-external" {
 			mail := strings.Join(r.Form["mail"], "")
+			sn := strings.Join(r.Form["sn"], "")
+			givenname := strings.Join(r.Form["givenname"], "")
+			member := strings.Join(r.Form["member"], "")
 			displayname := strings.Join(r.Form["displayname"], "")
 
 			searchRequest := ldap.NewSearchRequest(
@@ -217,11 +222,22 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 					if config.MailingGuestsBaseDN != "" {
 						guestDn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, mail, config.MailingGuestsBaseDN)
 						req := ldap.NewAddRequest(guestDn, nil)
-						req.Attribute("objectclass", []string{"inetOrgPerson", "organizationalPerson", "person", "top"})
-						req.Attribute("mail", []string{mail})
+						//req.Attribute("objectclass", []string{"inetOrgPerson", "organizationalPerson", "person", "top"})
+						req.Attribute("objectclass", []string{"inetOrgPerson"})
+						req.Attribute("mail", []string{fmt.Sprintf("%s",mail)})
+						if givenname != "" {
+							req.Attribute("givenname", []string{givenname})
+						}
+						if member != "" {
+							req.Attribute("member", []string{member})
+						}
 						if displayname != "" {
 							req.Attribute("displayname", []string{displayname})
 						}
+						if sn != "" {
+							req.Attribute("sn", []string{sn})
+						}
+            log.Printf(fmt.Sprintf("226: %v",req))
 						err := login.conn.Add(req)
 						if err != nil {
 							dError = err.Error()
@@ -230,6 +246,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 							modify_request.Add("member", []string{guestDn})
 
 							err := login.conn.Modify(modify_request)
+              log.Printf(fmt.Sprintf("249: %v",modify_request))
 							if err != nil {
 								dError = err.Error()
 							} else {
@@ -244,6 +261,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 					modify_request.Add("member", []string{sr.Entries[0].DN})
 
 					err := login.conn.Modify(modify_request)
+              log.Printf(fmt.Sprintf("264: %v",modify_request))
 					if err != nil {
 						dError = err.Error()
 					} else {
@@ -259,6 +277,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 			modify_request.Delete("member", []string{member})
 
 			err := login.conn.Modify(modify_request)
+              log.Printf(fmt.Sprintf("280: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -446,6 +465,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 				modify_request.Replace(attr, values_filtered)
 
 				err := login.conn.Modify(modify_request)
+              log.Printf(fmt.Sprintf("468: %v",modify_request))
 				if err != nil {
 					dError = err.Error()
 				} else {
@@ -467,6 +487,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Add(attr, values_filtered)
 
 			err := login.conn.Modify(modify_request)
+              log.Printf(fmt.Sprintf("490: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -479,6 +500,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Replace(attr, []string{})
 
 			err := login.conn.Modify(modify_request)
+              log.Printf(fmt.Sprintf("503: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -490,6 +512,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Delete("member", []string{dn})
 
 			err := login.conn.Modify(modify_request)
+              log.Printf(fmt.Sprintf("515: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -501,6 +524,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Add("member", []string{dn})
 
 			err := login.conn.Modify(modify_request)
+              log.Printf(fmt.Sprintf("527: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -512,6 +536,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Delete("member", []string{member})
 
 			err := login.conn.Modify(modify_request)
+              log.Printf(fmt.Sprintf("539: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -777,9 +802,13 @@ type CreateData struct {
 	IdType                string
 	IdValue               string
 	DisplayName           string
+	GivenName             string
+	Member                string
+	Mail                string
 	Description           string
 	StructuralObjectClass string
 	ObjectClass           string
+	SN                    string
 
 	Error string
 }
@@ -845,6 +874,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		data.IdType = config.UserNameAttr
 		data.StructuralObjectClass = "groupOfNames"
 		data.ObjectClass = "groupOfNames\ntop"
+    data.Member = "cn=sogo@resdigita.org,ou=users,dc=resdigita,dc=org"
 	} else if template == "ou" {
 		data.IdType = "ou"
 		data.StructuralObjectClass = "organizationalUnit"
@@ -864,7 +894,11 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		}
 		data.IdValue = strings.TrimSpace(strings.Join(r.Form["idvalue"], ""))
 		data.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
+		data.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
+		data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
+		data.Member = strings.TrimSpace(strings.Join(r.Form["member"], ""))
 		data.Description = strings.TrimSpace(strings.Join(r.Form["description"], ""))
+		data.SN = strings.TrimSpace(strings.Join(r.Form["sn"], ""))
 
 		object_class := []string{}
 		for _, oc := range strings.Split(data.ObjectClass, "\n") {
@@ -884,17 +918,34 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			dn := data.IdType + "=" + data.IdValue + "," + super_dn
 			req := ldap.NewAddRequest(dn, nil)
 			req.Attribute("objectclass", object_class)
+			// req.Attribute("mail", []string{data.IdValue})
+      /*
 			if data.StructuralObjectClass != "" {
 				req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
 			}
+      */
 			if data.DisplayName != "" {
 				req.Attribute("displayname", []string{data.DisplayName})
+			}
+			if data.GivenName != "" {
+				req.Attribute("givenname", []string{data.GivenName})
+			}
+			if data.Mail != "" {
+				req.Attribute("mail", []string{data.Mail})
+			}
+			if data.Member != "" {
+				req.Attribute("member", []string{data.Member})
+			}
+			if data.SN != "" {
+				req.Attribute("sn", []string{data.SN})
 			}
 			if data.Description != "" {
 				req.Attribute("description", []string{data.Description})
 			}
-
 			err := login.conn.Add(req)
+      log.Printf(fmt.Sprintf("899: %v",err))
+      log.Printf(fmt.Sprintf("899: %v",req))
+      log.Printf(fmt.Sprintf("899: %v",data))
 			if err != nil {
 				data.Error = err.Error()
 			} else {

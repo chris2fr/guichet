@@ -47,21 +47,42 @@
   </div>
   {{ if eq .Template "user" }}
     <div class="form-group">
-      <label for="displayname">Nom :</label>
+      <label for="displayname">Nom affiché :</label>
       <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
     </div>
-    <input type="hidden" name="description" value="" />
+    <div class="form-group">
+      <label for="mail">Email:</label>
+      <input type="text" id="mail" name="mail" class="form-control" value="{{ .Mail }}" />
+    </div>
+    <input type="hidden" name="mail" value="" />
+    <div class="form-group">
+      <label for="givenname">Prénom :</label>
+      <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" />
+    </div>
+    <input type="hidden" name="givenname" value="" />
+    <div class="form-group">
+      <label for="sn">Nom de Famille :</label>
+      <input type="text" id="sn" name="sn" class="form-control" value=" {{ .SN }}" />
+    </div>
+    <input type="hidden" name="sn" value="" />
   {{ else }}
     <div class="form-group">
       <label for="description">Description :</label>
       <input type="text" id="description" name="description" class="form-control" value="{{ .Description }}" />
     </div>
-    <input type="hidden" name="displayname" value="" />
+    <input type="hidden" name="description" value="" />
+    <div class="form-group">
+      <label for="member">Member :</label>
+      <input type="text" id="member" name="member" class="form-control" value="{{ .Member }}" />
+    </div>
+    <input type="hidden" name="member" value="" />
   {{ end }}
+  <!--
   <div class="form-group">
     <label for="soc">StructuralObjectClass :</label>
     <input type="text" {{if .Template}}disabled="disabled"{{end}} id="soc" name="soc" class="form-control" value="{{ .StructuralObjectClass }}" />
   </div>
+  -->
   <div class="form-group">
     <label for="oc">ObjectClass :</label>
     <textarea  rows="5" {{if .Template}}disabled="disabled"{{end}} id="oc" name="oc" class="form-control">{{ .ObjectClass }}</textarea>

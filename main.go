@@ -258,13 +258,14 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 			"givenname",
 			"sn",
 			"mail",
+      "cn",
 			"memberof",
 			"description",
 			"garage_s3_access_key",
-			FIELD_NAME_DIRECTORY_VISIBILITY,
-			FIELD_NAME_PROFILE_PICTURE,
 		},
 		nil)
+//			FIELD_NAME_DIRECTORY_VISIBILITY,
+//			FIELD_NAME_PROFILE_PICTURE,
 
 	sr, err := l.Search(searchRequest)
 	if err != nil {
