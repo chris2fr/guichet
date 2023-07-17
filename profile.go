@@ -81,9 +81,9 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	  //	}
 
 		err := login.conn.Modify(modify_request)
-    log.Printf(fmt.Sprintf("Profile:079: %v",modify_request))
-    log.Printf(fmt.Sprintf("Profile:079: %v",err))
-    log.Printf(fmt.Sprintf("Profile:079: %v",data))
+    // log.Printf(fmt.Sprintf("Profile:079: %v",modify_request))
+    // log.Printf(fmt.Sprintf("Profile:079: %v",err))
+    // log.Printf(fmt.Sprintf("Profile:079: %v",data))
 		if err != nil {
 			data.ErrorMessage = err.Error()
 		} else {
