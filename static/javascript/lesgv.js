@@ -1,8 +1,12 @@
-function addResDigitaOrgIdValue () {
-  inputTextEl = document.getElementById("idvalue");
-  value = inputTextEl.value;
-  value = value.split("@")[0];
-  inputTextEl.value = value + "@resdigita.org";
-  return value;
+function addResDigitaOrg (id) {
+  document.getElementById(id).value = document.getElementById(id).value.split("@")[0] + "@resdigita.org";
+  return document.getElementById(id).value;
 }
-document.getElementById("idvalue").addEventListener("change",addResDigitaOrgIdValue());
+function addResDigitaOrgIdValue () {
+  document.getElementById("mail").value = addResDigitaOrg("idvalue");
+}
+function addResDigitaOrgMail () {
+  document.getElementById("idvalue").value = addResDigitaOrg("mail");
+}
+document.getElementById("mail").addEventListener("change",addResDigitaOrgMail);
+document.getElementById("idvalue").addEventListener("change",addResDigitaOrgIdValue);
