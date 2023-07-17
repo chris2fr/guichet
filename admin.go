@@ -431,6 +431,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			Active:     dn == config.BaseDN,
 		},
 	}
+	log.Printf(fmt.Sprintf("434: %v",path))
 
 	len_base_dn := len(strings.Split(config.BaseDN, ","))
 	dn_split := strings.Split(dn, ",")
@@ -442,6 +443,8 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			Active:     i == len(dn_split),
 		})
 	}
+	log.Printf(fmt.Sprintf("446: %v",path))
+
 
 	// Handle modification operation
 	if r.Method == "POST" {
@@ -563,6 +566,8 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)
+	log.Printf(fmt.Sprintf("569: %v",searchRequest))
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -617,7 +622,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	}
 	hasMembers, hasGroups, isOrganization := false, false, false
 	for _, oc := range objectClass {
-		if strings.EqualFold(oc, "organizationalperson") || strings.EqualFold(oc, "person") {
+		if strings.EqualFold(oc, "organizationalPerson") || strings.EqualFold(oc, "person") || strings.EqualFold(oc, "inetOrgPerson") {
 			hasGroups = true
 		}
 		if strings.EqualFold(oc, "groupOfNames") {
@@ -682,59 +687,102 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Parse group list and prepare form section
-	groups_dn := []string{}
-	if gp, ok := props["memberof"]; ok {
-		groups_dn = gp.Values
-		delete(props, "memberof")
-	}
+	// // Parse group list and prepare form section
+	// groups_dn := []string{}
+	// if gp, ok := props["memberof"]; ok {
+	// 	groups_dn = gp.Values
+	// 	delete(props, "memberof")
+	// }
 
 	groups := []EntryName{}
 	possibleNewGroups := []EntryName{}
-	if len(groups_dn) > 0 || hasGroups {
-		// Lookup all existing groups in the server
-		// to know the DN -> display name correspondance
-		searchRequest = ldap.NewSearchRequest(
-			config.GroupBaseDN,
-			ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-			fmt.Sprintf("(objectClass=groupOfNames)"),
-			[]string{"dn", "description"},
-			nil)
-		sr, err = login.conn.Search(searchRequest)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		groupMap := make(map[string]string)
-		for _, ent := range sr.Entries {
-			groupMap[ent.DN] = ent.GetAttributeValue("displayname")
-			if groupMap[ent.DN] == "" {
-				groupMap[ent.DN] = ent.GetAttributeValue("description")
-			}
-		}
-
-		// Calculate list of current groups
-		for _, grpdn := range groups_dn {
-			groups = append(groups, EntryName{
-				DN:   grpdn,
-				Name: groupMap[grpdn],
-			})
-			delete(groupMap, grpdn)
-		}
-
-		// Calculate list of possible new groups
-		for dn, name := range groupMap {
-			entry := EntryName{
-				DN:   dn,
-				Name: name,
-			}
-			if entry.Name == "" {
-				entry.Name = entry.DN
-			}
-			possibleNewGroups = append(possibleNewGroups, entry)
-		}
+	searchRequest = ldap.NewSearchRequest(
+		config.GroupBaseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=groupOfNames)(member=%s))",dn),
+		[]string{"dn", "displayName", "cn", "description"},
+		nil)
+	log.Printf(fmt.Sprintf("708: %v",searchRequest))
+	sr, err = login.conn.Search(searchRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+	log.Printf(fmt.Sprintf("714: %v",sr.Entries))
+	for _, ent := range sr.Entries {
+		groups = append(groups, EntryName{
+			DN:   ent.DN,
+			Name: ent.GetAttributeValue("cn"),
+		})
+	}
+	searchRequest = ldap.NewSearchRequest(
+		config.GroupBaseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=groupOfNames)(!(member=%s)))",dn),
+		[]string{"dn", "displayName", "cn", "description"},
+		nil)
+	log.Printf(fmt.Sprintf("724: %v",searchRequest))
+	sr, err = login.conn.Search(searchRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	log.Printf(fmt.Sprintf("714: %v",sr.Entries))
+	for _, ent := range sr.Entries {
+		possibleNewGroups = append(possibleNewGroups, EntryName{
+			DN:   ent.DN,
+			Name: ent.GetAttributeValue("cn"),
+		})
+	}
+
+			// possibleNewGroup.DN = ent.GetAttributeValue("dn")
+			// possibleNewGroup.Name = ent.GetAttributeValue("cn")
+			// log.Printf(fmt.Sprintf("725: %v %v",dn, ent.GetAttributeValue("member")))
+			// for _, member := range ent   .GetAttributeValue("member") {
+			// // 	log.Printf(fmt.Sprintf("725: %v %v",dn, member))
+			// if ent.GetAttributeValue("member") == dn {
+			// 	groups = append(groups,possibleNewGroup,)
+			// 	possibleNewGroup.DN = ""
+			// 	possibleNewGroup.Name = ""
+			// }
+			// // }
+			// if possibleNewGroup.DN != "" {
+			//   possibleNewGroups = append(possibleNewGroups,possibleNewGroup,)
+			// 	possibleNewGroup = EntryName{}
+			// }
+			
+			// groupMap[.DN] = ent.GetAttributeValue("displayName")
+			// if groupMap[.DN] == "" {
+			// 	groupMap[.DN] = ent.GetAttributeValue("cn")
+			// }
+			// if groupMap[.DN] == "" {
+			// 	groupMap[.DN] = ent.GetAttributeValue("description")
+			// }
+		// }
+
+		// // Calculate list of current groups
+		// log.Printf(fmt.Sprintf("%v",groups_dn))
+		// for _, grpdn := range groups_dn {
+		// 	log.Printf(fmt.Sprintf("%v",grpdn))
+		// 	groups = append(groups, EntryName{
+		// 		DN:   grpdn,
+		// 		Name: groupMap[grpdn],
+		// 	})
+		// 	delete(groupMap, grpdn)
+		// }
+
+		// // Calculate list of possible new groups
+		// for dn, name := range groupMap {
+		// 	entry := EntryName{
+		// 		DN:   dn,
+		// 		Name: name,
+		// 	}
+		// 	if entry.Name == "" {
+		// 		entry.Name = entry.DN
+		// 	}
+		// 	possibleNewGroups = append(possibleNewGroups, entry)
+		// }
+	// }
 
 	// Get children
 	searchRequest = ldap.NewSearchRequest(
