@@ -25,6 +25,11 @@
   "group_can_admin": "gid=admin,ou=groups,dc=bottin,dc=eu",
   "group_can_invite": "",
 
+  "mailing_list_base_dn": "ou=mailings,dc=resdigita,dc=org",
+  "mailing_list_name_attr": "cn",
+  "mailing_list_guest_user_base_dn": ""
+
+
   "s3_admin_endpoint": "localhost:3903",
   "s3_admin_token": "GlXP43PWH3LuvEGSNxKYzZCyUss8VqZmarBU+HUlrxw=",
 

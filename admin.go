@@ -804,7 +804,7 @@ type CreateData struct {
 	DisplayName           string
 	GivenName             string
 	Member                string
-	Mail                string
+	Mail                  string
 	Description           string
 	StructuralObjectClass string
 	ObjectClass           string
