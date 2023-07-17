@@ -10,14 +10,14 @@
 
   "invitation_base_dn": "ou=invitations,dc=bottin,dc=eu",
   "invitation_name_attr": "cn",
-  "invited_mail_format": "{}@example.com",
+  "invited_mail_format": "{}@exemple.com",
   "invited_auto_groups": [
     "cn=email,ou=groups,dc=bottin,dc=eu"
   ],
 
   "web_address": "http://guichet.localhost:9991",
-  "mail_from": "welcome@example.com",
-  "smtp_server": "smtp.example.com",
+  "mail_from": "welcome@exemple.com",
+  "smtp_server": "smtp.exemple.com",
   "smtp_username": "guichet",
   "smtp_password": "",
 

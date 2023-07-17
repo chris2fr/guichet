@@ -1,6 +1,6 @@
 # Guichet
 
-[![Build Status](https://drone.deuxfleurs.fr/api/badges/Deuxfleurs/guichet/status.svg?ref=refs/heads/main)](https://drone.deuxfleurs.fr/Deuxfleurs/guichet)
+[![Build Status](https://drone.resdigita.org/api/badges/Deuxfleurs/guichet/status.svg?ref=refs/heads/main)](https://drone.resdigita.org/Deuxfleurs/guichet)
 
 Guichet is a simple LDAP web interface for the following tasks:
 
@@ -10,11 +10,11 @@ Guichet is a simple LDAP web interface for the following tasks:
 
 Guichet works well with the [Bottin](https://bottin.eu) LDAP server.
 Currently, Guichet's templates are only in French as it has been created for
-the [Deuxfleurs](https://deuxfleurs.fr) collective.
+the [Deuxfleurs](https://resdigita.org) collective.
 We would gladly merge a pull request with an English transaltion !
 
 A Docker image is provided on the [Docker hub](https://hub.docker.com/r/lxpz/guichet_amd64).
-An example for running Guichet on a Nomad cluster can be found in `guichet.hcl.example`.
+An exemple for running Guichet on a Nomad cluster can be found in `guichet.hcl.exemple`.
 
 Guichet takes a single command line argument, `-config <filename>`, which is the
 path to its config file (defaults to `./config.json`).
@@ -34,7 +34,7 @@ Then, run `make` in the root of the repo.
 ## Configuration of Guichet
 
 Guichet is configured using a simple JSON config file which is a dictionnary whose keys
-are described below. An example is provided in a further section.
+are described below. An exemple is provided in a further section.
 
 ### HTTP listen address
 
@@ -66,7 +66,7 @@ Invitation codes are created as temporary LDAP objects in a special folder.
 - `group_can_invite`: the LDAP DN of a group whose members are allowed to send invitations to new users
 - `invitation_base_dn`: the LDAP folder in which invitation codes are stored
 - `invitation_name_attr`: just use `cn`
-- `invited_mail_format`: automatically set the invited user's email to this string, where `{}` is replaced by the created username (ex: `{}@deuxfleurs.fr`)
+- `invited_mail_format`: automatically set the invited user's email to this string, where `{}` is replaced by the created username (ex: `{}@resdigita.org`)
 - `invited_auto_groups` (list of strings): a list of DNs of LDAP groups
 
 #### Email configuration
@@ -78,14 +78,14 @@ Guichet can send an invitation link by email. To do so, an SMTP server must be c
 - `mail_from`: the sender email address for the invitation message
 - `web_address`: the base web address of the Guichet service (used for building the invitation link)
 
-## Example configuration
+## exemple configuration
 
 This is a subset of the configuration we use on Deuxfleurs:
 
 ```
 {
   "http_bind_addr": ":9991",
-  "ldap_server_addr": "ldap://bottin2.service.2.cluster.deuxfleurs.fr:389",
+  "ldap_server_addr": "ldap://bottin2.service.2.cluster.resdigita.org:389",
 
   "base_dn": "dc=deuxfleurs,dc=fr",
   "user_base_dn": "ou=users,dc=deuxfleurs,dc=fr",
@@ -99,7 +99,7 @@ This is a subset of the configuration we use on Deuxfleurs:
 }
 ```
 
-Here is an example of Bottin ACLs that may be used to support Guichet invitations:
+Here is an exemple of Bottin ACLs that may be used to support Guichet invitations:
 
 ```
   "acl": [
@@ -127,5 +127,5 @@ Here is an example of Bottin ACLs that may be used to support Guichet invitation
   ]
 ```
 
-Consult [this directory](https://git.deuxfleurs.fr/Deuxfleurs/infrastructure/src/branch/main/app/directory/config)
+Consult [this directory](https://git.resdigita.org/Deuxfleurs/infrastructure/src/branch/main/app/directory/config)
 to view the full configuration in use on Deuxfleurs.

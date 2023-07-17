@@ -32,7 +32,7 @@
 
         meta = with pkgs.lib; {
           description = "A simple LDAP web interface for Bottin";
-          homepage = "https://git.deuxfleurs.fr/Deuxfleurs/guichet";
+          homepage = "https://git.resdigita.org/Deuxfleurs/guichet";
           license = licenses.gpl3Plus;
           platforms = platforms.linux;
         };

@@ -34,7 +34,7 @@
                 </tr>
                 <tr>
                     <th scope="row">Endpoint URL</th>
-                    <td>https://garage.deuxfleurs.fr</td>
+                    <td>https://garage.resdigita.org</td>
                 </tr>
                 <tr>
                     <th scope="row">Type d'URL</th>
@@ -66,7 +66,7 @@ export AWS_ACCESS_KEY_ID={{ .Key.AccessKeyId }}
 export AWS_SECRET_ACCESS_KEY={{ .Key.SecretAccessKey }}
 export AWS_DEFAULT_REGION='garage'
 
-function aws { command aws --endpoint-url https://garage.deuxfleurs.fr $@ ; }
+function aws { command aws --endpoint-url https://garage.resdigita.org $@ ; }
 aws --version
                         </pre>
                         <p>Ensuite vous pouvez utiliser awscli :</p>
@@ -96,7 +96,7 @@ aws s3 cp /tmp/a.txt s3://my-bucket
                         <pre>
 mc alias set \
   garage \
-  https://garage.deuxfleurs.fr \
+  https://garage.resdigita.org \
   {{ .Key.AccessKeyId }} \
   {{ .Key.SecretAccessKey }} \
   --api S3v4
@@ -140,7 +140,7 @@ mc cp /tmp/a.txt garage/my-bucket/a.txt
                         <p>Dans votre fichier <code>config.toml</code>, rajoutez :</p>
                         <pre>
 [[deployment.targets]]
- URL = "s3://bucket?endpoint=garage.deuxfleurs.fr&amp;s3ForcePathStyle=true&amp;region=garage"
+ URL = "s3://bucket?endpoint=garage.resdigita.org&amp;s3ForcePathStyle=true&amp;region=garage"
                         </pre>
                         <p>Assurez-vous d'avoir un fichier dans lequel les variables <code>AWS_ACCESS_KEY_ID</code> et <code>AWS_SECRET_ACCESS_KEY</code> sont définies,
                         ici on suppose que vous avez suivi les instructions de l'outil awscli (ci-dessus) et que vous avez un fichier <code>~/.awsrc</code> qui défini ces variables.
@@ -184,7 +184,7 @@ hugo deploy
                 </tr>
                 <tr>
                     <th scope="row">Hôte</th>
-                    <td>sftp://bagage.deuxfleurs.fr</td>
+                    <td>sftp://bagage.resdigita.org</td>
                 </tr>
                 <tr>
                     <th scope="row">Port</th>
@@ -207,7 +207,7 @@ hugo deploy
                     <div class="card-body">
                         <p>Un exemple avec SCP :</p>
                         <pre>
-scp -oHostKeyAlgorithms=+ssh-rsa -P2222 -r ./public {{ .Status.Info.Username }}@bagage.deuxfleurs.fr:mon_bucket/
+scp -oHostKeyAlgorithms=+ssh-rsa -P2222 -r ./public {{ .Status.Info.Username }}@bagage.resdigita.org:mon_bucket/
                         </pre>
                     </div>
                 </div>

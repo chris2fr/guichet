@@ -22,11 +22,11 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="bucket">Sous-domaine désiré :</label>
-                    <input type="text" id="bucket" name="bucket" placeholder="mon-site" class="form-control" value="" onkeyup="document.getElementById('url').value = `https://${document.getElementById('bucket').value}.web.deuxfleurs.fr`" />
+                    <input type="text" id="bucket" name="bucket" placeholder="mon-site" class="form-control" value="" onkeyup="document.getElementById('url').value = `https://${document.getElementById('bucket').value}.web.resdigita.org`" />
                 </div>
                 <div class="form-group col-md-6">
                     <label for="url">Votre site sera accessible à l'URL suivante :</label>
-                    <input type="text" id="url" disabled="true" name="url" class="form-control" value="https://mon-site.web.deuxfleurs.fr" />
+                    <input type="text" id="url" disabled="true" name="url" class="form-control" value="https://mon-site.web.resdigita.org" />
                 </div>
             </div>
             <div class="mt-4">
@@ -40,18 +40,18 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="bucket2">Votre nom de domaine :</label>
-                    <input type="text" id="bucket2" name="bucket2" placeholder="example.com" class="form-control" value="" onkeyup="document.getElementById('url2').value = `https://${document.getElementById('bucket2').value}`" />
+                    <input type="text" id="bucket2" name="bucket2" placeholder="exemple.com" class="form-control" value="" onkeyup="document.getElementById('url2').value = `https://${document.getElementById('bucket2').value}`" />
                 </div>
                 <div class="form-group col-md-6">
                     <label for="url2">Votre site sera accessible à l'URL suivante :</label>
-                    <input type="text" id="url2" disabled="true" name="url2" class="form-control" value="https://example.com" />
+                    <input type="text" id="url2" disabled="true" name="url2" class="form-control" value="https://exemple.com" />
                 </div>
             </div>
             <div>
-                <p>Vous devez éditer votre zone DNS, souvent gérée par votre bureau d'enregistrement, comme Gandi, pour la faire pointer vers Deuxfleurs. Si vous utilisez un sous domaine (eg. <code>site.example.com</code>), une entrée <code>CNAME</code> est appropriée :</p>
-                <pre>site   CNAME    3600    garage.deuxfleurs.fr.</pre>
-                <p>Si vous utilisez la racine de votre nom de domaine (eg. <code>example.com</code>, aussi appelée APEX), la solution dépend de votre fournisseur DNS, il vous faudra au choix une entrée <code>ALIAS</code> ou <code>CNAME</code> en fonction de ce que votre fournisseur supporte :</p>
-                <pre>@      ALIAS    3600    garage.deuxfleurs.fr.</pre>
+                <p>Vous devez éditer votre zone DNS, souvent gérée par votre bureau d'enregistrement, comme Gandi, pour la faire pointer vers Deuxfleurs. Si vous utilisez un sous domaine (eg. <code>site.exemple.com</code>), une entrée <code>CNAME</code> est appropriée :</p>
+                <pre>site   CNAME    3600    garage.resdigita.org.</pre>
+                <p>Si vous utilisez la racine de votre nom de domaine (eg. <code>exemple.com</code>, aussi appelée APEX), la solution dépend de votre fournisseur DNS, il vous faudra au choix une entrée <code>ALIAS</code> ou <code>CNAME</code> en fonction de ce que votre fournisseur supporte :</p>
+                <pre>@      ALIAS    3600    garage.resdigita.org.</pre>
                 <p>La première fois que vous chargerez votre site web, une erreur de certificat sera renvoyée. C'est normal, il faudra patienter quelques minutes le temps que le certificat se génère.</p>
             </div>
             <div class="mt-4">

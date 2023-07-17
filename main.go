@@ -84,7 +84,7 @@ func readConfig() ConfigFile {
 
 	_, err := os.Stat(*configFlag)
 	if os.IsNotExist(err) {
-		log.Fatalf("Could not find Guichet configuration file at %s. Please create this file, for example starting with config.json.example and customizing it for your deployment.", *configFlag)
+		log.Fatalf("Could not find Guichet configuration file at %s. Please create this file, for exemple starting with config.json.exemple and customizing it for your deployment.", *configFlag)
 	}
 
 	if err != nil {

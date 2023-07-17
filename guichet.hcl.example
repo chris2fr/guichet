@@ -40,7 +40,7 @@ job "guichet" {
 			"guichet",
 			"traefik.enable=true",
 			  "traefik.frontend.entryPoints=https,http",
-			  "traefik.frontend.rule=Host:guichet.deuxfleurs.fr,guichet.deuxfleurs.org",
+			  "traefik.frontend.rule=Host:guichet.resdigita.org,guichet.deuxfleurs.org",
 		]
         port = "web_port"
         address_mode = "host"
