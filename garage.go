@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	garage "git.resdigita.org/garage-sdk/garage-admin-sdk-golang"
+	garage "git.deuxfleurs.fr/garage-sdk/garage-admin-sdk-golang"
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
 	"log"

@@ -1,9 +1,9 @@
-module git.resdigita.org/Deuxfleurs/guichet
+module git.deuxfleurs.fr/Deuxfleurs/guichet
 
 go 1.18
 
 require (
-	git.resdigita.org/garage-sdk/garage-admin-sdk-golang v0.0.0-20230131081355-c965fe7f7dc9
+	git.deuxfleurs.fr/garage-sdk/garage-admin-sdk-golang v0.0.0-20230131081355-c965fe7f7dc9
 	github.com/emersion/go-sasl v0.0.0-20191210011802-430746ea8b9b
 	github.com/emersion/go-smtp v0.12.1
 	github.com/go-ldap/ldap/v3 v3.1.6
