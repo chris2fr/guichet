@@ -16,8 +16,12 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item list-group-item-action" href="/profile">Modifier mon profil</a>
             <a class="list-group-item list-group-item-action" href="/passwd">Modifier mon mot de passe</a>
+            <!--
             <a class="list-group-item list-group-item-action" href="/directory">Annuaire</a>
-        </div>
+            -->
+            <a class="list-group-item list-group-item-action" href="/SOGo">Accéder à mes curriels, mon agenda et à mes contacts</a>
+            <a class="list-group-item list-group-item-action" href="https://www.lesgrandsvoisins.com">Accéder au numérique des Grands Voisins .com</a>
+          </div>
     </div>
 </div>
 <!--
@@ -36,7 +40,7 @@
 {{if .Login.CanInvite}}
 <div class="card mt-3">
   <div class="card-header">
-    Inviter des gens sur Deuxfleurs
+    Inviter des gens sur {{.Org}}
   </div>
   <div class="list-group list-group-flush">
     <a class="list-group-item list-group-item-action" href="/invite/send_code">Envoyer un code d'invitation</a>
