@@ -56,6 +56,8 @@ type ConfigFile struct {
 	S3SecretKey string `json:"s3_secret_key"`
 	S3Region    string `json:"s3_region"`
 	S3Bucket    string `json:"s3_bucket"`
+
+  Org string `json:"org"`
 }
 
 var configFlag = flag.String("config", "./config.json", "Configuration file path")
@@ -80,6 +82,8 @@ func readConfig() ConfigFile {
 
 		InvitationNameAttr: "cn",
 		InvitedAutoGroups:  []string{},
+
+    Org: "ResDigita",
 	}
 
 	_, err := os.Stat(*configFlag)
@@ -321,6 +325,7 @@ func ldapOpen(w http.ResponseWriter) *ldap.Conn {
 type HomePageData struct {
 	Login  *LoginStatus
 	BaseDN string
+  Org string
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
