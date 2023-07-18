@@ -3,8 +3,6 @@ package main
 import (
 	"net/http"
 	"strings"
-  "log"
-  "fmt"
 
 	"github.com/go-ldap/ldap/v3"
 )

@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-  "log"
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
