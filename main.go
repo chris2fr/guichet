@@ -334,7 +334,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 	data := &HomePageData{
 		Login:  login,
 		BaseDN: config.BaseDN,
-		Org: config.Org
+		Org: config.Org,
 	}
 
 	templateHome.Execute(w, data)
