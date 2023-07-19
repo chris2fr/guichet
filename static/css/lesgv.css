@@ -1,0 +1,50 @@
+:root {
+  --color-lesartsvoisins: #f0494d;
+}
+body {
+  font-family: fengardoneue;
+  color: var(--color-text);
+  background-color: var(--color-background);
+}
+a {
+  color: var(--color-link);
+}
+h1, h2, h3, h4, h5, h6, nav {
+  font-family: lack;
+  clear: both;
+}
+hr {
+  border-style: none;
+  border-bottom: 1px solid var(--color-text);
+}
+button.toggle-darkmode {
+  position: fixed;
+  top: 0;
+  left:0;
+  z-index: 300;
+}
+
+img.richtext-image.full-width {
+  max-width: 100%;
+  height: auto;
+}
+img.richtext-image.left {
+  max-width: 50%;
+  float: left;
+  padding: 0 1rem 0 0 ;
+  height: auto;
+}
+img.richtext-image.right {
+  max-width: 50%;
+  float: right;
+  padding: 0 0 0 1rem ;
+  height: auto;
+}
+a:hover {
+  color: var(--color-link-hover);
+}
+
+image.lesgv .logo {
+  margin: 0 auto;
+  max-height: 35vh;
+}

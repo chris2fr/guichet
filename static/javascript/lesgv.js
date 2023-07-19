@@ -1,5 +1,5 @@
 function addResDigitaOrg (id) {
-  document.getElementById(id).value = document.getElementById(id).value.split("@")[0] + "@resdigita.org";
+  document.getElementById(id).value = document.getElementById(id).value.split("@")[0] + "@resdigita.com";
   return document.getElementById(id).value;
 }
 function addResDigitaOrgIdValue () {
