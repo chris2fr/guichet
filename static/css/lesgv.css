@@ -44,7 +44,7 @@ a:hover {
   color: var(--color-link-hover);
 }
 
-image.lesgv .logo {
+img.lesgv.hero {
   margin: 0 auto;
   max-height: 35vh;
 }
