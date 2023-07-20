@@ -135,7 +135,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
 
-		if password1 == password2 {
+		if password1 != password2 {
 			data.Success = false
 			data.ErrorPasswordMismatch = true
 		} else {
