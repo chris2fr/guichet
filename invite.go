@@ -62,7 +62,7 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
-	err := l.Bind(inviteDn, code_pw)
+	err := login.conn.Bind(inviteDn, code_pw)
 	if err != nil {
 		templateInviteInvalidCode := getTemplate("invite_invalid_code.html")
 		templateInviteInvalidCode.Execute(w, nil)
