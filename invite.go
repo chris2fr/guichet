@@ -123,6 +123,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		r.ParseForm()
 
 		newUser := NewUser{}
+		login := checkLogin(w, r)
 
 		newUser.CN = strings.TrimSpace(strings.Join(r.Form["username"], "@lesgv.com"))
 		newUser.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
@@ -134,7 +135,15 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
 
-		tryCreateAccount(l, data, password1, password2, invitedBy)
+		if password1 == password2 {
+			data.Success = false
+			data.ErrorPasswordMismatch = true
+		} else {
+			newUser.Password = password2
+			addNewUser(newUser, config, login)
+		}
+
+		// tryCreateAccount(l, data, password1, password2, invitedBy)
 	}
 
 	templateInviteNewAccount.Execute(w, data)
