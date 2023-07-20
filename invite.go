@@ -104,6 +104,7 @@ type NewAccountData struct {
 	GivenName   string
 	Surname     string
 	Mail        string
+	SuggestPW   string
 
 	ErrorUsernameTaken    bool
 	ErrorInvalidUsername  bool
@@ -147,6 +148,8 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 
 		// tryCreateAccount(l, data, password1, password2, invitedBy)
 
+	} else {
+		data.SuggestPW = suggestPassword()
 	}
 
 	templateInviteNewAccount.Execute(w, data)

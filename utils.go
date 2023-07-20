@@ -8,7 +8,7 @@ import (
 	// "bytes"
 	// "crypto/rand"
 	// "encoding/binary"
-	// "encoding/hex"
+	"encoding/hex"
 	// "fmt"
 	// "html/template"
 	// "log"
@@ -41,6 +41,11 @@ func openLdap(config ConfigFile) *ldap.Conn {
 	} else {
 		return l
 	}
+}
+
+func suggestPassword() string {
+	random := make([]byte, 32)
+	return hex.EncodeToString(random[0:4])
 }
 
 func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {

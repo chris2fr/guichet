@@ -62,6 +62,7 @@
     <label for="surname">Nom de famille :</label>
     <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
   </div>
+  <a href="#" onclick="javascript:document.getElementById('password').value='{{ .SuggestPW }}';document.getElementById('password2').value='{{ .SuggestPW }}';">Utiliser ce mot de passe :</a> <tt>{{ .SuggestPW }}</tt>
   <div class="form-group">
     <label for="password">Mot de passe :</label>
     <input type="password" id="password" name="password" class="form-control" />
