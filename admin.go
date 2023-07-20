@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
 )
@@ -21,7 +20,6 @@ func checkAdminLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		http.Error(w, "Not authorized to perform administrative operations.", http.StatusUnauthorized)
 		return nil
 	}
-
 	return login
 }
 
@@ -58,7 +56,7 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 		config.UserBaseDN,
 		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=organizationalPerson))"),
-		[]string{config.UserNameAttr, "dn", "displayname", "givenname", "sn", "mail"},
+		[]string{config.UserNameAttr, "dn", "displayName", "givenName", "sn", "mail", "uid", "cn"},
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)

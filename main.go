@@ -160,7 +160,7 @@ func main() {
 	staticfiles := http.FileServer(http.Dir(staticPath))
 	r.Handle("/static/{file:.*}", http.StripPrefix("/static/", staticfiles))
 
-	log.Printf("Starting HTTP server on %s", config.HttpBindAddr)
+	// log.Printf("Starting HTTP server on %s", config.HttpBindAddr)
 	err = http.ListenAndServe(config.HttpBindAddr, logRequest(r))
 	if err != nil {
 		log.Fatal("Cannot start http server: ", err)
@@ -194,7 +194,7 @@ func (login *LoginStatus) WelcomeName() string {
 
 func logRequest(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
+		// log.Printf("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 		handler.ServeHTTP(w, r)
 	})
 }
@@ -286,18 +286,51 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 	loginStatus.CanAdmin = strings.EqualFold(loginStatus.Info.DN, config.AdminAccount)
 	loginStatus.CanInvite = false
-	for _, attr := range loginStatus.UserEntry.Attributes {
-		if strings.EqualFold(attr.Name, "memberof") {
-			for _, group := range attr.Values {
-				if config.GroupCanInvite != "" && strings.EqualFold(group, config.GroupCanInvite) {
-					loginStatus.CanInvite = true
-				}
-				if config.GroupCanAdmin != "" && strings.EqualFold(group, config.GroupCanAdmin) {
-					loginStatus.CanAdmin = true
-				}
-			}
+
+	groups := []EntryName{}
+	searchRequest = ldap.NewSearchRequest(
+		config.GroupBaseDN,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=groupOfNames)(member=%s))",login_info.DN),
+		[]string{"dn", "displayName", "cn", "description"},
+		nil)
+	// // log.Printf(fmt.Sprintf("708: %v",searchRequest))
+	sr, err = l.Search(searchRequest)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+  //// log.Printf(fmt.Sprintf("303: %v",sr.Entries))
+	for _, ent := range sr.Entries {
+		// log.Printf(fmt.Sprintf("305: %v",ent.DN))
+		groups = append(groups, EntryName{
+			DN:   ent.DN,
+			Name: ent.GetAttributeValue("cn"),
+		})
+		// log.Printf(fmt.Sprintf("310: %v",config.GroupCanInvite))
+		if config.GroupCanInvite != "" && strings.EqualFold(ent.DN, config.GroupCanInvite) {
+			loginStatus.CanInvite = true
+		}
+		// log.Printf(fmt.Sprintf("314: %v",config.GroupCanAdmin))
+		if config.GroupCanAdmin != "" && strings.EqualFold(ent.DN, config.GroupCanAdmin) {
+			loginStatus.CanAdmin = true
 		}
 	}
+
+
+
+	// for _, attr := range loginStatus.UserEntry.Attributes {
+	// 	if strings.EqualFold(attr.Name, "memberof") {
+	// 		for _, group := range attr.Values {
+	// 			if config.GroupCanInvite != "" && strings.EqualFold(group, config.GroupCanInvite) {
+	// 				loginStatus.CanInvite = true
+	// 			}
+	// 			if config.GroupCanAdmin != "" && strings.EqualFold(group, config.GroupCanAdmin) {
+	// 				loginStatus.CanAdmin = true
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	return loginStatus
 }

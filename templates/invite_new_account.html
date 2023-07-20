@@ -62,13 +62,8 @@
           Les deux mots de passe entrés ne correspondent pas.
         </div>
       {{end}}
-
-      <h5>Renseignements optionnels</h5>
-      <small class="form-text text-muted">
-        Ces informations sont utilisées exclusivement pour "pré-configurer" les services que vous utiliserez, elles n'ont pas besoin de correspondre à votre état civil.
-      </small>
       <div class="form-group">
-        <label for="displayname">Nom complet :</label>
+        <label for="displayname">Nom affiché :</label>
         <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
       </div>
       <div class="form-group">
