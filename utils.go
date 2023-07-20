@@ -68,9 +68,9 @@ func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {
 		req.Attribute("description", []string{newUser.Description})
 	}
 	err := login.conn.Add(req)
-	// log.Printf(fmt.Sprintf("71: %v",err))
-	// log.Printf(fmt.Sprintf("72: %v",req))
-	// log.Printf(fmt.Sprintf("73: %v",newUser))
+	log.Printf(fmt.Sprintf("71: %v", err))
+	log.Printf(fmt.Sprintf("72: %v", req))
+	log.Printf(fmt.Sprintf("73: %v", newUser))
 	if err != nil {
 		log.Printf(fmt.Sprintf("75: %v", err))
 		return false
