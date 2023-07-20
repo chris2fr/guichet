@@ -42,7 +42,7 @@ func openLdap(config ConfigFile) *ldap.Conn {
 	}
 }
 
-func addNewUser(newUser NewUser, config ConfigFile, login LoginStatus) bool {
+func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {
 	log.Printf(fmt.Sprint("Adding New User"))
 	// l := openLdap(config)
 	// l.Bind(config.)
