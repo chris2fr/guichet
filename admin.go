@@ -970,7 +970,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			data.Error = "No identifier specified"
 		} else {
 			newUser = NewUser{
-				DN: data.IdType + "=" + data.IdValue + "," + super_dn
+				DN: data.IdType + "=" + data.IdValue + "," + super_dn,
 			}
 			// dn := data.IdType + "=" + data.IdValue + "," + super_dn
 			// req := ldap.NewAddRequest(dn, nil)
@@ -981,21 +981,16 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 					req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
 				}
 			*/
-			if data.CN && data.CN != "" {
-				newUser.CN = data.CN			}
-			if data.UID && data.UID != "" {
-				newUser.UID = data.UID
-			}
 			if data.Mail != "" {
 				newUser.Mail = data.Mail
 				// req.Attribute("mail", []string{data.Mail})
 			}
-			if (data.IdType == "cn") {
-				newUser.CN = data.CN	
-			} else if (data.IdType == "mail") {
-				newUser.Mail = data.Mail	
-			} else if (data.IdType == "uid") {
-				newUser.UID = data.UID	
+			if data.IdType == "cn" {
+				newUser.CN = data.IdValue
+			} else if data.IdType == "mail" {
+				newUser.Mail = data.IdValue
+			} else if data.IdType == "uid" {
+				newUser.UID = data.IdValue
 			}
 
 			if data.DisplayName != "" {
@@ -1028,13 +1023,13 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			// if err != nil {
 			// 	data.Error = err.Error()
 			// } else {
-				if template == "ml" {
-					http.Redirect(w, r, "/admin/mailing/"+data.IdValue, http.StatusFound)
-				} else {
-					http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
-				}
+			if template == "ml" {
+				http.Redirect(w, r, "/admin/mailing/"+data.IdValue, http.StatusFound)
+			} else {
+				http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
+			}
 			// }
-		// }
+		}
 	}
 
 	templateAdminCreate.Execute(w, data)
