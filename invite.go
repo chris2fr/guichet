@@ -60,7 +60,7 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
-	err := l.Bind(inviteDn, code_pw)
+	// err := l.Bind(inviteDn, code_pw)
 	if err != nil {
 		templateInviteInvalidCode := getTemplate("invite_invalid_code.html")
 		templateInviteInvalidCode.Execute(w, nil)
@@ -73,7 +73,7 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 		fmt.Sprintf("(objectclass=*)"),
 		[]string{"dn", "creatorsname"},
 		nil)
-	sr, err := l.Search(sReq)
+	sr, err := login.conn.Search(sReq)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -85,9 +85,9 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 
 	invitedBy := sr.Entries[0].GetAttributeValue("creatorsname")
 
-	if handleNewAccount(w, r, l, invitedBy) {
+	if handleNewAccount(w, r, login.conn, invitedBy) {
 		del_req := ldap.NewDelRequest(inviteDn, nil)
-		err = l.Del(del_req)
+		err = login.conn.Del(del_req)
 		if err != nil {
 			log.Printf("Could not delete invitation %s: %s", inviteDn, err)
 		}
