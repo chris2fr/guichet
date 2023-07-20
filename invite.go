@@ -52,6 +52,8 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["code"]
 	code_id, code_pw := readCode(code)
 
+	log.Printf(code_pw)
+
 	login := checkLogin(w, r)
 
 	// l := ldapOpen(w)
