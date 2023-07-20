@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
 )
@@ -72,6 +73,13 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 		Users:        EntryList(sr.Entries),
 	}
 	sort.Sort(data.Users)
+
+	addNewUser(NewUser{CN: "newuser@lesgv.com",
+		GivenName:   "New",
+		SN:          "User",
+		DisplayName: "New User",
+		Mail:        "newuser@lesgv.com",
+	})
 
 	templateAdminUsers.Execute(w, data)
 }
@@ -192,7 +200,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 			modify_request.Add("member", []string{member})
 
 			err := login.conn.Modify(modify_request)
-      // log.Printf(fmt.Sprintf("198: %v",modify_request))
+			// log.Printf(fmt.Sprintf("198: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -221,7 +229,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 						req := ldap.NewAddRequest(guestDn, nil)
 						//req.Attribute("objectclass", []string{"inetOrgPerson", "organizationalPerson", "person", "top"})
 						req.Attribute("objectclass", []string{"inetOrgPerson"})
-						req.Attribute("mail", []string{fmt.Sprintf("%s",mail)})
+						req.Attribute("mail", []string{fmt.Sprintf("%s", mail)})
 						if givenname != "" {
 							req.Attribute("givenname", []string{givenname})
 						}
@@ -234,7 +242,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 						if sn != "" {
 							req.Attribute("sn", []string{sn})
 						}
-            // log.Printf(fmt.Sprintf("226: %v",req))
+						// log.Printf(fmt.Sprintf("226: %v",req))
 						err := login.conn.Add(req)
 						if err != nil {
 							dError = err.Error()
@@ -243,7 +251,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 							modify_request.Add("member", []string{guestDn})
 
 							err := login.conn.Modify(modify_request)
-              // log.Printf(fmt.Sprintf("249: %v",modify_request))
+							// log.Printf(fmt.Sprintf("249: %v",modify_request))
 							if err != nil {
 								dError = err.Error()
 							} else {
@@ -258,7 +266,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 					modify_request.Add("member", []string{sr.Entries[0].DN})
 
 					err := login.conn.Modify(modify_request)
-              // log.Printf(fmt.Sprintf("264: %v",modify_request))
+					// log.Printf(fmt.Sprintf("264: %v",modify_request))
 					if err != nil {
 						dError = err.Error()
 					} else {
@@ -274,7 +282,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 			modify_request.Delete("member", []string{member})
 
 			err := login.conn.Modify(modify_request)
-              // log.Printf(fmt.Sprintf("280: %v",modify_request))
+			// log.Printf(fmt.Sprintf("280: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -442,7 +450,6 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	}
 	// log.Printf(fmt.Sprintf("446: %v",path))
 
-
 	// Handle modification operation
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -465,7 +472,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 				modify_request.Replace(attr, values_filtered)
 
 				err := login.conn.Modify(modify_request)
-              // log.Printf(fmt.Sprintf("468: %v",modify_request))
+				// log.Printf(fmt.Sprintf("468: %v",modify_request))
 				if err != nil {
 					dError = err.Error()
 				} else {
@@ -487,7 +494,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Add(attr, values_filtered)
 
 			err := login.conn.Modify(modify_request)
-              // log.Printf(fmt.Sprintf("490: %v",modify_request))
+			// log.Printf(fmt.Sprintf("490: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -500,7 +507,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Replace(attr, []string{})
 
 			err := login.conn.Modify(modify_request)
-              // log.Printf(fmt.Sprintf("503: %v",modify_request))
+			// log.Printf(fmt.Sprintf("503: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -512,7 +519,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Delete("member", []string{dn})
 
 			err := login.conn.Modify(modify_request)
-              // log.Printf(fmt.Sprintf("515: %v",modify_request))
+			// log.Printf(fmt.Sprintf("515: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -524,7 +531,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Add("member", []string{dn})
 
 			err := login.conn.Modify(modify_request)
-              // log.Printf(fmt.Sprintf("527: %v",modify_request))
+			// log.Printf(fmt.Sprintf("527: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -536,7 +543,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			modify_request.Delete("member", []string{member})
 
 			err := login.conn.Modify(modify_request)
-              // log.Printf(fmt.Sprintf("539: %v",modify_request))
+			// log.Printf(fmt.Sprintf("539: %v",modify_request))
 			if err != nil {
 				dError = err.Error()
 			} else {
@@ -696,7 +703,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	searchRequest = ldap.NewSearchRequest(
 		config.GroupBaseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf("(&(objectClass=groupOfNames)(member=%s))",dn),
+		fmt.Sprintf("(&(objectClass=groupOfNames)(member=%s))", dn),
 		[]string{"dn", "displayName", "cn", "description"},
 		nil)
 	// log.Printf(fmt.Sprintf("708: %v",searchRequest))
@@ -715,7 +722,7 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	searchRequest = ldap.NewSearchRequest(
 		config.GroupBaseDN,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf("(&(objectClass=groupOfNames)(!(member=%s)))",dn),
+		fmt.Sprintf("(&(objectClass=groupOfNames)(!(member=%s)))", dn),
 		[]string{"dn", "displayName", "cn", "description"},
 		nil)
 	// log.Printf(fmt.Sprintf("724: %v",searchRequest))
@@ -732,53 +739,53 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-			// possibleNewGroup.DN = ent.GetAttributeValue("dn")
-			// possibleNewGroup.Name = ent.GetAttributeValue("cn")
-			// // log.Printf(fmt.Sprintf("725: %v %v",dn, ent.GetAttributeValue("member")))
-			// for _, member := range ent   .GetAttributeValue("member") {
-			// // 	// log.Printf(fmt.Sprintf("725: %v %v",dn, member))
-			// if ent.GetAttributeValue("member") == dn {
-			// 	groups = append(groups,possibleNewGroup,)
-			// 	possibleNewGroup.DN = ""
-			// 	possibleNewGroup.Name = ""
-			// }
-			// // }
-			// if possibleNewGroup.DN != "" {
-			//   possibleNewGroups = append(possibleNewGroups,possibleNewGroup,)
-			// 	possibleNewGroup = EntryName{}
-			// }
-			
-			// groupMap[.DN] = ent.GetAttributeValue("displayName")
-			// if groupMap[.DN] == "" {
-			// 	groupMap[.DN] = ent.GetAttributeValue("cn")
-			// }
-			// if groupMap[.DN] == "" {
-			// 	groupMap[.DN] = ent.GetAttributeValue("description")
-			// }
-		// }
+	// possibleNewGroup.DN = ent.GetAttributeValue("dn")
+	// possibleNewGroup.Name = ent.GetAttributeValue("cn")
+	// // log.Printf(fmt.Sprintf("725: %v %v",dn, ent.GetAttributeValue("member")))
+	// for _, member := range ent   .GetAttributeValue("member") {
+	// // 	// log.Printf(fmt.Sprintf("725: %v %v",dn, member))
+	// if ent.GetAttributeValue("member") == dn {
+	// 	groups = append(groups,possibleNewGroup,)
+	// 	possibleNewGroup.DN = ""
+	// 	possibleNewGroup.Name = ""
+	// }
+	// // }
+	// if possibleNewGroup.DN != "" {
+	//   possibleNewGroups = append(possibleNewGroups,possibleNewGroup,)
+	// 	possibleNewGroup = EntryName{}
+	// }
 
-		// // Calculate list of current groups
-		// // log.Printf(fmt.Sprintf("%v",groups_dn))
-		// for _, grpdn := range groups_dn {
-		// 	// log.Printf(fmt.Sprintf("%v",grpdn))
-		// 	groups = append(groups, EntryName{
-		// 		DN:   grpdn,
-		// 		Name: groupMap[grpdn],
-		// 	})
-		// 	delete(groupMap, grpdn)
-		// }
+	// groupMap[.DN] = ent.GetAttributeValue("displayName")
+	// if groupMap[.DN] == "" {
+	// 	groupMap[.DN] = ent.GetAttributeValue("cn")
+	// }
+	// if groupMap[.DN] == "" {
+	// 	groupMap[.DN] = ent.GetAttributeValue("description")
+	// }
+	// }
 
-		// // Calculate list of possible new groups
-		// for dn, name := range groupMap {
-		// 	entry := EntryName{
-		// 		DN:   dn,
-		// 		Name: name,
-		// 	}
-		// 	if entry.Name == "" {
-		// 		entry.Name = entry.DN
-		// 	}
-		// 	possibleNewGroups = append(possibleNewGroups, entry)
-		// }
+	// // Calculate list of current groups
+	// // log.Printf(fmt.Sprintf("%v",groups_dn))
+	// for _, grpdn := range groups_dn {
+	// 	// log.Printf(fmt.Sprintf("%v",grpdn))
+	// 	groups = append(groups, EntryName{
+	// 		DN:   grpdn,
+	// 		Name: groupMap[grpdn],
+	// 	})
+	// 	delete(groupMap, grpdn)
+	// }
+
+	// // Calculate list of possible new groups
+	// for dn, name := range groupMap {
+	// 	entry := EntryName{
+	// 		DN:   dn,
+	// 		Name: name,
+	// 	}
+	// 	if entry.Name == "" {
+	// 		entry.Name = entry.DN
+	// 	}
+	// 	possibleNewGroups = append(possibleNewGroups, entry)
+	// }
 	// }
 
 	// Get children
@@ -919,7 +926,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		data.IdType = config.UserNameAttr
 		data.StructuralObjectClass = "groupOfNames"
 		data.ObjectClass = "groupOfNames\ntop"
-    data.Member = "cn=sogo@resdigita.org,ou=users,dc=resdigita,dc=org"
+		data.Member = "cn=sogo@resdigita.org,ou=users,dc=resdigita,dc=org"
 	} else if template == "ou" {
 		data.IdType = "ou"
 		data.StructuralObjectClass = "organizationalUnit"
@@ -964,11 +971,11 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			req := ldap.NewAddRequest(dn, nil)
 			req.Attribute("objectclass", object_class)
 			// req.Attribute("mail", []string{data.IdValue})
-      /*
-			if data.StructuralObjectClass != "" {
-				req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
-			}
-      */
+			/*
+				if data.StructuralObjectClass != "" {
+					req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
+				}
+			*/
 			if data.DisplayName != "" {
 				req.Attribute("displayname", []string{data.DisplayName})
 			}
@@ -988,9 +995,9 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 				req.Attribute("description", []string{data.Description})
 			}
 			err := login.conn.Add(req)
-      // log.Printf(fmt.Sprintf("899: %v",err))
-      // log.Printf(fmt.Sprintf("899: %v",req))
-      // log.Printf(fmt.Sprintf("899: %v",data))
+			// log.Printf(fmt.Sprintf("899: %v",err))
+			// log.Printf(fmt.Sprintf("899: %v",req))
+			// log.Printf(fmt.Sprintf("899: %v",data))
 			if err != nil {
 				data.Error = err.Error()
 			} else {
