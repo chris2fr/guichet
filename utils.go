@@ -7,7 +7,7 @@ import (
 	"github.com/go-ldap/ldap/v3"
 	// "bytes"
 	// "crypto/rand"
-	"encoding/binary"
+
 	// "encoding/hex"
 	// "fmt"
 	// "html/template"
@@ -19,6 +19,7 @@ import (
 	// "github.com/emersion/go-smtp"
 	// "github.com/gorilla/mux"
 	// "golang.org/x/crypto/argon2"
+	"github.com/sethvargo/go-password/password"
 )
 
 type NewUser struct {
@@ -43,9 +44,12 @@ func openLdap(config ConfigFile) *ldap.Conn {
 	}
 }
 
-func suggestPassword() uint32 {
-	random := make([]byte, 32)
-	return binary.BigEndian.Uint32(random[0:12])
+func suggestPassword() string {
+	res, err := password.Generate(10, 2, 2, false, false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return res
 }
 
 func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {
