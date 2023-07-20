@@ -19,7 +19,7 @@ import (
 	// "github.com/emersion/go-smtp"
 	// "github.com/gorilla/mux"
 	// "golang.org/x/crypto/argon2"
-	"github.com/sethvargo/go-password/password"
+	"math/rand"
 )
 
 type NewUser struct {
@@ -45,11 +45,12 @@ func openLdap(config ConfigFile) *ldap.Conn {
 }
 
 func suggestPassword() string {
-	res, err := password.Generate(10, 2, 2, false, false)
-	if err != nil {
-		log.Fatal(err)
+	password := ""
+	chars := "abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*+_-="
+	for i := 0; i < 12; i++ {
+		password += string([]rune(chars)[rand.Intn(len(chars))])
 	}
-	return res
+	return password
 }
 
 func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {
