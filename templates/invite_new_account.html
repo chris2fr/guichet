@@ -62,7 +62,7 @@
     <label for="surname">Nom de famille :</label>
     <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
   </div>
-  <p><a href="#" onClick="javascript:var suggestPW = Math.random().toString(36).slice(-10); document.getElementById('password').value='{{ .SuggestPW }}';document.getElementById('password2').value='{{ .SuggestPW }}';">Générer un mot de passe :</a> <pre id="suggestPW">{{ .SuggestPW }}</pre></p>
+  <p><a href="#" onClick="javascript:var suggestPW = Math.random().toString(36).slice(-10); document.getElementById('password').value='{{ .SuggestPW }}';document.getElementById('password2').value='{{ .SuggestPW }}';">Utiliser ce mot de passe :</a> <tt id="suggestPW">{{ .SuggestPW }}</tt></p>
   <div class="form-group">
     <label for="password">Mot de passe :</label>
     <input type="password" id="password" name="password" class="form-control" />
