@@ -142,9 +142,11 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		} else {
 			newUser.Password = password2
 			data.Success = addNewUser(newUser, config, login)
+			http.Redirect(w, r, "/admin/ldap/"+newUser.DN, http.StatusFound)
 		}
 
 		// tryCreateAccount(l, data, password1, password2, invitedBy)
+
 	}
 
 	templateInviteNewAccount.Execute(w, data)

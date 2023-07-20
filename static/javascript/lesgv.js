@@ -10,4 +10,17 @@ function addResDigitaOrgIdValue () {
 function addResDigitaOrgMail () {
   document.getElementById("idvalue").value = addResDigitaOrg("mail");
 }
-document.getElementById("idvalue").addEventListener("change",addResDigitaOrgIdValue);
+let idvalueInput = document.querySelector("#idvalue");
+if (idvalueInput != null) {
+  idvalueInput.addEventListener("change",addResDigitaOrgIdValue);
+}
+
+
+function changeUsername () {
+   username = document.getElementById("username");
+   calcCn = document.getElementById("calc-cn");
+  calcCn.innerText = "Login Name et Courriel seront : " + username.value.split("@")[0] + "@lesgv.com";
+}
+if (document.getElementById("username") != null) {
+  document.getElementById("username").addEventListener("change",changeUsername);
+}
