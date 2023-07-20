@@ -103,6 +103,7 @@ type NewAccountData struct {
 	DisplayName string
 	GivenName   string
 	Surname     string
+	Mail        string
 
 	ErrorUsernameTaken    bool
 	ErrorInvalidUsername  bool
