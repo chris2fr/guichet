@@ -7,8 +7,8 @@ import (
 	"github.com/go-ldap/ldap/v3"
 	// "bytes"
 	// "crypto/rand"
-	// "encoding/binary"
-	"encoding/hex"
+	"encoding/binary"
+	// "encoding/hex"
 	// "fmt"
 	// "html/template"
 	// "log"
@@ -43,9 +43,9 @@ func openLdap(config ConfigFile) *ldap.Conn {
 	}
 }
 
-func suggestPassword() string {
+func suggestPassword() uint32 {
 	random := make([]byte, 32)
-	return hex.EncodeToString(random[0:4])
+	return binary.BigEndian.Uint32(random[0:12])
 }
 
 func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {
