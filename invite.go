@@ -52,7 +52,7 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["code"]
 	code_id, code_pw := readCode(code)
 
-	log.Printf(code_pw)
+	// log.Printf(code_pw)
 
 	login := checkLogin(w, r)
 
@@ -62,7 +62,7 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
-	// err := l.Bind(inviteDn, code_pw)
+	err := l.Bind(inviteDn, code_pw)
 	if err != nil {
 		templateInviteInvalidCode := getTemplate("invite_invalid_code.html")
 		templateInviteInvalidCode.Execute(w, nil)
