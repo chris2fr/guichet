@@ -131,6 +131,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
 		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
+		newUser.DN = "cn=" + newUser.CN + "," + config.InvitationBaseDN
 
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
@@ -140,7 +141,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 			data.ErrorPasswordMismatch = true
 		} else {
 			newUser.Password = password2
-			addNewUser(newUser, config, login)
+			data.Success = addNewUser(newUser, config, login)
 		}
 
 		// tryCreateAccount(l, data, password1, password2, invitedBy)
