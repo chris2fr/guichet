@@ -12,8 +12,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/emersion/go-sasl"
-	"github.com/emersion/go-smtp"
+	// "github.com/emersion/go-sasl"
+	// "github.com/emersion/go-smtp"
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/argon2"
@@ -27,10 +27,10 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		return nil
 	}
 
-	if !login.CanInvite {
-		http.Error(w, "Not authorized to invite new users.", http.StatusUnauthorized)
-		return nil
-	}
+	// if !login.CanInvite {
+	// 	http.Error(w, "Not authorized to invite new users.", http.StatusUnauthorized)
+	// 	return nil
+	// }
 
 	return login
 }
@@ -246,44 +246,180 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &SendCodeData{
-		WebBaseAddress: config.WebAddress,
-	}
+	// carLicense
+
 
 	if r.Method == "POST" {
 		r.ParseForm()
-
-		choice := strings.Join(r.Form["choice"], "")
-		sendto := strings.Join(r.Form["sendto"], "")
-
-		if choice == "display" || choice == "send" {
-			trySendCode(login, choice, sendto, data)
+		data := &SendCodeData{
+			WebBaseAddress: config.WebAddress,
 		}
+
+		
+
+
+
+
+
+		// modify_request := ldap.NewModifyRequest(login.UserEntry.DN, nil)
+		// // choice := strings.Join(r.Form["choice"], "")
+		// // sendto := strings.Join(r.Form["sendto"], "")
+		code, code_id, code_pw := genCode()
+		log.Printf(fmt.Sprintf("272: %v %v %v", code, code_id, code_pw))
+		// // Create invitation object in database
+		// modify_request.Add("carLicense", []string{fmt.Sprintf("%s,%s,%s",code, code_id, code_pw)})
+		// err := login.conn.Modify(modify_request)
+		// if err != nil {
+		// 	data.ErrorMessage = err.Error()
+		// 	// return
+		// } else {
+		// 	data.Success = true
+		// 	data.CodeDisplay = code
+		// }
+		log.Printf(fmt.Sprintf("279: %v %v %v", code, code_id, code_pw))
+		addReq := ldap.NewAddRequest("documentIdentifier=" + code_id + "," + config.InvitationBaseDN,nil)
+		addReq.Attribute("objectClass", []string{"top", "document", "simpleSecurityObject"})
+		addReq.Attribute("cn", []string{code})
+		addReq.Attribute("userPassword", []string{code_pw})
+		addReq.Attribute("documentIdentifier", []string{code_id})
+		log.Printf(fmt.Sprintf("285: %v %v %v", code, code_id, code_pw))
+		log.Printf(fmt.Sprintf("286: %v", addReq))
+		err := login.conn.Add(addReq)
+		if err != nil {
+			data.ErrorMessage = err.Error()
+			// return
+		} else {
+			data.Success = true
+			data.CodeDisplay = code
+		}
+
+
+
+		templateInviteSendCode.Execute(w, data)
+
+
+
+
+		
+
+		// if choice == "display" || choice == "send" {
+		// 	log.Printf(fmt.Sprintf("260: %v %v %v %v", login, choice, sendto, data))
+		// 	trySendCode(login, choice, sendto, data)
+		// }
 	}
 
-	templateInviteSendCode.Execute(w, data)
+	
 }
 
 func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCodeData) {
+	log.Printf(fmt.Sprintf("269: %v %v %v %v", login, choice, sendto, data))
 	// Generate code
 	code, code_id, code_pw := genCode()
-
+	log.Printf(fmt.Sprintf("272: %v %v %v", code, code_id, code_pw))
 	// Create invitation object in database
-	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
-	req := ldap.NewAddRequest(inviteDn, nil)
-	pw, err := SSHAEncode(code_pw)
-	if err != nil {
-		data.ErrorMessage = err.Error()
-		return
-	}
-	req.Attribute("userpassword", []string{pw})
-	req.Attribute("objectclass", []string{"top", "invitationCode"})
 
-	err = login.conn.Add(req)
-	if err != nil {
-		data.ErrorMessage = err.Error()
-		return
-	}
+
+
+
+
+
+	// len_base_dn := len(strings.Split(config.BaseDN, ","))
+	// dn_split := strings.Split(super_dn, ",")
+	// for i := len_base_dn + 1; i <= len(dn_split); i++ {
+	// 	path = append(path, PathItem{
+	// 		DN:         strings.Join(dn_split[len(dn_split)-i:len(dn_split)], ","),
+	// 		Identifier: dn_split[len(dn_split)-i],
+	// 	})
+	// }
+	// data := &SendCodeData{
+	// 	WebBaseAddress: config.WebAddress,
+	// }
+	// // Handle data
+	// data := &CreateData{
+	// 	SuperDN: super_dn,
+	// 	Path:    path,
+	// }
+	// data.IdType = config.UserNameAttr
+	// data.StructuralObjectClass = "inetOrgPerson"
+	// data.ObjectClass = "inetOrgPerson\norganizationalPerson\nperson\ntop"
+	// data.IdValue = strings.TrimSpace(strings.Join(r.Form["idvalue"], ""))
+	// data.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
+	// data.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
+	// data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
+	// data.Member = strings.TrimSpace(strings.Join(r.Form["member"], ""))
+	// data.Description = strings.TrimSpace(strings.Join(r.Form["description"], ""))
+	// data.SN = strings.TrimSpace(strings.Join(r.Form["sn"], ""))
+	// object_class := []string{}
+	// for _, oc := range strings.Split(data.ObjectClass, "\n") {
+	// 	x := strings.TrimSpace(oc)
+	// 	if x != "" {
+	// 		object_class = append(object_class, x)
+	// 	}
+	// }
+	// dn := data.IdType + "=" + data.IdValue + "," + super_dn
+	// 		req := ldap.NewAddRequest(dn, nil)
+	// 		req.Attribute("objectclass", object_class)
+	// 		// req.Attribute("mail", []string{data.IdValue})
+  //     /*
+	// 		if data.StructuralObjectClass != "" {
+	// 			req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
+	// 		}
+  //     */
+	// 		if data.DisplayName != "" {
+	// 			req.Attribute("displayname", []string{data.DisplayName})
+	// 		}
+	// 		if data.GivenName != "" {
+	// 			req.Attribute("givenname", []string{data.GivenName})
+	// 		}
+	// 		if data.Mail != "" {
+	// 			req.Attribute("mail", []string{data.Mail})
+	// 		}
+	// 		if data.Member != "" {
+	// 			req.Attribute("member", []string{data.Member})
+	// 		}
+	// 		if data.SN != "" {
+	// 			req.Attribute("sn", []string{data.SN})
+	// 		}
+	// 		if data.Description != "" {
+	// 			req.Attribute("description", []string{data.Description})
+	// 		}
+	// 		err := login.conn.Add(req)
+  //     // log.Printf(fmt.Sprintf("899: %v",err))
+  //     // log.Printf(fmt.Sprintf("899: %v",req))
+  //     // log.Printf(fmt.Sprintf("899: %v",data))
+	// 		if err != nil {
+	// 			data.Error = err.Error()
+	// 		} else {
+	// 			if template == "ml" {
+	// 				http.Redirect(w, r, "/admin/mailing/"+data.IdValue, http.StatusFound)
+	// 			} else {
+	// 				http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
+	// 			}
+	// 		}
+
+
+
+
+
+
+
+
+	// inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
+	// req := ldap.NewAddRequest(inviteDn, nil)
+	// pw, err := SSHAEncode(code_pw)
+	// if err != nil {
+	// 	data.ErrorMessage = err.Error()
+	// 	return
+	// }
+	// req.Attribute("employeeNumber", []string{pw})
+	// req.Attribute("objectclass", []string{"top", "invitationCode"})
+
+	// err = login.conn.Add(req)
+	// if err != nil {
+	// 	log.Printf(fmt.Sprintf("286: %v", req))
+	// 	data.ErrorMessage = err.Error()
+	// 	return
+	// }
 
 	// If we want to display it, do so
 	if choice == "display" {
@@ -309,16 +445,16 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	})
 
 	log.Printf("Sending mail to: %s", sendto)
-	var auth sasl.Client = nil
-	if config.SMTPUsername != "" {
-		auth = sasl.NewPlainClient("", config.SMTPUsername, config.SMTPPassword)
-	}
-	err = smtp.SendMail(config.SMTPServer, auth, config.MailFrom, []string{sendto}, buf)
-	if err != nil {
-		data.ErrorMessage = err.Error()
-		return
-	}
-	log.Printf("Mail sent.")
+	// var auth sasl.Client = nil
+	// if config.SMTPUsername != "" {
+	// 	auth = sasl.NewPlainClient("", config.SMTPUsername, config.SMTPPassword)
+	// }
+	// err = smtp.SendMail(config.SMTPServer, auth, config.MailFrom, []string{sendto}, buf)
+	// if err != nil {
+	// 	data.ErrorMessage = err.Error()
+	// 	return
+	// }
+	// log.Printf("Mail sent.")
 
 	data.Success = true
 	data.CodeSentTo = sendto
@@ -337,7 +473,8 @@ func genCode() (code string, code_id string, code_pw string) {
 
 	code = fmt.Sprintf("%03d-%03d-%03d", a%1000, b%1000, c%1000)
 	code_id, code_pw = readCode(code)
-	return
+	log.Printf(fmt.Sprintf("342: %v %v %v", code, code_id, code_pw))
+	return code, code_id, code_pw
 }
 
 func readCode(code string) (code_id string, code_pw string) {
@@ -354,5 +491,6 @@ func readCode(code string) (code_id string, code_pw string) {
 
 	code_id = hex.EncodeToString(id_hash[:8])
 	code_pw = hex.EncodeToString(pw_hash[:16])
-	return
+	return code_id, code_pw
 }
+
