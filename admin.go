@@ -1026,7 +1026,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			if template == "ml" {
 				http.Redirect(w, r, "/admin/mailing/"+data.IdValue, http.StatusFound)
 			} else {
-				http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
+				http.Redirect(w, r, "/admin/ldap/"+newUser.DN, http.StatusFound)
 			}
 			// }
 		}
