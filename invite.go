@@ -493,3 +493,4 @@ func readCode(code string) (code_id string, code_pw string) {
 	code_pw = hex.EncodeToString(pw_hash[:16])
 	return code_id, code_pw
 }
+
