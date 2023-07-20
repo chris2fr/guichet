@@ -74,14 +74,14 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	sort.Sort(data.Users)
 
-	addNewUser(NewUser{
-		DN:          "cn=newuser@lesgv.com,ou=newusers,dc=resdigita,dc=org",
-		CN:          "newuser@lesgv.com",
-		GivenName:   "New",
-		SN:          "User",
-		DisplayName: "New User",
-		Mail:        "newuser@lesgv.com",
-	}, config, login)
+	// addNewUser(NewUser{
+	// 	DN:          "cn=newuser@lesgv.com,ou=newusers,dc=resdigita,dc=org",
+	// 	CN:          "newuser@lesgv.com",
+	// 	GivenName:   "New",
+	// 	SN:          "User",
+	// 	DisplayName: "New User",
+	// 	Mail:        "newuser@lesgv.com",
+	// }, config, login)
 
 	templateAdminUsers.Execute(w, data)
 }
@@ -969,47 +969,72 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		} else if len(data.IdValue) == 0 {
 			data.Error = "No identifier specified"
 		} else {
-			dn := data.IdType + "=" + data.IdValue + "," + super_dn
-			req := ldap.NewAddRequest(dn, nil)
-			req.Attribute("objectclass", object_class)
+			newUser = NewUser{
+				DN: data.IdType + "=" + data.IdValue + "," + super_dn
+			}
+			// dn := data.IdType + "=" + data.IdValue + "," + super_dn
+			// req := ldap.NewAddRequest(dn, nil)
+			// req.Attribute("objectclass", object_class)
 			// req.Attribute("mail", []string{data.IdValue})
 			/*
 				if data.StructuralObjectClass != "" {
 					req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
 				}
 			*/
-			if data.DisplayName != "" {
-				req.Attribute("displayname", []string{data.DisplayName})
-			}
-			if data.GivenName != "" {
-				req.Attribute("givenname", []string{data.GivenName})
+			if data.CN && data.CN != "" {
+				newUser.CN = data.CN			}
+			if data.UID && data.UID != "" {
+				newUser.UID = data.UID
 			}
 			if data.Mail != "" {
-				req.Attribute("mail", []string{data.Mail})
+				newUser.Mail = data.Mail
+				// req.Attribute("mail", []string{data.Mail})
 			}
-			if data.Member != "" {
-				req.Attribute("member", []string{data.Member})
+			if (data.IdType == "cn") {
+				newUser.CN = data.CN	
+			} else if (data.IdType == "mail") {
+				newUser.Mail = data.Mail	
+			} else if (data.IdType == "uid") {
+				newUser.UID = data.UID	
 			}
+
+			if data.DisplayName != "" {
+				newUser.DisplayName = data.DisplayName
+				// req.Attribute("displayname", []string{data.DisplayName})
+			}
+			if data.GivenName != "" {
+				newUser.GivenName = data.GivenName
+				// req.Attribute("givenname", []string{data.GivenName})
+			}
+
+			// if data.Member != "" {
+			// 	req.Attribute("member", []string{data.Member})
+			// }
 			if data.SN != "" {
-				req.Attribute("sn", []string{data.SN})
+				newUser.SN = data.SN
+				// req.Attribute("sn", []string{data.SN})
 			}
 			if data.Description != "" {
-				req.Attribute("description", []string{data.Description})
+				newUser.Description = data.Description
+				// req.Attribute("description", []string{data.Description})
 			}
-			err := login.conn.Add(req)
-			// log.Printf(fmt.Sprintf("899: %v",err))
-			// log.Printf(fmt.Sprintf("899: %v",req))
-			// log.Printf(fmt.Sprintf("899: %v",data))
-			if err != nil {
-				data.Error = err.Error()
-			} else {
+
+			addNewUser(newUser, config, login)
+
+			// err := login.conn.Add(req)
+			// // log.Printf(fmt.Sprintf("899: %v",err))
+			// // log.Printf(fmt.Sprintf("899: %v",req))
+			// // log.Printf(fmt.Sprintf("899: %v",data))
+			// if err != nil {
+			// 	data.Error = err.Error()
+			// } else {
 				if template == "ml" {
 					http.Redirect(w, r, "/admin/mailing/"+data.IdValue, http.StatusFound)
 				} else {
 					http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
 				}
-			}
-		}
+			// }
+		// }
 	}
 
 	templateAdminCreate.Execute(w, data)
