@@ -30,6 +30,7 @@ type NewUser struct {
 	SN          string
 	UID         string
 	Description string
+	Password    string
 }
 
 func openLdap(config ConfigFile) *ldap.Conn {
@@ -66,6 +67,10 @@ func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {
 	}
 	if newUser.Description != "" {
 		req.Attribute("description", []string{newUser.Description})
+	}
+	if newUser.Password != "" {
+		pw, _ := SSHAEncode(newUser.Password)
+		req.Attribute("userPassword", []string{pw})
 	}
 	err := login.conn.Add(req)
 	log.Printf(fmt.Sprintf("71: %v", err))

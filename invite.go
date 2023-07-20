@@ -52,10 +52,12 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["code"]
 	code_id, code_pw := readCode(code)
 
-	l := ldapOpen(w)
-	if l == nil {
-		return
-	}
+	login := checkLogin(w, r)
+
+	// l := ldapOpen(w)
+	// if l == nil {
+	// 	return
+	// }
 
 	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
 	err := l.Bind(inviteDn, code_pw)
@@ -117,10 +119,14 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	if r.Method == "POST" {
 		r.ParseForm()
 
-		data.Username = strings.TrimSpace(strings.Join(r.Form["username"], ""))
-		data.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
-		data.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
-		data.Surname = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
+		newUser := NewUser{}
+
+		newUser.CN = strings.TrimSpace(strings.Join(r.Form["username"], "@lesgv.com"))
+		newUser.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
+		newUser.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
+		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
+		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
+		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
@@ -248,18 +254,11 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 
 	// carLicense
 
-
 	if r.Method == "POST" {
 		r.ParseForm()
 		data := &SendCodeData{
 			WebBaseAddress: config.WebAddress,
 		}
-
-		
-
-
-
-
 
 		// modify_request := ldap.NewModifyRequest(login.UserEntry.DN, nil)
 		// // choice := strings.Join(r.Form["choice"], "")
@@ -277,7 +276,7 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		// 	data.CodeDisplay = code
 		// }
 		log.Printf(fmt.Sprintf("279: %v %v %v", code, code_id, code_pw))
-		addReq := ldap.NewAddRequest("documentIdentifier=" + code_id + "," + config.InvitationBaseDN,nil)
+		addReq := ldap.NewAddRequest("documentIdentifier="+code_id+","+config.InvitationBaseDN, nil)
 		addReq.Attribute("objectClass", []string{"top", "document", "simpleSecurityObject"})
 		addReq.Attribute("cn", []string{code})
 		addReq.Attribute("userPassword", []string{code_pw})
@@ -293,14 +292,7 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 			data.CodeDisplay = code
 		}
 
-
-
 		templateInviteSendCode.Execute(w, data)
-
-
-
-
-		
 
 		// if choice == "display" || choice == "send" {
 		// 	log.Printf(fmt.Sprintf("260: %v %v %v %v", login, choice, sendto, data))
@@ -308,7 +300,6 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		// }
 	}
 
-	
 }
 
 func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCodeData) {
@@ -317,11 +308,6 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	code, code_id, code_pw := genCode()
 	log.Printf(fmt.Sprintf("272: %v %v %v", code, code_id, code_pw))
 	// Create invitation object in database
-
-
-
-
-
 
 	// len_base_dn := len(strings.Split(config.BaseDN, ","))
 	// dn_split := strings.Split(super_dn, ",")
@@ -360,11 +346,11 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// 		req := ldap.NewAddRequest(dn, nil)
 	// 		req.Attribute("objectclass", object_class)
 	// 		// req.Attribute("mail", []string{data.IdValue})
-  //     /*
+	//     /*
 	// 		if data.StructuralObjectClass != "" {
 	// 			req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
 	// 		}
-  //     */
+	//     */
 	// 		if data.DisplayName != "" {
 	// 			req.Attribute("displayname", []string{data.DisplayName})
 	// 		}
@@ -384,9 +370,9 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// 			req.Attribute("description", []string{data.Description})
 	// 		}
 	// 		err := login.conn.Add(req)
-  //     // log.Printf(fmt.Sprintf("899: %v",err))
-  //     // log.Printf(fmt.Sprintf("899: %v",req))
-  //     // log.Printf(fmt.Sprintf("899: %v",data))
+	//     // log.Printf(fmt.Sprintf("899: %v",err))
+	//     // log.Printf(fmt.Sprintf("899: %v",req))
+	//     // log.Printf(fmt.Sprintf("899: %v",data))
 	// 		if err != nil {
 	// 			data.Error = err.Error()
 	// 		} else {
@@ -396,13 +382,6 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// 				http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
 	// 			}
 	// 		}
-
-
-
-
-
-
-
 
 	// inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
 	// req := ldap.NewAddRequest(inviteDn, nil)
@@ -493,4 +472,3 @@ func readCode(code string) (code_id string, code_pw string) {
 	code_pw = hex.EncodeToString(pw_hash[:16])
 	return code_id, code_pw
 }
-
