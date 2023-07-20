@@ -79,7 +79,7 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 		SN:          "User",
 		DisplayName: "New User",
 		Mail:        "newuser@lesgv.com",
-	})
+	}, config, login)
 
 	templateAdminUsers.Execute(w, data)
 }
