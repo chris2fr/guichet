@@ -74,7 +74,9 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	sort.Sort(data.Users)
 
-	addNewUser(NewUser{CN: "newuser@lesgv.com",
+	addNewUser(NewUser{
+		DN:          "cn=newuser@lesgv.com,ou=newusers,dc=resdigita,dc=org",
+		CN:          "newuser@lesgv.com",
 		GivenName:   "New",
 		SN:          "User",
 		DisplayName: "New User",
