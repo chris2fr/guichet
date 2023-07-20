@@ -149,7 +149,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		// tryCreateAccount(l, data, password1, password2, invitedBy)
 
 	} else {
-		data.SuggestPW = suggestPassword()
+		data.SuggestPW = fmt.Sprint("%s", suggestPassword())
 	}
 
 	templateInviteNewAccount.Execute(w, data)
