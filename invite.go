@@ -39,8 +39,8 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 // New account creation directly from interface
 
 func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
-	// l := ldapOpen(w)
-	// l.Bind(config.NewUserDN, config.NewUserPassword)
+	l := ldapOpen(w)
+	l.Bind(config.NewUserDN, config.NewUserPassword)
 
 	// login := checkInviterLogin(w, r)
 	// if login == nil {
@@ -49,12 +49,13 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	// l, _ := ldap.DialURL(config.LdapServerAddr)
 	// l.Bind(config.NewUserDN, config.NewUserPassword)
 
-	err, loginInfo := doLogin(w, r, "testuser", config.NewUserDN, config.NewUserPassword)
+	loginInfo, err := doLogin(w, r, "testuser", config.NewUserDN, config.NewUserPassword)
+
 	if err != nil {
 		log.Printf(fmt.Sprintf("58: %v %v", err, loginInfo))
 	}
 
-	l := ldapOpen(w)
+	// l := ldapOpen(w)
 	if l == nil {
 		return
 	}

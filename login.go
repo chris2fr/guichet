@@ -235,7 +235,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 	}
 }
 
-func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn string, password string) (error, *LoginInfo) {
+func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn string, password string) (*LoginInfo, error) {
 	l := ldapOpen(w)
 	// if l == nil {
 	// 	return nil, nil
@@ -243,7 +243,7 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 
 	err := l.Bind(user_dn, password)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 
 	// Successfully logged in, save it to session
@@ -259,7 +259,7 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 	err = session.Save(r, w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return err, nil
+		return nil, err
 	}
 
 	LoginInfo := LoginInfo{
@@ -268,6 +268,6 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 		Password: password,
 	}
 
-	return nil, &LoginInfo
+	return &LoginInfo, nil
 
 }
