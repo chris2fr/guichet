@@ -87,5 +87,15 @@
   {{end}}
   <button type="submit" class="btn btn-primary">Créer le compte</button>
 </form>
+
+<script lang="javascript">
+  function changeUsername () {
+   username = document.getElementById("username");
+   calcCn = document.getElementById("calc-cn");
+   username.value = username.value.toLowerCase().replace(/[^A-z0-9.-]/g, '');
+  calcCn.innerText = "Login Name et Courriel seront : " + username.value.split("@")[0] + "@lesgv.com";
+}
+document.getElementById("username").addEventListener("change",changeUsername);
+</script>
 {{end}}
 {{end}}
