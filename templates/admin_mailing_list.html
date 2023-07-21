@@ -3,11 +3,10 @@
 {{define "body"}}
 
 <div class="d-flex">
-  <h4>ML {{.MailingList.GetAttributeValue .MailingNameAttr}}
+  <h2>ML {{.MailingList.GetAttributeValue .MailingNameAttr}}
     <a class="ml-auto btn btn-sm btn-dark" href="/admin/ldap/{{.MailingList.DN}}">Vue avancée</a>
-  </h4>
+  </h2>
   <a class="ml-auto btn btn-dark" href="/admin/mailing">Liste des ML</a>
-  <a class="ml-4 btn btn-info" href="/">Menu principal</a>
 </div>
 
 {{if .Success}}
