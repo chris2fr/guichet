@@ -40,7 +40,10 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	l, err := ldapOpen(w)
-	l.Bind(config.NewUserDN, config.NewUserPassword)
+	if err != nil {
+		log.Printf(fmt.Sprintf("58: %v %v", err, loginInfo))
+	}
+	// l.Bind(config.NewUserDN, config.NewUserPassword)
 
 	// login := checkInviterLogin(w, r)
 	// if login == nil {
@@ -49,7 +52,7 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	// l, _ := ldap.DialURL(config.LdapServerAddr)
 	// l.Bind(config.NewUserDN, config.NewUserPassword)
 
-	loginInfo, err := doLogin(w, r, "testuser", config.NewUserDN, config.NewUserPassword)
+	// loginInfo, err := doLogin(w, r, "testuser", config.NewUserDN, config.NewUserPassword)
 
 	if err != nil {
 		log.Printf(fmt.Sprintf("58: %v %v", err, loginInfo))
@@ -61,7 +64,9 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = l.Bind(config.NewUserDN, config.NewUserPassword)
-
+	if err != nil {
+		log.Printf(fmt.Sprintf("58: %v %v", err, loginInfo))
+	}
 	handleNewAccount(w, r, l, config.NewUserDN)
 }
 
@@ -161,6 +166,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 			data.ErrorPasswordMismatch = true
 		} else {
 			newUser.Password = password2
+			l.Bind(config.NewUserDN, config.NewUserPassword)
 			data.Success = addNewUser(newUser, config, l)
 			http.Redirect(w, r, "/admin/ldap/"+newUser.DN, http.StatusFound)
 		}
