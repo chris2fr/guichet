@@ -86,7 +86,7 @@ func handleAdminActivateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	http.Redirect(w, r, "/admin/ldap/"+"cn="+cn+","+config.UserBaseDN, http.StatusFound)
+	http.Redirect(w, r, "/admin/activate", http.StatusFound)
 }
 
 func handleAdminUnactivateUser(w http.ResponseWriter, r *http.Request) {
@@ -100,7 +100,7 @@ func handleAdminUnactivateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	http.Redirect(w, r, "/admin/ldap/"+"cn="+cn+","+config.InvitationBaseDN, http.StatusFound)
+	http.Redirect(w, r, "/admin/users", http.StatusFound)
 }
 
 func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
