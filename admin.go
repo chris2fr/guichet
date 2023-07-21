@@ -1072,7 +1072,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 				// req.Attribute("description", []string{data.Description})
 			}
 
-			addNewUser(newUser, config)
+			addNewUser(newUser, config, login.conn)
 
 			// err := login.conn.Add(req)
 			// // log.Printf(fmt.Sprintf("899: %v",err))
