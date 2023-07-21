@@ -10,7 +10,7 @@
       {{range $user := $root.Users}}
         <tr>
           <td>
-            <a href="/admin/ldap/{{$group.DN}}">
+            <a href="/admin/ldap/{{$user.DN}}">
               {{$user.GetAttributeValue $user.UserNameAttr}}
             </a>
           </td>
