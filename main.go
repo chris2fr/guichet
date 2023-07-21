@@ -62,6 +62,7 @@ func main() {
 	r.HandleFunc("/picture/{name}", handleDownloadPicture)
 
 	r.HandleFunc("/admin/activate", handleAdminActivateUsers)
+	r.HandleFunc("/admin/activate/{cn}", handleAdminActivateUser)
 
 	r.HandleFunc("/directory/search", handleDirectorySearch)
 	r.HandleFunc("/directory", handleDirectory)

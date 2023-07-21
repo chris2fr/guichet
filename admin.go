@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"net/http"
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
@@ -51,6 +52,7 @@ func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 	if login == nil {
 		return
 	}
+
 	searchRequest := ldap.NewSearchRequest(
 		config.InvitationBaseDN,
 		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
@@ -71,6 +73,22 @@ func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 		Users:        EntryList(sr.Entries),
 	}
 	templateAdminActivateUsers.Execute(w, data)
+
+}
+
+func handleAdminActivateUser(w http.ResponseWriter, r *http.Request) {
+	cn := mux.Vars(r)["cn"]
+	login := checkAdminLogin(w, r)
+	if login == nil {
+		return
+	}
+	modifyRequest := *ldap.NewModifyDNRequest("cn="+cn+","+config.InvitationBaseDN, "cn="+cn, true, config.UserBaseDN)
+	err := login.conn.ModifyDN(&modifyRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/admin/ldap/"+"cn="+cn+","+config.UserBaseDN), http.StatusFound)
 }
 
 func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
