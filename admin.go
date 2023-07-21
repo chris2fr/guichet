@@ -56,7 +56,7 @@ func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 		config.InvitationBaseDN,
 		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=organizationalPerson))"),
-		[]string{config.UserNameAttr, "dn", "displayName", "givenName", "sn", "mail", "uid", "cn"},
+		[]string{config.UserNameAttr, "displayName", "givenName", "sn", "mail", "uid", "cn"},
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)
