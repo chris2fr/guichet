@@ -47,7 +47,7 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	// l, _ := ldap.DialURL(config.LdapServerAddr)
 	// l.Bind(config.NewUserDN, config.NewUserPassword)
-	handleNewAccount(w, r, l, config.NewUserDN)
+	handleNewAccount(w, r, login.conn, config.NewUserDN)
 }
 
 // New account creation using code
