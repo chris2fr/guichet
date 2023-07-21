@@ -55,7 +55,7 @@
         <li><a href="/invite/new_account">Créer un nouveau compte</a></li>
         {{end}}
         {{if .Login.CanAdmin}}
-        <li>Administration</li>
+        <li><a href="#">Administration</a></li>
         <ul class="submenu">
     <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
     <li><a href="/admin/users">Utilisateur·ices</a></li>
@@ -64,6 +64,7 @@
     <li><a href="/admin/ldap/{{.BaseDN}}">Explorateur LDAP</a></li>
   </ul>
   </li>
+  <li> &nbsp;&lt;&nbsp;<a href="#" class="jour-nuit" id="jour-nuit">Jour et nuit</a></li>
 </ul>
       </div>
 {{end}}
@@ -75,5 +76,6 @@
   <script src="/static/javascript/jquery.slim.min.js"></script>
   <script src="/static/javascript/bootstrap.bundle.min.js"></script>
   <script src="/static/javascript/lesgv.js"></script>
+  <script src="/static/javascript/journuit.js"></script>
 </body>
 </html>
