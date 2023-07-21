@@ -18,7 +18,57 @@
 <body>
   <div class="container mb-4">
     <h1>Guichet Les Grands Voisins</h1>
-    <ul></ul>
+    <nav role="navigation">
+      <div id="menuToggle">
+        <!--
+        A fake / hidden checkbox is used as click reciever,
+        so you can use the :checked selector on it.
+        -->
+        <input type="checkbox" id="menu-checkbox"/>
+        
+        <!--
+        Some spans to act as a hamburger.
+        
+        They are acting like a real hamburger,
+        not that McDonalds stuff.
+        -->
+      <div class="burger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+        
+        <!--
+        Too bad the menu has to be inside of the button
+        but hey, it's pure CSS magic.
+        -->
+        <ul id="menu">
+          <li><a href="/">Home</a>
+        <ul class="submenu">
+          <li><a href="/profile">Modifier mon profil</a></li>
+          <li><a href="/passwd">Modifier mon mot de passe</a></li>
+          <li><a href="/SOGo">Accéder à mes courriels, mon agenda et à mes contacts</a></li>
+          <li><a href="https://www.lesgrandsvoisins.com/resdigita">Accéder au numérique des Grands Voisins .com</a></li>
+        </ul>
+        </li>
+        {{if .Login.CanInvite}}
+        <li><a href="/invite/new_account">Créer un nouveau compte</a></li>
+        {{end}}
+        {{if .Login.CanAdmin}}
+        <li>Administration</li>
+        <ul class="submenu">
+    <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
+    <li><a href="/admin/users">Utilisateur·ices</a></li>
+    <li><a href="/admin/groups">Groupes</a></li>
+    <li><a href="/admin/mailing">Mailing lists</a></li>
+    <li><a href="/admin/ldap/{{.BaseDN}}">Explorateur LDAP</a></li>
+  </ul>
+  </li>
+</ul>
+      </div>
+{{end}}
+    </nav>
+    
     <hr />
     {{template "body" .}}
   </div>
