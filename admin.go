@@ -55,14 +55,19 @@ func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 
 	searchRequest := ldap.NewSearchRequest(
 		config.InvitationBaseDN,
-		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
+		ldap.ScopeSingleLevel,
+		ldap.NeverDerefAliases,
+		0,
+		0,
+		false,
 		fmt.Sprintf("(&(objectClass=organizationalPerson))"),
-		[]string{config.UserNameAttr, "displayName", "givenName", "sn", "mail", "uid", "cn"},
+		[]string{"cn", "displayName", "givenName", "sn", "mail", "uid"},
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
-		log.Printf(fmt.Sprintf("65: %v %v", err, sr))
+		log.Printf(fmt.Sprintf("65: %v %v", err, searchRequest))
+		log.Printf(fmt.Sprintf("65: %v %v", login, login.conn))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
