@@ -6,6 +6,7 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -23,6 +24,7 @@ func ldapOpen(w http.ResponseWriter) *ldap.Conn {
 	l, err := ldap.DialURL(config.LdapServerAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf(fmt.Sprintf("27: %v %v", err, l))
 		return nil
 	}
 

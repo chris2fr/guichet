@@ -237,9 +237,9 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 
 func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn string, password string) (*LoginInfo, error) {
 	l := ldapOpen(w)
-	// if l == nil {
-	// 	return nil, nil
-	// }
+	if l == nil {
+		return nil, nil
+	}
 
 	err := l.Bind(user_dn, password)
 	if err != nil {
