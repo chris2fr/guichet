@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"sort"
@@ -61,6 +62,7 @@ func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
+		log.Printf(fmt.Sprintf("65: %v %v", err, sr))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
