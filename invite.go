@@ -42,13 +42,26 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	// l := ldapOpen(w)
 	// l.Bind(config.NewUserDN, config.NewUserPassword)
 
-	login := checkInviterLogin(w, r)
-	if login == nil {
-		return
-	}
+	// login := checkInviterLogin(w, r)
+	// if login == nil {
+	// 	return
+	// }
 	// l, _ := ldap.DialURL(config.LdapServerAddr)
 	// l.Bind(config.NewUserDN, config.NewUserPassword)
-	handleNewAccount(w, r, login.conn, config.NewUserDN)
+
+	err, loginInfo := doLogin(w, r, "testuser", config.NewUserDN, config.NewUserPassword)
+	if err != nil {
+		log.Printf(fmt.Sprintf("58: %v %v", err, loginInfo))
+	}
+
+	l := ldapOpen(w)
+	if l == nil {
+		return
+	}
+
+	err = l.Bind(loginInfo.DN, loginInfo.Password)
+
+	handleNewAccount(w, r, l, config.NewUserDN)
 }
 
 // New account creation using code
