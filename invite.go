@@ -38,7 +38,7 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 // New account creation directly from interface
 
 func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
-	login := checkInviterLogin(w, r)
+	// login := checkInviterLogin(w, r)
 	// if login == nil {
 	// 	return
 	// }
