@@ -19,6 +19,7 @@ if (idvalueInput != null) {
 function changeUsername () {
    username = document.getElementById("username");
    calcCn = document.getElementById("calc-cn");
+   username.value = username.value.toLowerCase().replace(/[^A-z0-9.-]/g, '');
   calcCn.innerText = "Login Name et Courriel seront : " + username.value.split("@")[0] + "@lesgv.com";
 }
 if (document.getElementById("username") != null) {
