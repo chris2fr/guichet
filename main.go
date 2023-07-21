@@ -7,7 +7,7 @@ package main
 
 import (
 	"crypto/rand"
-	"crypto/tls"
+	// "crypto/tls"
 
 	// "encoding/json"
 	"flag"
@@ -20,7 +20,6 @@ import (
 	// "os"
 	"strings"
 
-	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 )
@@ -89,54 +88,4 @@ func main() {
 	if err != nil {
 		log.Fatal("Cannot start http server: ", err)
 	}
-}
-
-func logRequest(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// log.Printf("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
-		handler.ServeHTTP(w, r)
-	})
-}
-
-func ldapOpen(w http.ResponseWriter) *ldap.Conn {
-	l, err := ldap.DialURL(config.LdapServerAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return nil
-	}
-
-	if config.LdapTLS {
-		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return nil
-		}
-	}
-
-	return l
-}
-
-// Page handlers ----
-
-type HomePageData struct {
-	Login  *LoginStatus
-	BaseDN string
-	Org    string
-}
-
-func handleHome(w http.ResponseWriter, r *http.Request) {
-	templateHome := getTemplate("home.html")
-
-	login := checkLogin(w, r)
-	if login == nil {
-		return
-	}
-
-	data := &HomePageData{
-		Login:  login,
-		BaseDN: config.BaseDN,
-		Org:    config.Org,
-	}
-
-	templateHome.Execute(w, data)
 }
