@@ -93,7 +93,8 @@ function changeDisplayname () {
    displayname = document.getElementById("displayname");
    username = document.getElementById("username");
    if (!username.value) {
-    username.value = displayname.value.toLowerCase().replace(/[^A-z0-9.-]/g, '');
+    username.value = displayname.value;
+    changeUsername();
    }
 }
 function changeUsername () {
