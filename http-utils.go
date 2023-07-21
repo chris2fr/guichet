@@ -21,13 +21,6 @@ func logRequest(handler http.Handler) http.Handler {
 }
 
 func ldapOpen(w http.ResponseWriter) *ldap.Conn {
-	l, err := ldap.DialURL(config.LdapServerAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf(fmt.Sprintf("27: %v %v", err, l))
-		return nil
-	}
-
 	if config.LdapTLS {
 		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 		if err != nil {
@@ -36,5 +29,11 @@ func ldapOpen(w http.ResponseWriter) *ldap.Conn {
 		}
 	}
 
+	l, err := ldap.DialURL(config.LdapServerAddr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf(fmt.Sprintf("27: %v %v", err, l))
+		return nil
+	}
 	return l
 }
