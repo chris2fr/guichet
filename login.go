@@ -62,7 +62,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		}
 	}
 
-	l := ldapOpen(w)
+	l, err := ldapOpen(w)
 	if l == nil {
 		return nil
 	}
@@ -236,10 +236,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 }
 
 func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn string, password string) (*LoginInfo, error) {
-	l := ldapOpen(w)
-	if l == nil {
-		return nil, nil
-	}
+	l, _ := ldapOpen(w)
 
 	err := l.Bind(user_dn, password)
 	if err != nil {

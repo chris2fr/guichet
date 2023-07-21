@@ -6,8 +6,8 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/go-ldap/ldap/v3"
@@ -20,21 +20,22 @@ func logRequest(handler http.Handler) http.Handler {
 	})
 }
 
-func ldapOpen(w http.ResponseWriter) *ldap.Conn {
-	l, err := ldap.DialURL(config.LdapServerAddr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf(fmt.Sprintf("27: %v %v", err, l))
-		return nil
-	}
-
+func ldapOpen(w http.ResponseWriter) (*ldap.Conn, error) {
 	if config.LdapTLS {
-		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return nil
+		tlsConf := &tls.Config{
+			ServerName:         config.LdapServerAddr,
+			InsecureSkipVerify: true,
 		}
+		return ldap.DialTLS("tcp", net.JoinHostPort(config.LdapServerAddr, "636"), tlsConf)
+	} else {
+		return ldap.DialURL("ldap://" + config.LdapServerAddr)
 	}
 
-	return l
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	log.Printf(fmt.Sprintf("27: %v %v", err, l))
+	// 	return nil
+	// }
+
+	// return l
 }
