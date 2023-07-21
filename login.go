@@ -213,7 +213,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
-		err, loginInfo := doLogin(w, r, username, user_dn, password)
+		loginInfo, err := doLogin(w, r, username, user_dn, password)
 		if err != nil {
 			data := &LoginFormData{
 				Username: username,
