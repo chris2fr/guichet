@@ -38,13 +38,13 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 // New account creation directly from interface
 
 func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
-	l := ldapOpen(w)
-	l.Bind(config.NewUserDN, config.NewUserPassword)
+	// l := ldapOpen(w)
+	// l.Bind(config.NewUserDN, config.NewUserPassword)
 
-	// login := checkInviterLogin(w, r)
-	// if login == nil {
-	// 	return
-	// }
+	login := checkInviterLogin(w, r)
+	if login == nil {
+		return
+	}
 	// l, _ := ldap.DialURL(config.LdapServerAddr)
 	// l.Bind(config.NewUserDN, config.NewUserPassword)
 	handleNewAccount(w, r, l, config.NewUserDN)
