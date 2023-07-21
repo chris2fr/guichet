@@ -1,0 +1,25 @@
+{{define "title"}}Activer des utilisateurs |{{end}}
+
+<table class="table mt-4">
+  <thead>
+    <th scope="col">Identifiant</th>
+    <th scope="col">Nom complet</th>
+  </thead>
+  <tbody>
+    {{with $root := .}}
+      {{range $user := $root.Users}}
+        <tr>
+          <td>
+            <a href="/admin/ldap/{{$group.DN}}">
+              {{$user.GetAttributeValue $user.UserNameAttr}}
+            </a>
+          </td>
+          <td>{{$user.GetAttributeValue "mail"}}</td>
+          <td>{{$user.GetAttributeValue "displayname"}}</td>
+          <td>{{$user.GetAttributeValue "sn"}}</td>
+          <td>{{$user.GetAttributeValue "description"}}</td>
+        </tr>
+      {{end}}
+    {{end}}
+  </tbody>
+</table>

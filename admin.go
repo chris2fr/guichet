@@ -45,6 +45,34 @@ type AdminUsersTplData struct {
 	Users        EntryList
 }
 
+func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
+	templateAdminActivateUsers := getTemplate("admin_activate.html")
+	login := checkAdminLogin(w, r)
+	if login == nil {
+		return
+	}
+	searchRequest := ldap.NewSearchRequest(
+		config.InvitationBaseDN,
+		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=organizationalPerson))"),
+		[]string{config.UserNameAttr, "dn", "displayName", "givenName", "sn", "mail", "uid", "cn"},
+		nil)
+
+	sr, err := login.conn.Search(searchRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data := &AdminUsersTplData{
+		Login:        login,
+		UserNameAttr: config.UserNameAttr,
+		UserBaseDN:   config.UserBaseDN,
+		Users:        EntryList(sr.Entries),
+	}
+	templateAdminActivateUsers.Execute(w, data)
+}
+
 func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	templateAdminUsers := getTemplate("admin_users.html")
 
