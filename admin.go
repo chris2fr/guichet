@@ -100,7 +100,7 @@ func handleAdminUnactivateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	http.Redirect(w, r, "/admin/ldap/"+"cn="+cn+","+config.UserBaseDN, http.StatusFound)
+	http.Redirect(w, r, "/admin/ldap/"+"cn="+cn+","+config.InvitationBaseDN, http.StatusFound)
 }
 
 func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
