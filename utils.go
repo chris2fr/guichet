@@ -4,22 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-ldap/ldap/v3"
-	// "bytes"
-	// "crypto/rand"
-
-	// "encoding/hex"
-	// "fmt"
-	// "html/template"
-	// "log"
-	// "net/http"
-	// "regexp"
-	// "strings"
-	// "github.com/emersion/go-sasl"
-	// "github.com/emersion/go-smtp"
-	// "github.com/gorilla/mux"
-	// "golang.org/x/crypto/argon2"
 	"math/rand"
+
+	"github.com/go-ldap/ldap/v3"
 )
 
 type NewUser struct {
