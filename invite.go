@@ -22,6 +22,7 @@ import (
 var EMAIL_REGEXP = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
 func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
+
 	login := checkLogin(w, r)
 	if login == nil {
 		return nil

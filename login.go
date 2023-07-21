@@ -209,54 +209,60 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		username := strings.Join(r.Form["username"], "")
 		password := strings.Join(r.Form["password"], "")
 		user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
+
 		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
-
-		l := ldapOpen(w)
-		if l == nil {
-			return nil
-		}
-
-		err := l.Bind(user_dn, password)
-		if err != nil {
-			data := &LoginFormData{
-				Username: username,
-			}
-			if ldap.IsErrorWithCode(err, ldap.LDAPResultInvalidCredentials) {
-				data.WrongPass = true
-			} else if ldap.IsErrorWithCode(err, ldap.LDAPResultNoSuchObject) {
-				data.WrongUser = true
-			} else {
-				data.ErrorMessage = err.Error()
-			}
-			templateLogin.Execute(w, data)
-			return nil
-		}
-
-		// Successfully logged in, save it to session
-		session, err := store.Get(r, SESSION_NAME)
-		if err != nil {
-			session, _ = store.New(r, SESSION_NAME)
-		}
-
-		session.Values["login_username"] = username
-		session.Values["login_password"] = password
-		session.Values["login_dn"] = user_dn
-
-		err = session.Save(r, w)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return nil
-		}
-
-		return &LoginInfo{
-			DN:       user_dn,
-			Username: username,
-			Password: password,
-		}
+		return doLogin(w, r, username, user_dn, password)
 	} else {
 		http.Error(w, "Unsupported method", http.StatusBadRequest)
 		return nil
 	}
+}
+
+func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn string, password string) *LoginInfo {
+	l := ldapOpen(w)
+	if l == nil {
+		return nil
+	}
+
+	err := l.Bind(user_dn, password)
+	if err == nil {
+		templateLogin := getTemplate("login.html")
+		data := &LoginFormData{
+			Username: username,
+		}
+		if ldap.IsErrorWithCode(err, ldap.LDAPResultInvalidCredentials) {
+			data.WrongPass = true
+		} else if ldap.IsErrorWithCode(err, ldap.LDAPResultNoSuchObject) {
+			data.WrongUser = true
+		} else {
+			data.ErrorMessage = err.Error()
+		}
+		templateLogin.Execute(w, data)
+		return nil
+	}
+
+	// Successfully logged in, save it to session
+	session, err := store.Get(r, SESSION_NAME)
+	if err != nil {
+		session, _ = store.New(r, SESSION_NAME)
+	}
+
+	session.Values["login_username"] = username
+	session.Values["login_password"] = password
+	session.Values["login_dn"] = user_dn
+
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return nil
+	}
+
+	return &LoginInfo{
+		DN:       user_dn,
+		Username: username,
+		Password: password,
+	}
+
 }
