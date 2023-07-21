@@ -54,10 +54,10 @@
               </li>
             </ul>
           </li>
-          {{if .Login and .Login.CanInvite}}
+
           <li><a href="/invite/new_account">Créer un nouveau compte</a></li>
-          {{end}}
-          {{if .Login and .Login.CanAdmin}}
+
+
           <li><a href="#">Administration</a></li>
           <ul class="submenu">
             <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
@@ -67,7 +67,7 @@
             <li><a href="/admin/ldap/{{.BaseDN}}">Explorateur LDAP</a></li>
           </ul>
           </li>
-          {{end}}
+
           <li> &nbsp;&lt;&nbsp;<a href="#" class="jour-nuit" id="jour-nuit">Jour et nuit</a></li>
         </ul>
       </div>
