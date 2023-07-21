@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 
@@ -43,7 +44,12 @@ func suggestPassword() string {
 func addNewUser(newUser NewUser, config *ConfigFile) bool {
 	log.Printf(fmt.Sprint("Adding New User"))
 	l, _ := ldap.DialURL(config.LdapServerAddr)
+	err := l.StartTLS(&tls.Config{InsecureSkipVerify: true})
+	if err != nil {
+		log.Printf(fmt.Sprintf("86: %v", err))
+	}
 	l.Bind(config.NewUserDN, config.NewUserPassword)
+
 	// l.Bind(config.)
 	dn := newUser.DN
 	req := ldap.NewAddRequest(dn, nil)
@@ -76,12 +82,12 @@ func addNewUser(newUser NewUser, config *ConfigFile) bool {
 
 	// conn :=
 
-	err := l.Add(req)
+	err = l.Add(req)
 	log.Printf(fmt.Sprintf("71: %v", err))
 	log.Printf(fmt.Sprintf("72: %v", req))
 	log.Printf(fmt.Sprintf("73: %v", newUser))
 	if err != nil {
-		log.Printf(fmt.Sprintf("75: %v", err))
+		log.Printf(fmt.Sprintf("86: %v", err))
 		return false
 	} else {
 		return true
