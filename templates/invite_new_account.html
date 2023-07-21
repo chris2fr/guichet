@@ -24,6 +24,25 @@
 {{else}}
 <form method="POST" class="mt-4">
   <div class="form-group">
+    <label for="displayname">Nom affiché :</label>
+    <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
+  </div>
+  <div class="form-group">
+    <label for="mail">Email :</label>
+    <input type="text" id="mail" name="mail" class="form-control" value="{{ .Mail }}" />
+    <small class="form-text text-muted">
+      Le courriel de l'utilisateur.
+    </small>
+  </div>
+  <div class="form-group">
+    <label for="givenname">Prénom :</label>
+    <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" />
+  </div>
+  <div class="form-group">
+    <label for="surname">Nom de famille :</label>
+    <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
+  </div>
+  <div class="form-group">
     <label for="username">Identifiant souhaité :</label>
     <input type="text" id="username" name="username" class="form-control" value="{{ .Username }}" />
     <small class="form-text text-muted">
@@ -43,25 +62,6 @@
     Ce nom d'utilisateur est déjà pris.
   </div>
   {{end}}
-  <div class="form-group">
-    <label for="mail">Email :</label>
-    <input type="text" id="mail" name="mail" class="form-control" value="{{ .Mail }}" />
-    <small class="form-text text-muted">
-      Le courriel de l'utilisateur.
-    </small>
-  </div>
-  <div class="form-group">
-    <label for="displayname">Nom affiché :</label>
-    <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
-  </div>
-  <div class="form-group">
-    <label for="givenname">Prénom :</label>
-    <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" />
-  </div>
-  <div class="form-group">
-    <label for="surname">Nom de famille :</label>
-    <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
-  </div>
   <p><a href="#" onClick="javascript:var suggestPW = Math.random().toString(36).slice(-10); document.getElementById('password').value='{{ .SuggestPW }}';document.getElementById('password2').value='{{ .SuggestPW }}';">Utiliser ce mot de passe :</a> {{ .SuggestPW }}</p>
   <div class="form-group">
     <label for="password">Mot de passe :</label>
@@ -89,13 +89,21 @@
 </form>
 
 <script lang="javascript">
-  function changeUsername () {
+function changeDisplayname () {
+   displayname = document.getElementById("displayname");
+   username = document.getElementById("username");
+   if (!username.value) {
+    username.value = displayname.value.toLowerCase().replace(/[^A-z0-9.-]/g, '');
+   }
+}
+function changeUsername () {
    username = document.getElementById("username");
    calcCn = document.getElementById("calc-cn");
    username.value = username.value.toLowerCase().replace(/[^A-z0-9.-]/g, '');
   calcCn.innerText = "Login Name et Courriel seront : " + username.value.split("@")[0] + "@lesgv.com";
 }
 document.getElementById("username").addEventListener("change",changeUsername);
+document.getElementById("displayname").addEventListener("change",changeDisplayname);
 </script>
 {{end}}
 {{end}}
