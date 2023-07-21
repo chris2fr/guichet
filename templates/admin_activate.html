@@ -21,7 +21,7 @@
             </a>
           </td>
           <td>
-              {{$user.GetAttributeValue "cn"}}
+            <a href="/admin/ldap/{{$user.DN}}">{{$user.GetAttributeValue "cn"}}</a>
           </td>
           <td>{{$user.GetAttributeValue "mail"}}</td>
           <td>{{$user.GetAttributeValue "displayName"}}</td>
