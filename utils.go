@@ -42,8 +42,7 @@ func suggestPassword() string {
 
 func addNewUser(newUser NewUser, config *ConfigFile) bool {
 	log.Printf(fmt.Sprint("Adding New User"))
-	l := openLdap(*config)
-	l.Bind(config.NewUserDN, config.NewUserPassword)
+
 	// l.Bind(config.)
 	dn := newUser.DN
 	req := ldap.NewAddRequest(dn, nil)
