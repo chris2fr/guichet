@@ -213,7 +213,20 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
-		_, loginInfo := doLogin(w, r, username, user_dn, password)
+		err, loginInfo := doLogin(w, r, username, user_dn, password)
+		if err != nil {
+			data := &LoginFormData{
+				Username: username,
+			}
+			if ldap.IsErrorWithCode(err, ldap.LDAPResultInvalidCredentials) {
+				data.WrongPass = true
+			} else if ldap.IsErrorWithCode(err, ldap.LDAPResultNoSuchObject) {
+				data.WrongUser = true
+			} else {
+				data.ErrorMessage = err.Error()
+			}
+			templateLogin.Execute(w, data)
+		}
 		return loginInfo
 
 	} else {
@@ -229,19 +242,7 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 	// }
 
 	err := l.Bind(user_dn, password)
-	if err == nil {
-		templateLogin := getTemplate("login.html")
-		data := &LoginFormData{
-			Username: username,
-		}
-		if ldap.IsErrorWithCode(err, ldap.LDAPResultInvalidCredentials) {
-			data.WrongPass = true
-		} else if ldap.IsErrorWithCode(err, ldap.LDAPResultNoSuchObject) {
-			data.WrongUser = true
-		} else {
-			data.ErrorMessage = err.Error()
-		}
-		templateLogin.Execute(w, data)
+	if err != nil {
 		return err, nil
 	}
 
@@ -261,10 +262,12 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 		return err, nil
 	}
 
-	return nil, &LoginInfo{
+	LoginInfo := LoginInfo{
 		DN:       user_dn,
 		Username: username,
 		Password: password,
 	}
+
+	return nil, &LoginInfo
 
 }
