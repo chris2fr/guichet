@@ -41,7 +41,7 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	l, err := ldapOpen(w)
 	if err != nil {
-		log.Printf(fmt.Sprintf("58: %v %v", err, loginInfo))
+		log.Printf(fmt.Sprintf("58: %v %v", err, l))
 	}
 	// l.Bind(config.NewUserDN, config.NewUserPassword)
 
@@ -55,7 +55,7 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	// loginInfo, err := doLogin(w, r, "testuser", config.NewUserDN, config.NewUserPassword)
 
 	if err != nil {
-		log.Printf(fmt.Sprintf("58: %v %v", err, loginInfo))
+		log.Printf(fmt.Sprintf("58: %v %v", err, l))
 	}
 
 	// l := ldapOpen(w)
@@ -65,7 +65,7 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 
 	err = l.Bind(config.NewUserDN, config.NewUserPassword)
 	if err != nil {
-		log.Printf(fmt.Sprintf("58: %v %v", err, loginInfo))
+		log.Printf(fmt.Sprintf("58: %v %v", err, l))
 	}
 	handleNewAccount(w, r, l, config.NewUserDN)
 }
