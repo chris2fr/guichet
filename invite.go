@@ -39,9 +39,9 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	login := checkInviterLogin(w, r)
-	if login == nil {
-		return
-	}
+	// if login == nil {
+	// 	return
+	// }
 
 	handleNewAccount(w, r, login.conn, login.Info.DN)
 }
@@ -124,7 +124,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		r.ParseForm()
 
 		newUser := NewUser{}
-		login := checkLogin(w, r)
+		// login := checkLogin(w, r)
 
 		newUser.CN = fmt.Sprintf("%s@%s", strings.TrimSpace(strings.Join(r.Form["username"], "")), "lesgv.com")
 		newUser.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
@@ -142,7 +142,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 			data.ErrorPasswordMismatch = true
 		} else {
 			newUser.Password = password2
-			data.Success = addNewUser(newUser, config, login)
+			data.Success = addNewUser(newUser, config)
 			http.Redirect(w, r, "/admin/ldap/"+newUser.DN, http.StatusFound)
 		}
 

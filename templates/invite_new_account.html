@@ -92,9 +92,17 @@
 function changeDisplayname () {
    displayname = document.getElementById("displayname");
    username = document.getElementById("username");
+   givenname = document.getElementById("givenname");
+   sn = document.getElementById("sn");
    if (!username.value) {
     username.value = displayname.value;
     changeUsername();
+   }
+   if (!givenname.value) {
+    givenname.value = displayname.value.split(" ")[0];
+   }
+   if (!sn.value) {
+    sn.value = displayname.value.split(" ")[1];
    }
 }
 function changeUsername () {

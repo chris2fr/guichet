@@ -40,9 +40,10 @@ func suggestPassword() string {
 	return password
 }
 
-func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {
+func addNewUser(newUser NewUser, config *ConfigFile) bool {
 	log.Printf(fmt.Sprint("Adding New User"))
-	// l := openLdap(config)
+	l := openLdap(*config)
+	l.Bind(config.NewUserDN, config.NewUserPassword)
 	// l.Bind(config.)
 	dn := newUser.DN
 	req := ldap.NewAddRequest(dn, nil)
@@ -72,7 +73,10 @@ func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {
 		pw, _ := SSHAEncode(newUser.Password)
 		req.Attribute("userPassword", []string{pw})
 	}
-	err := login.conn.Add(req)
+
+	// conn :=
+
+	err := l.Add(req)
 	log.Printf(fmt.Sprintf("71: %v", err))
 	log.Printf(fmt.Sprintf("72: %v", req))
 	log.Printf(fmt.Sprintf("73: %v", newUser))

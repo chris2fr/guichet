@@ -50,7 +50,10 @@ type ConfigFile struct {
 	S3Region    string `json:"s3_region"`
 	S3Bucket    string `json:"s3_bucket"`
 
-	Org string `json:"org"`
+	Org             string `json:"org"`
+	DomainName      string `json:"domain_name"`
+	NewUserDN       string `json:"new_user_dn"`
+	NewUserPassword string `json:"new_user_password"`
 }
 
 var configFlag = flag.String("config", "./config.json", "Configuration file path")
