@@ -75,8 +75,12 @@ func addNewUser(newUser NewUser, config *ConfigFile, ldapConn *ldap.Conn) bool {
 		req.Attribute("description", []string{newUser.Description})
 	}
 	if newUser.Password != "" {
-		pw, _ := SSHAEncode(newUser.Password)
-		req.Attribute("userPassword", []string{pw})
+		pwdEncoded, _ := encodePassword(newUser.Password)
+		// if err != nil {
+		// 	log.Printf("Error encoding password:  %s", err)
+		// 	return err
+		// }
+		req.Attribute("userPassword", []string{pwdEncoded})
 	}
 
 	// conn :=
@@ -91,4 +95,14 @@ func addNewUser(newUser NewUser, config *ConfigFile, ldapConn *ldap.Conn) bool {
 	} else {
 		return true
 	}
+}
+
+function encodePassword (inPassword string) (string, error) {
+	utf16 := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
+	return utf16.NewEncoder().String("\"" + password + "\"")
+	// if err != nil {
+	// 	log.Printf("Error encoding password:  %s", err)
+	// 	return err
+	// }
+
 }
