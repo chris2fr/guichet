@@ -89,6 +89,20 @@ func handleAdminActivateUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/ldap/"+"cn="+cn+","+config.UserBaseDN, http.StatusFound)
 }
 
+func handleAdminUnactivateUser(w http.ResponseWriter, r *http.Request) {
+	cn := mux.Vars(r)["cn"]
+	login := checkAdminLogin(w, r)
+	if login == nil {
+		return
+	}
+	modifyRequest := *ldap.NewModifyDNRequest("cn="+cn+","+config.UserBaseDN, "cn="+cn, true, config.InvitationBaseDN)
+	err := login.conn.ModifyDN(&modifyRequest)
+	if err != nil {
+		return
+	}
+	http.Redirect(w, r, "/admin/ldap/"+"cn="+cn+","+config.UserBaseDN, http.StatusFound)
+}
+
 func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	templateAdminUsers := getTemplate("admin_users.html")
 

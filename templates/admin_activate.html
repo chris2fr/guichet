@@ -3,6 +3,7 @@
 {{define "body"}}
 <table class="table mt-4">
   <thead>
+    <th scope="col"></th>
     <th scope="col">Login</th>
     <th scope="col">Email</th>
     <th scope="col">Nom d'ffichage</th>
@@ -16,8 +17,11 @@
         <tr>
           <td>
             <a href="/admin/activate/{{ $user.GetAttributeValue "cn" }}">
-              {{$user.GetAttributeValue "cn"}}
+              Activer
             </a>
+          </td>
+          <td>
+              {{$user.GetAttributeValue "cn"}}
           </td>
           <td>{{$user.GetAttributeValue "mail"}}</td>
           <td>{{$user.GetAttributeValue "displayName"}}</td>

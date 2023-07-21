@@ -10,6 +10,7 @@
 
 <table class="table mt-4">
   <thead>
+    <th scope="col"></th>
     <th scope="col">Identifiant</th>
     <th scope="col">Nom complet</th>
     <th scope="col">Email</th>
@@ -18,6 +19,11 @@
     {{with $root := .}}
       {{range $user := $root.Users}}
         <tr>
+          <td>
+            <a href="/admin/unactivate/{{ $user.GetAttributeValue "cn" }}">
+              Dèsactiver
+            </a>
+          </td>
           <td>
             <a href="/admin/ldap/{{$user.DN}}">
               {{$user.GetAttributeValue $root.UserNameAttr}}
