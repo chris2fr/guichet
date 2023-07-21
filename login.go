@@ -213,7 +213,8 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
-		return doLogin(w, r, username, user_dn, password)
+		loginInfo := *doLogin(w, r, username, user_dn, password)
+		return &loginInfo
 	} else {
 		http.Error(w, "Unsupported method", http.StatusBadRequest)
 		return nil
