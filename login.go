@@ -213,15 +213,16 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
-		loginInfo := *doLogin(w, r, username, user_dn, password)
+		loginInfo := doLogin(w, r, username, user_dn, password)
 		return &loginInfo
+
 	} else {
 		http.Error(w, "Unsupported method", http.StatusBadRequest)
 		return nil
 	}
 }
 
-func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn string, password string) *LoginInfo {
+func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn string, password string) LoginInfo {
 	l := ldapOpen(w)
 	if l == nil {
 		return nil
@@ -260,7 +261,7 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 		return nil
 	}
 
-	return &LoginInfo{
+	return LoginInfo{
 		DN:       user_dn,
 		Username: username,
 		Password: password,
