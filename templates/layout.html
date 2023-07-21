@@ -14,12 +14,12 @@
   <link rel="stylesheet" type="text/css" href="/static/css/lesgv.css" />
   <link rel="stylesheet" type="text/css" href="/css/lesgv/faire-ma-home-page.css" />
 
-  <title>{{template "title" .}} Guichet</title>
+  <title>{{template "title" .}}</title>
 </head>
 
 <body>
   <div class="container mb-4">
-    <h1>Guichet Les Grands Voisins</h1>
+    <h1><a href="/">{{ template "title" .}}</a></h1>
     <nav role="navigation">
       <div id="menuToggle">
         <!--
@@ -73,6 +73,7 @@
   <script src="/static/javascript/jquery.slim.min.js"></script>
   <script src="/static/javascript/bootstrap.bundle.min.js"></script>
   <script src="/static/javascript/lesgv.js"></script>
+  <script src="/static/javascript/burger.js"></script>
   <script src="/static/javascript/journuit.js"></script>
 </body>
 
