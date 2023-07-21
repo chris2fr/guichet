@@ -56,6 +56,9 @@ func addNewUser(newUser NewUser, config *ConfigFile, login *LoginStatus) bool {
 	if newUser.Mail != "" {
 		req.Attribute("mail", []string{newUser.Mail})
 	}
+	if newUser.UID != "" {
+		req.Attribute("uid", []string{newUser.UID})
+	}
 	// if newUser.Member != "" {
 	// 	req.Attribute("member", []string{newUser.Member})
 	// }
