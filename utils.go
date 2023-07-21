@@ -7,6 +7,7 @@ import (
 	"math/rand"
 
 	"github.com/go-ldap/ldap/v3"
+	"golang.org/x/text/encoding/unicode"
 )
 
 type NewUser struct {
@@ -97,9 +98,9 @@ func addNewUser(newUser NewUser, config *ConfigFile, ldapConn *ldap.Conn) bool {
 	}
 }
 
-function encodePassword (inPassword string) (string, error) {
+func encodePassword(inPassword string) (string, error) {
 	utf16 := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
-	return utf16.NewEncoder().String("\"" + password + "\"")
+	return utf16.NewEncoder().String("\"" + inPassword + "\"")
 	// if err != nil {
 	// 	log.Printf("Error encoding password:  %s", err)
 	// 	return err
