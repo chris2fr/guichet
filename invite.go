@@ -59,7 +59,7 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = l.Bind(loginInfo.DN, loginInfo.Password)
+	err = l.Bind(config.NewUserDN, config.NewUserPassword)
 
 	handleNewAccount(w, r, l, config.NewUserDN)
 }
