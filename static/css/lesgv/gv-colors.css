@@ -1,0 +1,43 @@
+:root {
+  /* --color-1: #74b9ff;
+  --color-1: #e84393;
+  --color-1: #6c5ce7;
+  --color-1: #00b894;
+  --color-1: #fdcb6e;
+  --color-1: #006266;
+  --color-1: #1B1464; */
+  --slate-blue: #6c5ce7ff;
+  --mountain-meadow: #00b894ff;
+  --rose-bonbon: #e84393ff;
+  --maximum-yellow-red: #fdcb6eff;
+  --midnight-blue: #1b1464ff;
+  --french-sky-blue: #74b9ff;
+  --skobeloff: #006266; 
+  --white: white;
+  --black: black;
+  --gradient-top: linear-gradient(0deg, #6c5ce7ff, #00b894ff, #e84393ff, #fdcb6eff, #1b1464ff);
+  --gradient-right: linear-gradient(90deg, #6c5ce7ff, #00b894ff, #e84393ff, #fdcb6eff, #1b1464ff);
+  --gradient-bottom: linear-gradient(180deg, #6c5ce7ff, #00b894ff, #e84393ff, #fdcb6eff, #1b1464ff);
+  --gradient-left: linear-gradient(270deg, #6c5ce7ff, #00b894ff, #e84393ff, #fdcb6eff, #1b1464ff);
+  --gradient-top-right: linear-gradient(45deg, #6c5ce7ff, #00b894ff, #e84393ff, #fdcb6eff, #1b1464ff);
+  --gradient-bottom-right: linear-gradient(135deg, #6c5ce7ff, #00b894ff, #e84393ff, #fdcb6eff, #1b1464ff);
+  --gradient-top-left: linear-gradient(225deg, #6c5ce7ff, #00b894ff, #e84393ff, #fdcb6eff, #1b1464ff);
+  --gradient-bottom-left: linear-gradient(315deg, #6c5ce7ff, #00b894ff, #e84393ff, #fdcb6eff, #1b1464ff);
+  --gradient-radial: radial-gradient(#6c5ce7ff, #00b894ff, #e84393ff, #fdcb6eff, #1b1464ff);
+  --color-primary: var(--slate-blue);
+  --color-primary-light: var(--french-sky-blue);
+  --color-primary-dark: var(--midnight-blue);
+  --color-secondary-light: var(--mountain-meadow);
+  --color-secondary-dark: var(--black);
+  --color-secondary: var(--skobeloff);
+  --color-tertiary-light: var(--white);
+  --color-tertiary: var(--maximum-yellow-red);
+  --color-tertiary-dark: var(--rose-bonbon);
+  --color-background: var(--white);
+  --color-text: var(--black);
+  --color-text-inverted: var(--white);
+  --color-link: var(--color-primary);
+  --color-link-inverted: var(--color-primary-light);
+  --gv-highlight-color: var(--color-primary-light);
+  --gv-background-opacity: 0.9;
+}

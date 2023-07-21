@@ -1,0 +1,158 @@
+div.container,
+div.posts {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 1rem 1rem;
+  gap: 1rem;
+}
+
+body {
+  margin: 1rem auto;
+  width: 90vw;
+}
+
+.card {
+  min-width: unset;
+}
+
+div.lesgv-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+div.agenda-item {
+  overflow: hidden;
+}
+
+.agenda-item img {
+  width: 100%;
+  max-height: 14rem;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.agenda-item a.left img {
+  width: 50%;
+  float: left;
+  padding: 0 1rem 0 0;
+}
+
+.agenda-item a.right img {
+  width: 50%;
+  float: right;
+  padding: 0 0 0 1rem;
+}
+
+.agenda-item p {
+  margin-block-end: 0.25rem;
+}
+
+ul.agenda-item-date-lieu {
+  padding-left: 0;
+  padding-top:0;
+  margin-top: -0.5rem;
+}
+ul.agenda-item-date-lieu li {
+  padding: 0 1rem 0 0;
+  display: inline-block;
+  font-size: small;
+}
+.apropos {
+  grid-row-start: 1;
+  grid-row-end: 2;
+  
+}
+.agenda {
+  grid-area: 1 / 2 / 3 / 4;
+  border: var(--color-text);
+  border-style: solid;
+  border-width: 1px;
+  padding: 0 0.5rem;
+  border-top: unset;
+  border-bottom: unset;
+  border-radius: 1rem;
+}
+
+.agenda h2 {
+  text-align: center;
+}
+
+div.posts div.card:nth-child(3) {
+  grid-area: 2 / 1 / 4 / 2;
+}
+div.posts div.card:nth-child(4) {
+  grid-area: 3 / 2 / 4 / 4;
+}
+div.posts div.card:nth-child(6) {
+  grid-area: 4 / 2 / 5 / 4;
+}
+div.posts div.card:nth-child(4) div.card-body{
+  flex-direction: row;
+}
+div.posts div.card:nth-child(6) div.card-body {
+  flex-direction: row-reverse;
+}
+div.posts div.card:nth-child(4) img,
+div.posts div.card:nth-child(6) img {
+  width: 14rem;
+  padding: 0 0 0 0;
+  margin: 1rem;
+  border-radius: 1rem;
+}
+
+@media (max-width: 800px) {
+  div.posts {
+    grid-template-columns: 1fr 1fr;
+  }
+  .agenda {
+    grid-area: 1 / 2 / 3 / 3;
+  }
+  div.lesgv-footer {
+    grid-template-columns: 1fr;
+  }
+  div.posts div.card:nth-child(3) {
+    grid-area: unset;
+  }
+  div.posts div.card:nth-child(4) {
+    grid-area: unset;
+  }
+  div.posts div.card:nth-child(6) {
+    grid-area: unset;
+  }
+  div.posts div.card:nth-child(4) div.card-body{
+    flex-direction: column;
+  }
+  div.posts div.card:nth-child(6) div.card-body {
+    flex-direction: column;
+  }
+  div.posts div.card:nth-child(4) img,
+  div.posts div.card:nth-child(6) img {
+    width: unset;
+    padding: unset;
+  }
+  .agenda-item a.right img,
+  .agenda-item a.left img {
+    width: 100%;
+    float: unset;
+    padding: 0 0 0 0;
+    border-radius: 1rem;
+  }
+
+}
+
+@media (max-width: 550px) {
+  div.posts {
+    grid-template-columns: 1fr;
+  }
+  .apropos {
+    grid-area: 1 / 1 / 2 / 2;
+  }
+  .agenda {
+    grid-area: 2 / 1 / 3 / 2;
+    border: var(--color-text);
+    border-style: solid;
+    border-width: 1px;
+    padding: 0 0.5rem;
+  }
+}
+

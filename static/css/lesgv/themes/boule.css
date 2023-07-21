@@ -1,0 +1,62 @@
+:root {
+  --color-primary:  var(--mountain-meadow);
+  --color-primary-light: var(--maximum-yellow-red); 
+  --color-primary-dark: var(--skobeloff);
+  --color-secondary-light: var(--color-whiteish);
+  --color-secondary-dark: var(--color-blackish);
+  --color-secondary:  var(--rose-bonbon);
+  --color-tertiary-light:  var(--french-sky-blue);
+  --color-tertiary: var(--slate-blue);
+  --color-tertiary-dark:  var(--midnight-blue);
+  --color-background: var(--color-whiteish);
+  --color-background-inverted: var(--color-primary-dark);
+  --color-text:  var(--color-blackish);
+  --color-text-inverted: var(--color-whiteish);
+  --color-link: var(--color-primary-dark);
+  --color-link-inverted: var(--color-primary-light);
+  --gv-highlight-color: var(--color-seccondary);
+  --color-highlight: var(--color-secondary);
+  --gv-background-opacity: 0.9;
+  --color-link-hover: var(--color-secondary);
+  --color-link-hover-inverted: var(--color-primary-light);
+}
+.darkmode {
+    --color-background: var(--color-blackish);
+    --color-text: var(--color-whiteish);
+    --color-text-inverted: var(--color-primary-dark);
+    --color-link: var(--color-primary-light);
+    --color-link-inverted: var(--color-primary-dark);
+    --color-link-hover: var(--color-secondary);
+}
+div.CT, div.FL, div.FR, div.HH {
+    --color-background: var(--color-blackish);
+    --color-text: var(--color-whiteish);
+    --color-text-inverted: var(--color-primary-dark);
+    --color-link: var(--color-primary-light);
+    --color-link-inverted: var(--color-primary-dark);
+    --color-link-hover: var(--color-secondary);
+    color: var(--color-text);
+    background-color: var(--color-background);
+}
+.CT a, .FL a, .FR a, .HH a {
+    color: var(--color-link);
+}
+.CT a:hover, .FL a:hover, .FR a:hover, .HH a:hover {
+    color: var(--color-link-hover);
+}
+body.darkmode div.CT,
+body.darkmode div.FL,
+body.darkmode div.FR,
+body.darkmode div.HH {
+ --color-background: var(--color-whiteish);
+  --color-background-inverted: var(--color-primary-dark);
+  --color-text:  var(--color-blackish);
+  --color-text-inverted: var(--color-whiteish);
+  --color-link: var(--color-primary-dark);
+  --color-link-inverted: var(--color-primary-light);
+  --gv-highlight-color: var(--color-secondary);
+  --color-highlight: var(--color-secondary);
+  --gv-background-opacity: 0.9;
+  --color-link-hover: var(--color-secondary);
+  --color-link-hover-inverted: var(--color-primary-light);
+}
