@@ -213,8 +213,8 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
-		loginInfo := doLogin(w, r, username, user_dn, password)
-		return &loginInfo
+		_, loginInfo := doLogin(w, r, username, user_dn, password)
+		return loginInfo
 
 	} else {
 		http.Error(w, "Unsupported method", http.StatusBadRequest)
@@ -222,11 +222,11 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 	}
 }
 
-func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn string, password string) LoginInfo {
+func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn string, password string) (error, *LoginInfo) {
 	l := ldapOpen(w)
-	if l == nil {
-		return nil
-	}
+	// if l == nil {
+	// 	return nil, nil
+	// }
 
 	err := l.Bind(user_dn, password)
 	if err == nil {
@@ -242,7 +242,7 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 			data.ErrorMessage = err.Error()
 		}
 		templateLogin.Execute(w, data)
-		return nil
+		return err, nil
 	}
 
 	// Successfully logged in, save it to session
@@ -258,10 +258,10 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 	err = session.Save(r, w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return nil
+		return err, nil
 	}
 
-	return LoginInfo{
+	return nil, &LoginInfo{
 		DN:       user_dn,
 		Username: username,
 		Password: password,
