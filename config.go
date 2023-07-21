@@ -4,7 +4,9 @@ config handles reading the config.json file at the root and processing the setti
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"io/ioutil"
 	"log"
 	"os"
 )
