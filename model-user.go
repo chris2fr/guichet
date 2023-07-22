@@ -39,7 +39,7 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 		false,
 		"",
 		[]string{
-			"*",
+			"(objectClass=inetOrgPerson)",
 		},
 		nil,
 	)
