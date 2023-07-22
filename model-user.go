@@ -166,7 +166,7 @@ func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string, pr
 	if value != "" {
 		modifReq.Replace(key, []string{value})
 	} else {
-		modifReq.Delete(key, []string{value})
+		modifReq.Delete(key, []string{previousValue})
 	}
 	return nil
 }

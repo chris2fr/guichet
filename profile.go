@@ -59,11 +59,13 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		data.GivenName = user.GivenName
 		data.Surname = user.SN
 		data.Description = user.Description
-		err := modify(user, config, login.conn)
-		if err != nil {
-			data.ErrorMessage = "handleProfile : " + err.Error()
-		} else {
-			data.Success = true
+		if user.Mail != "" {
+			err := modify(user, config, login.conn)
+			if err != nil {
+				data.ErrorMessage = "handleProfile : " + err.Error()
+			} else {
+				data.Success = true
+			}
 		}
 
 		/*
