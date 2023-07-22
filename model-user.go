@@ -134,11 +134,15 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	modify_request := ldap.NewModifyRequest(user.DN, nil)
-	replaceIfContent(modify_request, "displayName", user.DisplayName)
-	replaceIfContent(modify_request, "givenName", user.GivenName)
-	replaceIfContent(modify_request, "sn", user.SN)
-	replaceIfContent(modify_request, "description", user.Description)
-	err := ldapConn.Modify(modify_request)
+	previousUser, err := get(user, config, ldapConn)
+	if err != nil {
+		return err
+	}
+	replaceIfContent(modify_request, "displayName", user.DisplayName, previousUser.DisplayName)
+	replaceIfContent(modify_request, "givenName", user.GivenName, previousUser.GivenName)
+	replaceIfContent(modify_request, "sn", user.SN, previousUser.SN)
+	replaceIfContent(modify_request, "description", user.Description, previousUser.Description)
+	err = ldapConn.Modify(modify_request)
 	if err != nil {
 		return err
 	}
@@ -155,9 +159,11 @@ func bind(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	return ldapConn.Bind(user.DN, user.Password)
 }
 
-func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string) error {
+func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string, previousValue string) error {
 	if value != "" {
 		modifReq.Replace(key, []string{value})
+	} else {
+		modifReq.Delete(key, []string{value})
 	}
 	return nil
 }
