@@ -64,14 +64,15 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 				data.Success = true
 			}
 		} else {
-			user, _ = get(User{
-				DN: login.Info.DN
-			}, config, login.conn)
-			data.DisplayName = user.DisplayName
-			data.GivenName = user.GivenName
-			data.Surname = user.SN
-			data.Description = user.Description
-			data.Mail = user.Mail
+			findUser, err := get(user, config, login.conn)
+			if err != nil {
+				data.ErrorMessage = "handleProfile : " + err.Error()
+			}
+			data.DisplayName = findUser.DisplayName
+			data.GivenName = findUser.GivenName
+			data.Surname = findUser.SN
+			data.Description = findUser.Description
+			data.Mail = findUser.Mail
 		}
 
 		/*
