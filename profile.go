@@ -56,7 +56,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 			// Password: ,
 		}
 
-		if user.Mail != "" {
+		if user.DisplayName != "" {
 			err := modify(user, config, login.conn)
 			if err != nil {
 				data.ErrorMessage = "handleProfile : " + err.Error()

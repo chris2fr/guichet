@@ -134,6 +134,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 }
 
 func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
+	log.Printf("Modify User : %v", user)
 	modify_request := ldap.NewModifyRequest(user.DN, nil)
 	previousUser, err := get(user, config, ldapConn)
 	if err != nil {
