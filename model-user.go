@@ -31,13 +31,13 @@ type User struct {
 
 func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 	searchReq := ldap.NewSearchRequest(
-		config.UserBaseDN,
-		ldap.ScopeSingleLevel,
+		user.DN,
+		ldap.ScopeBaseObject,
 		ldap.NeverDerefAliases,
 		0,
 		0,
 		false,
-		"(cn="+user.CN+")",
+		"(objectClass=*)",
 		[]string{
 			"cn",
 			"givenName",
