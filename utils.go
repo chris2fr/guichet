@@ -7,7 +7,7 @@ import (
 	"math/rand"
 
 	"github.com/go-ldap/ldap/v3"
-	"golang.org/x/text/encoding/unicode"
+	// "golang.org/x/text/encoding/unicode"
 )
 
 func openLdap(config ConfigFile) *ldap.Conn {
