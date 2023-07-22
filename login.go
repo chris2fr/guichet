@@ -92,6 +92,11 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		DN: login_info.DN,
 	}, config, l)
 
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return nil
+	}
+
 	userEntry := ldapUser.UserEntry
 
 	loginStatus := &LoginStatus{

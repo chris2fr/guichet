@@ -45,6 +45,9 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 	)
 	searchRes, err := ldapConn.Search(searchReq)
 	if err != nil {
+		log.Printf("get User : %v", err)
+		log.Printf("get User : %v", searchReq)
+		log.Printf("get User : %v", searchRes)
 		return nil, err
 	}
 	userEntry := searchRes.Entries[0]
