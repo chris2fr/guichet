@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/go-ldap/ldap/v3"
 )
@@ -25,6 +26,7 @@ type User struct {
 	Password    string
 	CanAdmin    bool
 	CanInvite   bool
+	UserEntry   *ldap.Entry
 }
 
 func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
@@ -52,6 +54,9 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 		SN:          searchRes.Entries[0].GetAttributeValue("sn"),
 		UID:         searchRes.Entries[0].GetAttributeValue("uid"),
 		CN:          searchRes.Entries[0].GetAttributeValue("cn"),
+		CanAdmin:    strings.EqualFold(user.DN, config.AdminAccount),
+		CanInvite:   true,
+		UserEntry:   searchRes.Entries[0],
 	}
 	return &resUser, nil
 }
