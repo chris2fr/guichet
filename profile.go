@@ -3,8 +3,6 @@ package main
 import (
 	"net/http"
 	"strings"
-
-	"github.com/go-ldap/ldap/v3"
 )
 
 type ProfileTplData struct {
@@ -141,8 +139,10 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 		} else if password2 != password {
 			data.NoMatchError = true
 		} else {
-			passwordModifyRequest := ldap.NewPasswordModifyRequest(login.Info.DN, "", password)
-			_, err := login.conn.PasswordModify(passwordModifyRequest)
+			err := passwd(User{
+				DN:       login.Info.DN,
+				Password: password,
+			}, config, login.conn)
 			if err != nil {
 				data.ErrorMessage = err.Error()
 			} else {

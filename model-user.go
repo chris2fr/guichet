@@ -92,6 +92,12 @@ func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	return nil
 }
 
+func passwd(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
+	passwordModifyRequest := ldap.NewPasswordModifyRequest(user.DN, "", user.Password)
+	_, err := ldapConn.PasswordModify(passwordModifyRequest)
+	return err
+}
+
 func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string) error {
 	if value != "" {
 		modifReq.Replace(key, []string{value})
