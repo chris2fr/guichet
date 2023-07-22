@@ -224,6 +224,9 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 			} else if ldap.IsErrorWithCode(err, ldap.LDAPResultNoSuchObject) {
 				data.WrongUser = true
 			} else {
+				log.Printf("%v", err)
+				log.Printf("%v", user_dn)
+				log.Printf("%v", username)
 				data.ErrorMessage = err.Error()
 			}
 			templateLogin.Execute(w, data)
@@ -258,6 +261,7 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 
 	err = session.Save(r, w)
 	if err != nil {
+		log.Printf("%v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return nil, err
 	}
