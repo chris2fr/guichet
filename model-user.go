@@ -164,11 +164,15 @@ func bind(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	return ldapConn.Bind(user.DN, user.Password)
 }
 
-func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string, previousValue []string) error {
+func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string, previousValue string) error {
+	log.Printf("replaceIfContent : %v", modifReq)
+	log.Printf("replaceIfContent : %v", key)
+	log.Printf("replaceIfContent : %v", value)
+	log.Printf("replaceIfContent : %v", previousValue)
 	if value != "" {
 		modifReq.Replace(key, []string{value})
 	} else {
-		modifReq.Delete(key, previousValue)
+		modifReq.Delete(key, []string{previousValue})
 	}
 	return nil
 }
