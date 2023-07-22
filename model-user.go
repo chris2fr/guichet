@@ -60,6 +60,7 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 		DN:          user.DN,
 		GivenName:   searchRes.Entries[0].GetAttributeValue("givenName"),
 		DisplayName: searchRes.Entries[0].GetAttributeValue("displayName"),
+		Description: searchRes.Entries[0].GetAttributeValue("description"),
 		SN:          searchRes.Entries[0].GetAttributeValue("sn"),
 		UID:         searchRes.Entries[0].GetAttributeValue("uid"),
 		CN:          searchRes.Entries[0].GetAttributeValue("cn"),
