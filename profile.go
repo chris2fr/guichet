@@ -63,17 +63,16 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 			} else {
 				data.Success = true
 			}
-		} else {
-			findUser, err := get(user, config, login.conn)
-			if err != nil {
-				data.ErrorMessage = "handleProfile : " + err.Error()
-			}
-			data.DisplayName = findUser.DisplayName
-			data.GivenName = findUser.GivenName
-			data.Surname = findUser.SN
-			data.Description = findUser.Description
-			data.Mail = findUser.Mail
 		}
+		findUser, err := get(user, config, login.conn)
+		if err != nil {
+			data.ErrorMessage = "handleProfile : " + err.Error()
+		}
+		data.DisplayName = findUser.DisplayName
+		data.GivenName = findUser.GivenName
+		data.Surname = findUser.SN
+		data.Description = findUser.Description
+		data.Mail = findUser.Mail
 
 		/*
 					visible := strings.TrimSpace(strings.Join(r.Form["visibility"], ""))
