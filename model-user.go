@@ -32,7 +32,7 @@ type User struct {
 func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 	searchReq := ldap.NewSearchRequest(
 		config.UserBaseDN,
-		ldap.ScopeSingleLevel,
+		ldap.ScopeBaseObject,
 		ldap.NeverDerefAliases,
 		0,
 		0,
