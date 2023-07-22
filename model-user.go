@@ -86,7 +86,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 	dn := user.DN
 	req := ldap.NewAddRequest(dn, nil)
-	req.Attribute("objectClass", []string{"top", "inetOrgPerson", "pilotPerson"})
+	req.Attribute("objectClass", []string{"top", "person", "organizationalPerson", "inetOrgPerson"})
 	if user.DisplayName != "" {
 		req.Attribute("displayName", []string{user.DisplayName})
 	}
