@@ -205,16 +205,21 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		templateLogin.Execute(w, LoginFormData{})
 		return nil
 	} else if r.Method == "POST" {
+		log.Printf("%v", "Parsing Form handleLogin")
 		r.ParseForm()
 
 		username := strings.Join(r.Form["username"], "")
 		password := strings.Join(r.Form["password"], "")
 		user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
 
+		log.Printf("%v", user_dn)
+		log.Printf("%v", username)
+
 		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
 		loginInfo, err := doLogin(w, r, username, user_dn, password)
+		log.Printf("%v", loginInfo)
 		if err != nil {
 			data := &LoginFormData{
 				Username: username,
