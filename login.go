@@ -90,6 +90,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 	ldapUser, err := get(User{
 		DN: login_info.DN,
+		CN: login_info.Username,
 	}, config, l)
 
 	if err != nil {
