@@ -157,8 +157,8 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
-		newUser.CN = strings.TrimSpace(strings.Join(r.Form["CN"], ""))
-		newUser.DN = "cn=" + newUser.CN + "," + config.InvitationBaseDN
+		newUser.CN = strings.TrimSpace(strings.Join(r.Form["cn"], ""))
+		newUser.DN = "cn=" + strings.TrimSpace(strings.Join(r.Form["cn"], "")) + "," + config.InvitationBaseDN
 
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
