@@ -33,16 +33,21 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 	searchReq := ldap.NewSearchRequest(
 		user.DN,
 		ldap.ScopeBaseObject,
-		0,
+		ldap.NeverDerefAliases,
 		0,
 		0,
 		false,
-		"",
+		"(objectClass=inetOrgPerson)",
 		[]string{
-			"(objectClass=inetOrgPerson)",
+			"cn",
+			"givenName",
+			"displayName",
+			"uid",
+			"sn",
+			"mail",
+			"description",
 		},
-		nil,
-	)
+		nil)
 	searchRes, err := ldapConn.Search(searchReq)
 	if err != nil {
 		log.Printf("get User : %v", err)
