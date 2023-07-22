@@ -151,13 +151,13 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser := User{}
 		// login := checkLogin(w, r)
 
-		newUser.CN = fmt.Sprintf("%s@%s", strings.TrimSpace(strings.Join(r.Form["username"], "")), "lesgv.com")
+		// newUser.Mail = fmt.Sprintf("%s@%s", strings.TrimSpace(strings.Join(r.Form["username"], "")), "lesgv.com")
 		newUser.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
 		newUser.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
-		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
-		newUser.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["otherMailbox"], ""))
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
+		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
+		newUser.CN = strings.TrimSpace(strings.Join(r.Form["otherMailbox"], ""))
 		newUser.DN = "cn=" + newUser.CN + "," + config.InvitationBaseDN
 
 		password1 := strings.Join(r.Form["password"], "")
