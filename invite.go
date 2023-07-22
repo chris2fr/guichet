@@ -157,7 +157,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
-		newUser.CN = strings.TrimSpace(strings.Join(r.Form["otherMailbox"], ""))
+		newUser.CN = strings.TrimSpace(strings.Join(r.Form["CN"], ""))
 		newUser.DN = "cn=" + newUser.CN + "," + config.InvitationBaseDN
 
 		password1 := strings.Join(r.Form["password"], "")
@@ -174,7 +174,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 				data.Success = false
 				data.ErrorMessage = err.Error()
 			}
-			http.Redirect(w, r, "/admin/ldap/"+newUser.DN, http.StatusFound)
+			http.Redirect(w, r, "/admin/activate", http.StatusFound)
 		}
 
 		// tryCreateAccount(l, data, password1, password2, invitedBy)
