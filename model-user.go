@@ -23,6 +23,37 @@ type User struct {
 	UID         string
 	Description string
 	Password    string
+	CanAdmin    bool
+	CanInvite   bool
+}
+
+func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
+	searchReq := ldap.NewSearchRequest(
+		user.DN,
+		ldap.ScopeBaseObject,
+		0,
+		0,
+		0,
+		false,
+		"",
+		[]string{
+			"*",
+		},
+		nil,
+	)
+	searchRes, err := ldapConn.Search(searchReq)
+	if err != nil {
+		return nil, err
+	}
+	resUser := User{
+		DN:          user.DN,
+		GivenName:   searchRes.Entries[0].GetAttributeValue("givenName"),
+		DisplayName: searchRes.Entries[0].GetAttributeValue("displayName"),
+		SN:          searchRes.Entries[0].GetAttributeValue("sn"),
+		UID:         searchRes.Entries[0].GetAttributeValue("uid"),
+		CN:          searchRes.Entries[0].GetAttributeValue("cn"),
+	}
+	return &resUser, nil
 }
 
 func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
