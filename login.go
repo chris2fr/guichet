@@ -92,10 +92,12 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		DN: login_info.DN,
 	}, config, l)
 
+	userEntry := ldapUser.UserEntry
+
 	loginStatus := &LoginStatus{
 		Info:      login_info,
 		conn:      l,
-		UserEntry: ldapUser.UserEntry,
+		UserEntry: userEntry,
 		CanAdmin:  ldapUser.CanAdmin,
 		CanInvite: ldapUser.CanInvite,
 	}

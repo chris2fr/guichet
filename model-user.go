@@ -47,6 +47,7 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+	userEntry := searchRes.Entries[0]
 	resUser := User{
 		DN:          user.DN,
 		GivenName:   searchRes.Entries[0].GetAttributeValue("givenName"),
@@ -56,7 +57,7 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 		CN:          searchRes.Entries[0].GetAttributeValue("cn"),
 		CanAdmin:    strings.EqualFold(user.DN, config.AdminAccount),
 		CanInvite:   true,
-		UserEntry:   searchRes.Entries[0],
+		UserEntry:   userEntry,
 	}
 	return &resUser, nil
 }
