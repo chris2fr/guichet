@@ -1031,7 +1031,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		} else if len(data.IdValue) == 0 {
 			data.Error = "No identifier specified"
 		} else {
-			newUser := NewUser{
+			newUser := User{
 				DN: data.IdType + "=" + data.IdValue + "," + super_dn,
 			}
 			// dn := data.IdType + "=" + data.IdValue + "," + super_dn
@@ -1076,7 +1076,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 				// req.Attribute("description", []string{data.Description})
 			}
 
-			addNewUser(newUser, config, login.conn)
+			add(newUser, config, login.conn)
 
 			// err := login.conn.Add(req)
 			// // log.Printf(fmt.Sprintf("899: %v",err))

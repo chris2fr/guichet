@@ -147,7 +147,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	if r.Method == "POST" {
 		r.ParseForm()
 
-		newUser := NewUser{}
+		newUser := User{}
 		// login := checkLogin(w, r)
 
 		newUser.CN = fmt.Sprintf("%s@%s", strings.TrimSpace(strings.Join(r.Form["username"], "")), "lesgv.com")
@@ -167,7 +167,11 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		} else {
 			newUser.Password = password2
 			l.Bind(config.NewUserDN, config.NewUserPassword)
-			data.Success = addNewUser(newUser, config, l)
+			err := add(newUser, config, l)
+			if err != nil {
+				data.Success = false
+				data.ErrorMessage = err.Error()
+			}
 			http.Redirect(w, r, "/admin/ldap/"+newUser.DN, http.StatusFound)
 		}
 
