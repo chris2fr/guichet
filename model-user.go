@@ -144,6 +144,9 @@ func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	replaceIfContent(modify_request, "description", user.Description, previousUser.Description)
 	err = ldapConn.Modify(modify_request)
 	if err != nil {
+		log.Printf(fmt.Sprintf("71: %v", err))
+		log.Printf(fmt.Sprintf("72: %v", modify_request))
+		log.Printf(fmt.Sprintf("73: %v", user))
 		return err
 	}
 	return nil
