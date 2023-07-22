@@ -123,13 +123,13 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 // Common functions for new account
 
 type NewAccountData struct {
-	Username     string
-	DisplayName  string
-	GivenName    string
-	Surname      string
-	Mail         string
-	SuggestPW    string
-	OtherMailbox string
+	Username    string
+	DisplayName string
+	GivenName   string
+	Surname     string
+	Mail        string
+	SuggestPW   string
+	CN          string
 
 	ErrorUsernameTaken    bool
 	ErrorInvalidUsername  bool
