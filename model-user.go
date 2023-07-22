@@ -63,6 +63,7 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 		SN:          searchRes.Entries[0].GetAttributeValue("sn"),
 		UID:         searchRes.Entries[0].GetAttributeValue("uid"),
 		CN:          searchRes.Entries[0].GetAttributeValue("cn"),
+		Mail:        searchRes.Entries[0].GetAttributeValue("mail"),
 		CanAdmin:    strings.EqualFold(user.DN, config.AdminAccount),
 		CanInvite:   true,
 		UserEntry:   userEntry,
