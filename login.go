@@ -231,21 +231,21 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		templateLogin.Execute(w, LoginFormData{})
 		return nil
 	} else if r.Method == "POST" {
-		log.Printf("%v", "Parsing Form handleLogin")
+		// log.Printf("%v", "Parsing Form handleLogin")
 		r.ParseForm()
 
 		username := strings.Join(r.Form["username"], "")
 		password := strings.Join(r.Form["password"], "")
 		user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
 
-		log.Printf("%v", user_dn)
-		log.Printf("%v", username)
+		// log.Printf("%v", user_dn)
+		// log.Printf("%v", username)
 
 		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
 		loginInfo, err := doLogin(w, r, username, user_dn, password)
-		log.Printf("%v", loginInfo)
+		// log.Printf("%v", loginInfo)
 		if err != nil {
 			data := &LoginFormData{
 				Username: username,
@@ -275,8 +275,8 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 
 	err := l.Bind(user_dn, password)
 	if err != nil {
-		log.Printf("%v", err)
-		log.Printf("%v", user_dn)
+		log.Printf("doLogin : %v", err)
+		log.Printf("doLogin : %v", user_dn)
 		return nil, err
 	}
 
@@ -292,7 +292,7 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 
 	err = session.Save(r, w)
 	if err != nil {
-		log.Printf("%v", err)
+		log.Printf("doLogin Session Save: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return nil, err
 	}
