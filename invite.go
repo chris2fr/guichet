@@ -123,12 +123,13 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 // Common functions for new account
 
 type NewAccountData struct {
-	Username    string
-	DisplayName string
-	GivenName   string
-	Surname     string
-	Mail        string
-	SuggestPW   string
+	Username     string
+	DisplayName  string
+	GivenName    string
+	Surname      string
+	Mail         string
+	SuggestPW    string
+	OtherMailbox string
 
 	ErrorUsernameTaken    bool
 	ErrorInvalidUsername  bool
@@ -155,6 +156,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
 		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
+		newUser.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["otherMailbox"], ""))
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		newUser.DN = "cn=" + newUser.CN + "," + config.InvitationBaseDN
 

@@ -15,18 +15,19 @@ import (
 Represents a user
 */
 type User struct {
-	DN          string
-	CN          string
-	GivenName   string
-	DisplayName string
-	Mail        string
-	SN          string
-	UID         string
-	Description string
-	Password    string
-	CanAdmin    bool
-	CanInvite   bool
-	UserEntry   *ldap.Entry
+	DN           string
+	CN           string
+	GivenName    string
+	DisplayName  string
+	Mail         string
+	SN           string
+	UID          string
+	Description  string
+	Password     string
+	OtherMailbox string
+	CanAdmin     bool
+	CanInvite    bool
+	UserEntry    *ldap.Entry
 }
 
 func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
@@ -85,7 +86,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 	dn := user.DN
 	req := ldap.NewAddRequest(dn, nil)
-	req.Attribute("objectClass", []string{"top", "inetOrgPerson"})
+	req.Attribute("objectClass", []string{"top", "inetOrgPerson", "pilotPerson"})
 	if user.DisplayName != "" {
 		req.Attribute("displayName", []string{user.DisplayName})
 	}
