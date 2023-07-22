@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -240,6 +241,8 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 
 	err := l.Bind(user_dn, password)
 	if err != nil {
+		log.Printf("%v", err)
+		log.Printf("%v", user_dn)
 		return nil, err
 	}
 
