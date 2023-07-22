@@ -67,6 +67,18 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 		CanInvite:   true,
 		UserEntry:   userEntry,
 	}
+	searchReq.BaseDN = config.GroupCanAdmin
+	searchReq.Filter = "(member=" + user.DN + ")"
+	searchRes, err = ldapConn.Search(searchReq)
+	if err != nil {
+		log.Printf("get User : %v", err)
+		log.Printf("get User : %v", searchReq)
+		log.Printf("get User : %v", searchRes)
+		return nil, err
+	}
+	if len(searchRes.Entries) > 0 {
+		resUser.CanAdmin = true
+	}
 	return &resUser, nil
 }
 
