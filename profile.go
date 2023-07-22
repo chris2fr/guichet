@@ -55,10 +55,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 			Description: strings.TrimSpace(strings.Join(r.Form["description"], "")),
 			// Password: ,
 		}
-		data.DisplayName = user.DisplayName
-		data.GivenName = user.GivenName
-		data.Surname = user.SN
-		data.Description = user.Description
+
 		if user.Mail != "" {
 			err := modify(user, config, login.conn)
 			if err != nil {
@@ -66,6 +63,15 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 			} else {
 				data.Success = true
 			}
+		} else {
+			user, _ = get(User{
+				DN: login.Info.DN
+			}, config, login.conn)
+			data.DisplayName = user.DisplayName
+			data.GivenName = user.GivenName
+			data.Surname = user.SN
+			data.Description = user.Description
+			data.Mail = user.Mail
 		}
 
 		/*
