@@ -68,7 +68,13 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		return nil
 	}
 
-	err = l.Bind(login_info.DN, login_info.Password)
+	err = bind(User{
+		DN:       login_info.DN,
+		Password: login_info.Password,
+	}, config, l)
+
+	// err = l.Bind(login_info.DN, login_info.Password)
+
 	if err != nil {
 		delete(session.Values, "login_username")
 		delete(session.Values, "login_password")

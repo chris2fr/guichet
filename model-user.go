@@ -98,6 +98,10 @@ func passwd(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	return err
 }
 
+func bind(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
+	return ldapConn.Bind(user.DN, user.Password)
+}
+
 func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string) error {
 	if value != "" {
 		modifReq.Replace(key, []string{value})
