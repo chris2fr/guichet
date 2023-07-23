@@ -135,17 +135,19 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 	newCode, _ := b64.URLEncoding.DecodeString(code)
 	ldapConn, err := openNewUserLdap(config)
 	if err != nil {
-		log.Printf(fmt.Sprint("handleFoundPassword %v", err))
+		log.Printf(fmt.Sprint("handleFoundPassword / openNewUserLdap / %v", err))
 		data.ErrorMessage = err.Error()
 	}
 	codeArray := strings.Split(string(newCode), ";")
 	user := User{
 		UID:      codeArray[0],
 		Password: codeArray[1],
+		DN:       "uid=" + codeArray[0] + ",ou=invitations,dc=resdigita,dc=org",
 	}
 	data.Success, err = passwordFound(user, config, ldapConn)
 	if err != nil {
-		log.Printf(fmt.Sprint("handleFoundPassword %v", err))
+		log.Printf(fmt.Sprint("handleFoundPassword / passwordFound %v", err))
+		log.Printf(fmt.Sprint("handleFoundPassword / passwordFound %user", err))
 		data.ErrorMessage = err.Error()
 	}
 	templateFoundPasswordPage.Execute(w, data)
