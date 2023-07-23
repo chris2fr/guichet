@@ -93,9 +93,9 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (bool, er
 	}
 	err = l.Bind(user.DN, user.Password)
 	if err != nil {
-		log.Printf(fmt.Sprint("passwordFound %v", err))
-		log.Printf(fmt.Sprint("passwordFound %v", user.DN))
-		log.Printf(fmt.Sprint("passwordFound %v", user.UID))
+		log.Printf("passwordFound %v", err)
+		log.Printf("passwordFound %v", user.DN)
+		log.Printf("passwordFound %v", user.UID)
 		return false, err
 	}
 	return true, nil

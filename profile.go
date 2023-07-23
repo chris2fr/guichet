@@ -146,8 +146,8 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Success, err = passwordFound(user, config, ldapConn)
 	if err != nil {
-		log.Printf(fmt.Sprint("handleFoundPassword / passwordFound %v", err))
-		log.Printf(fmt.Sprint("handleFoundPassword / passwordFound %user", err))
+		log.Printf("handleFoundPassword / passwordFound %v", err)
+		log.Printf("handleFoundPassword / passwordFound %v", err)
 		data.ErrorMessage = err.Error()
 	}
 	templateFoundPasswordPage.Execute(w, data)
