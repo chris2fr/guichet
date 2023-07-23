@@ -54,12 +54,16 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
 	}
-	data := LostPasswordData{}
+	data := LostPasswordData{
+		Username:     "",
+		Mail:         "",
+		OtherMailbox: "",
+	}
 	if r.Method == "POST" {
 		r.ParseForm()
 		data.Username = strings.TrimSpace(strings.Join(r.Form["username"], ""))
 		data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
-		data.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["otherMailbox"], ""))
+		data.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
 		user := User{
 			CN:           data.Username,
 			Mail:         data.Mail,
