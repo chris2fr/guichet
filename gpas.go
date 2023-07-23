@@ -58,6 +58,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// Préparation du courriel à envoyer
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
+	user.DN = "uid=" + user.UID + ",ou=invitations,dc=resdigita,dc=org"
 	err = passwd(user, config, ldapConn)
 	if err != nil {
 		log.Printf(fmt.Sprintf("passwordLost : %v", err))
