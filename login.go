@@ -73,8 +73,6 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		Password: login_info.Password,
 	}, config, l)
 
-	// err = l.Bind(login_info.DN, login_info.Password)
-
 	if err != nil {
 		delete(session.Values, "login_username")
 		delete(session.Values, "login_password")
@@ -107,8 +105,6 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		CanAdmin:  ldapUser.CanAdmin,
 		CanInvite: ldapUser.CanInvite,
 	}
-
-	return loginStatus
 
 	/*
 
@@ -196,6 +192,8 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 		return loginStatus
 	*/
+
+	return loginStatus
 }
 
 func handleLogout(w http.ResponseWriter, r *http.Request) {
@@ -304,5 +302,4 @@ func doLogin(w http.ResponseWriter, r *http.Request, username string, user_dn st
 	}
 
 	return &LoginInfo, nil
-
 }

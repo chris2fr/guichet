@@ -75,6 +75,7 @@ func main() {
 
 	r.HandleFunc("/invite/new_account", handleInviteNewAccount)
 	r.HandleFunc("/invite/send_code", handleInviteSendCode)
+	r.HandleFunc("/gpas", handleLostPassword)
 	r.HandleFunc("/invitation/{code}", handleInvitationCode)
 
 	r.HandleFunc("/admin/users", handleAdminUsers)

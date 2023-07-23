@@ -38,6 +38,42 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 // New account creation directly from interface
 
+type LostPasswordData struct {
+	Username     string
+	Mail         string
+	OtherMailbox string
+}
+
+func handleLostPassword(w http.ResponseWriter, r *http.Request) {
+	templateLostPasswordPage := getTemplate("lost_password.html")
+	l, err := ldapOpen(w)
+	if err != nil {
+		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
+	}
+	err = l.Bind(config.NewUserDN, config.NewUserPassword)
+	if err != nil {
+		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
+	}
+	data := LostPasswordData{}
+	if r.Method == "POST" {
+		r.ParseForm()
+		data.Username = strings.TrimSpace(strings.Join(r.Form["username"], ""))
+		data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
+		data.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["otherMailbox"], ""))
+		user := User{
+			CN:           data.Username,
+			Mail:         data.Mail,
+			OtherMailbox: data.OtherMailbox,
+		}
+		err = passwordLost(user, config, l)
+		err = l.Bind(config.NewUserDN, config.NewUserPassword)
+		if err != nil {
+			log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
+		}
+	}
+	templateLostPasswordPage.Execute(w, data)
+}
+
 func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	l, err := ldapOpen(w)
 	if err != nil {
@@ -54,9 +90,9 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 
 	// loginInfo, err := doLogin(w, r, "testuser", config.NewUserDN, config.NewUserPassword)
 
-	if err != nil {
-		log.Printf(fmt.Sprintf("58: %v %v", err, l))
-	}
+	// if err != nil {
+	// 	log.Printf(fmt.Sprintf("58: %v %v", err, l))
+	// }
 
 	// l := ldapOpen(w)
 	if l == nil {
@@ -129,7 +165,7 @@ type NewAccountData struct {
 	Surname     string
 	Mail        string
 	SuggestPW   string
-	CN          string
+	OtherEmail  string
 
 	ErrorUsernameTaken    bool
 	ErrorInvalidUsername  bool
@@ -156,9 +192,9 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
-		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
-		newUser.CN = strings.TrimSpace(strings.Join(r.Form["cn"], ""))
-		newUser.DN = "cn=" + strings.TrimSpace(strings.Join(r.Form["cn"], "")) + "," + config.InvitationBaseDN
+		newUser.UID = strings.TrimSpace(strings.Join(r.Form["otheremail"], ""))
+		newUser.CN = strings.TrimSpace(strings.Join(r.Form["username"], ""))
+		newUser.DN = "cn=" + strings.TrimSpace(strings.Join(r.Form["username"], "")) + "," + config.InvitationBaseDN
 
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
