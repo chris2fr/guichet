@@ -40,9 +40,10 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("passwordLost : %v %v", err, ldapConn))
 		log.Printf(fmt.Sprintf("passwordLost : %v", searchReq))
 		log.Printf(fmt.Sprintf("passwordLost : %v", user))
-		return errors.New("LDAP chose")
+		return errors.New("Chose LDAP")
 	}
 	if len(searchRes.Entries) == 0 {
+		log.Printf("Il n'y a pas d'utilisateur qui correspond")
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
 	// Préparation du courriel à envoyer
@@ -66,6 +67,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	log.Printf("auth: %v", auth)
 	err = smtp.SendMail(config.SMTPServer+":587", auth, config.SMTPUsername, []string{user.OtherMailbox}, message)
 	if err != nil {
+		log.Printf("email send error %v", err)
 		return err
 	}
 	log.Printf("Mail sent.")
