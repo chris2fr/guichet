@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"log"
 	"net"
 
 	"math/rand"
@@ -11,15 +12,22 @@ import (
 )
 
 func openLdap(config *ConfigFile) (*ldap.Conn, error) {
+	var ldapConn *ldap.Conn
+	var err error
 	if config.LdapTLS {
 		tlsConf := &tls.Config{
 			ServerName:         config.LdapServerAddr,
 			InsecureSkipVerify: true,
 		}
-		return ldap.DialTLS("tcp", net.JoinHostPort(config.LdapServerAddr, "636"), tlsConf)
+		ldapConn, err = ldap.DialTLS("tcp", net.JoinHostPort(config.LdapServerAddr, "636"), tlsConf)
 	} else {
-		return ldap.DialURL("ldap://" + config.LdapServerAddr)
+		ldapConn, err = ldap.DialURL("ldap://" + config.LdapServerAddr)
 	}
+	if err != nil {
+		log.Printf("openLDAP %v", err)
+		log.Printf("openLDAP %v", config.LdapServerAddr)
+	}
+	return ldapConn, err
 
 	// l, err := ldap.DialURL(config.LdapServerAddr)
 	// if err != nil {
