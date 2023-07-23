@@ -1,8 +1,13 @@
 package main
 
 import (
+	b64 "encoding/base64"
+	"fmt"
+	"log"
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 type ProfileTplData struct {
@@ -120,6 +125,30 @@ type PasswdTplData struct {
 	TooShortError bool
 	NoMatchError  bool
 	Success       bool
+}
+
+func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
+	templateFoundPasswordPage := getTemplate("passwd.html")
+	data := PasswdTplData{}
+	code := mux.Vars(r)["code"]
+	// code = strings.TrimSpace(strings.Join([]string{code}, ""))
+	newCode, _ := b64.URLEncoding.DecodeString(code)
+	ldapConn, err := openNewUserLdap(config)
+	if err != nil {
+		log.Printf(fmt.Sprint("handleFoundPassword %v", err))
+		data.ErrorMessage = err.Error()
+	}
+	codeArray := strings.Split(string(newCode), ";")
+	user := User{
+		UID:      codeArray[0],
+		Password: codeArray[1],
+	}
+	data.Success, err = passwordFound(user, config, ldapConn)
+	if err != nil {
+		log.Printf(fmt.Sprint("handleFoundPassword %v", err))
+		data.ErrorMessage = err.Error()
+	}
+	templateFoundPasswordPage.Execute(w, data)
 }
 
 func handlePasswd(w http.ResponseWriter, r *http.Request) {

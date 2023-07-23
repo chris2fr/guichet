@@ -46,12 +46,6 @@ type PasswordFoundData struct {
 	OtherMailbox string
 }
 
-func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
-	templateFoundPasswordPage := getTemplate("passwd.html")
-	data := PasswordFoundData{}
-	templateFoundPasswordPage.Execute(w, data)
-}
-
 type PasswordLostData struct {
 	ErrorMessage string
 	Success      bool
@@ -60,19 +54,20 @@ type PasswordLostData struct {
 	OtherMailbox string
 }
 
+func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
+	l := openLdap(config)
+	err := l.Bind(config.NewUserDN, config.NewUserPassword)
+	if err != nil {
+		log.Printf(fmt.Sprintf("openNewUserLdap : %v %v", err, l))
+		// data.ErrorMessage = err.Error()
+	}
+	return l, err
+}
+
 func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 	templateLostPasswordPage := getTemplate("password_lost.html")
 	data := PasswordLostData{}
-	l, err := ldapOpen(w)
-	if err != nil {
-		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
-		data.ErrorMessage = err.Error()
-	}
-	err = l.Bind(config.NewUserDN, config.NewUserPassword)
-	if err != nil {
-		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
-		data.ErrorMessage = err.Error()
-	}
+
 	if r.Method == "POST" {
 		r.ParseForm()
 		data.Username = strings.TrimSpace(strings.Join(r.Form["username"], ""))
@@ -83,10 +78,15 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 			Mail:         data.Mail,
 			OtherMailbox: data.OtherMailbox,
 		}
-		err = passwordLost(user, config, l)
-		err = l.Bind(config.NewUserDN, config.NewUserPassword)
+		ldapConn, err := openNewUserLdap(config)
 		if err != nil {
-			log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
+			log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, ldapConn))
+			data.ErrorMessage = err.Error()
+		}
+		err = passwordLost(user, config, ldapConn)
+		err = ldapConn.Bind(config.NewUserDN, config.NewUserPassword)
+		if err != nil {
+			log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, ldapConn))
 			data.ErrorMessage = err.Error()
 		} else {
 			data.Success = true

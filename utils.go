@@ -10,7 +10,7 @@ import (
 	// "golang.org/x/text/encoding/unicode"
 )
 
-func openLdap(config ConfigFile) *ldap.Conn {
+func openLdap(config *ConfigFile) *ldap.Conn {
 	l, err := ldap.DialURL(config.LdapServerAddr)
 	if err != nil {
 		log.Printf(fmt.Sprint("Erreur connect LDAP %v", err))
