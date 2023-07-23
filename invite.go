@@ -39,6 +39,8 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 // New account creation directly from interface
 
 type LostPasswordData struct {
+	ErrorMessage string
+	Success      bool
 	Username     string
 	Mail         string
 	OtherMailbox string
@@ -46,18 +48,20 @@ type LostPasswordData struct {
 
 func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 	templateLostPasswordPage := getTemplate("lost_password.html")
-	l, err := ldapOpen(w)
-	if err != nil {
-		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
-	}
-	err = l.Bind(config.NewUserDN, config.NewUserPassword)
-	if err != nil {
-		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
-	}
 	data := LostPasswordData{
 		Username:     "",
 		Mail:         "",
 		OtherMailbox: "",
+	}
+	l, err := ldapOpen(w)
+	if err != nil {
+		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
+		data.ErrorMessage = err.Error()
+	}
+	err = l.Bind(config.NewUserDN, config.NewUserPassword)
+	if err != nil {
+		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
+		data.ErrorMessage = err.Error()
 	}
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -73,6 +77,9 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 		err = l.Bind(config.NewUserDN, config.NewUserPassword)
 		if err != nil {
 			log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
+			data.ErrorMessage = err.Error()
+		} else {
+			data.Success = true
 		}
 	}
 	templateLostPasswordPage.Execute(w, data)
