@@ -55,7 +55,8 @@
               </li>
             </ul>
           </li>
-          {{if .Login && .Login.CanAdmin}}
+          {{if .Login}}  
+            {{if .Login.CanAdmin}}
           <li><a href="/admin/activate">Administrer LDAP</a>
           <ul class="submenu">
             <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
@@ -63,6 +64,7 @@
             <li><a href="/admin/groups">Groupes</a></li>
           </ul>
           </li>
+          {{end}}
           {{end}}
           {{if .Login}}
           <li><a href="/logout">Se déconnecter</a></li>
