@@ -94,7 +94,7 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 	l, err := openLdap(config)
 	if err != nil {
 		log.Printf("passwordFound %v", err)
-		log.Printf("passwordFound %v", config)
+		log.Printf("passwordFound Config : %v", config)
 		return "", err
 	}
 	if user.DN == "" && user.UID != "" {
