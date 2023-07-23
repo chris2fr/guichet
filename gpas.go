@@ -58,10 +58,16 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// Préparation du courriel à envoyer
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
-	user.DN = "uid=" + user.UID + ",ou=invitations,dc=resdigita,dc=org"
+	user.DN = "uid=" + searchRes.Entries[0].GetAttributeValue("cn") + ",ou=invitations,dc=resdigita,dc=org"
+	user.UID = searchRes.Entries[0].GetAttributeValue("cn")
+	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
+	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
+	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
 	err = passwd(user, config, ldapConn)
 	if err != nil {
 		log.Printf(fmt.Sprintf("passwordLost : %v", err))
+		log.Printf(fmt.Sprintf("passwordLost : %v", user))
+		log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0]))
 		return err
 	}
 	templateMail := template.Must(template.ParseFiles(templatePath + "/invite_mail.txt"))
