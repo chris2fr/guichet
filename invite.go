@@ -82,9 +82,10 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 		data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		data.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
 		user := User{
-			CN:           data.Username,
-			Mail:         data.Mail,
-			OtherMailbox: data.OtherMailbox,
+			CN:           strings.TrimSpace(strings.Join(r.Form["username"], "")),
+			UID:          strings.TrimSpace(strings.Join(r.Form["username"], "")),
+			Mail:         strings.TrimSpace(strings.Join(r.Form["mail"], "")),
+			OtherMailbox: strings.TrimSpace(strings.Join(r.Form["othermailbox"], "")),
 		}
 		ldapConn, err := openNewUserLdap(config)
 		if err != nil {

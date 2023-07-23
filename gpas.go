@@ -34,7 +34,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	}
 	searchFilter := "(|"
 	if user.CN != "" {
-		searchFilter += "(cn=" + user.CN + ")"
+		searchFilter += "(cn=" + user.UID + ")"
 	}
 	if user.Mail != "" {
 		searchFilter += "(mail=" + user.Mail + ")"
@@ -57,6 +57,10 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	}
 	log.Printf(fmt.Sprintf("passwordLost : %v", user))
 	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0]))
+	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0].GetAttributeValue("cn")))
+	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0].GetAttributeValue("uid")))
+	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0].GetAttributeValue("mail")))
+	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0].GetAttributeValue("carLicense")))
 	// Préparation du courriel à envoyer
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
