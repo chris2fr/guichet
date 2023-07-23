@@ -248,6 +248,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		if err != nil {
 			data := &LoginFormData{
 				Username: username,
+				Login:    false,
 			}
 			if ldap.IsErrorWithCode(err, ldap.LDAPResultInvalidCredentials) {
 				data.WrongPass = true
