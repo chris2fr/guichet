@@ -1,6 +1,27 @@
 {{define "title"}}Home {{end}}
 
-
+{{define "admenu"}}
+{{if .Login.CanAdmin}}
+<li><a href="/admin/activate">Administrer LDAP</a>
+<ul class="submenu">
+  <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
+  <li><a href="/admin/users">Utilisateur·ices</a></li>
+  <li><a href="/admin/groups">Groupes</a></li>
+</ul>
+</li>
+{{end}}
+{{if .Login}}
+<li><a href="/logout">Se déconnecter</a></li>
+{{else}}
+<li><a href="/">Se connecter</a>
+  <ul class="submenu">
+    <li><a href="/">Se connecter</a></li>
+    <li><a href="/gpas">Mal de passe oublié</a></li>
+    <li><a href="/invite/new_account">S'enregistrer</a></li>
+  </ul>
+</li>
+{{end}}
+{{end}}
 
 {{define "body"}}
 <div class="alert alert-info">
