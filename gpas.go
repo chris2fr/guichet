@@ -96,6 +96,7 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (bool, er
 		log.Printf("passwordFound %v", err)
 		log.Printf("passwordFound %v", user.DN)
 		log.Printf("passwordFound %v", user.UID)
+		log.Printf("passwordFound %v", user.Password)
 		return false, err
 	}
 	return true, nil
