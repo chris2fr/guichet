@@ -14,6 +14,7 @@ func openLdap(config *ConfigFile) *ldap.Conn {
 	l, err := ldap.DialURL(config.LdapServerAddr)
 	if err != nil {
 		log.Printf(fmt.Sprint("Erreur connect LDAP %v", err))
+		log.Printf(fmt.Sprint("Erreur connect LDAP %v", config.LdapServerAddr))
 		return nil
 	} else {
 		return l
