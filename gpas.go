@@ -43,7 +43,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		return errors.New("Chose LDAP")
 	}
 	if len(searchRes.Entries) == 0 {
-		log.Printf("Il n'y a pas d'utilisateur qui correspond")
+		log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
 	// Préparation du courriel à envoyer
