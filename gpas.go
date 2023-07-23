@@ -63,6 +63,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// 	auth = sasl.NewPlainClient("", config.SMTPUsername, config.SMTPPassword)
 	// }
 	auth := smtp.PlainAuth("", config.SMTPUsername, config.SMTPPassword, config.SMTPServer)
+	log.Printf("auth: %v", auth)
 	err = smtp.SendMail(config.SMTPServer+":587", auth, config.SMTPUsername, []string{user.OtherMailbox}, message)
 	if err != nil {
 		return err
