@@ -99,7 +99,7 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 		return "", err
 	}
 	searchReq := ldap.NewSearchRequest(user.DN, ldap.ScopeBaseObject,
-		ldap.NeverDerefAliases, 0, 0, false, "", []string{"seeAlso"}, nil)
+		ldap.NeverDerefAliases, 0, 0, false, "(uid="+user.UID+")", []string{"seeAlso"}, nil)
 	var searchRes *ldap.SearchResult
 	searchRes, err = ldapConn.Search(searchReq)
 	if err != nil {
