@@ -144,7 +144,7 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 		Password: codeArray[1],
 		DN:       "uid=" + codeArray[0] + ",ou=invitations,dc=resdigita,dc=org",
 	}
-	dn, err = passwordFound(user, config, ldapConn)
+	user.SeeAlso, err = passwordFound(user, config, ldapConn)
 	if err != nil {
 		log.Printf("handleFoundPassword / passwordFound %v", err)
 		log.Printf("handleFoundPassword / passwordFound %v", err)

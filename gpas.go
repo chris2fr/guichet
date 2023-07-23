@@ -86,7 +86,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, error) {
 	l, err := openLdap(config)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 	if user.DN == "" && user.UID != "" {
 		user.DN = "uid=" + user.UID + ",ou=invitations,dc=resdigita,dc=org"
