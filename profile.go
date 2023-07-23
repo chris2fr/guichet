@@ -144,11 +144,33 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 		Password: codeArray[1],
 		DN:       "uid=" + codeArray[0] + ",ou=invitations,dc=resdigita,dc=org",
 	}
-	data.Success, err = passwordFound(user, config, ldapConn)
+	dn, err = passwordFound(user, config, ldapConn)
 	if err != nil {
 		log.Printf("handleFoundPassword / passwordFound %v", err)
 		log.Printf("handleFoundPassword / passwordFound %v", err)
 		data.ErrorMessage = err.Error()
+	}
+	if r.Method == "POST" {
+		r.ParseForm()
+
+		password := strings.Join(r.Form["password"], "")
+		password2 := strings.Join(r.Form["password2"], "")
+
+		if len(password) < 8 {
+			data.TooShortError = true
+		} else if password2 != password {
+			data.NoMatchError = true
+		} else {
+			err := passwd(User{
+				DN:       user.SeeAlso,
+				Password: password,
+			}, config, ldapConn)
+			if err != nil {
+				data.ErrorMessage = err.Error()
+			} else {
+				data.Success = true
+			}
+		}
 	}
 	templateFoundPasswordPage.Execute(w, data)
 }

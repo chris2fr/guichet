@@ -83,7 +83,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	return nil
 }
 
-func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (bool, error) {
+func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, error) {
 	l, err := openLdap(config)
 	if err != nil {
 		return false, err
@@ -96,8 +96,10 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (bool, er
 		log.Printf("passwordFound %v", err)
 		log.Printf("passwordFound %v", user.DN)
 		log.Printf("passwordFound %v", user.UID)
-		log.Printf("passwordFound %v", user.Password)
-		return false, err
+		return "", err
 	}
-	return true, nil
+	searchReq := ldap.NewSearchRequest(user.DN, ldap.ScopeBaseObject,
+		ldap.NeverDerefAliases, 0, 0, false, "", []string{"seeAlso"}, nil)
+	searchRes, _ := ldapConn.Search(searchReq)
+	return searchRes.Entries[0].GetAttributeValue("seeAlso"), nil
 }

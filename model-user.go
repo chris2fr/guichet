@@ -28,6 +28,7 @@ type User struct {
 	CanAdmin     bool
 	CanInvite    bool
 	UserEntry    *ldap.Entry
+	SeeAlso      string
 }
 
 func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
