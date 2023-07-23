@@ -88,6 +88,9 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (bool, er
 	if err != nil {
 		return false, err
 	}
+	if user.DN == "" && user.UID != "" {
+		user.DN = "uid=" + user.UID + ",ou=invitations,dc=resdigita,dc=org"
+	}
 	err = l.Bind(user.DN, user.Password)
 	if err != nil {
 		return false, err
