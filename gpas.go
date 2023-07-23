@@ -100,6 +100,14 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 	}
 	searchReq := ldap.NewSearchRequest(user.DN, ldap.ScopeBaseObject,
 		ldap.NeverDerefAliases, 0, 0, false, "", []string{"seeAlso"}, nil)
-	searchRes, _ := ldapConn.Search(searchReq)
-	return searchRes.Entries[0].GetAttributeValue("seeAlso"), nil
+	var searchRes *ldap.SearchResult
+	searchRes, err = ldapConn.Search(searchReq)
+	if len(searchRes.Entries) == 0 {
+		log.Printf("passwordFound %v", err)
+		log.Printf("passwordFound %v", searchReq)
+		log.Printf("passwordFound %v", ldapConn)
+		log.Printf("passwordFound %v", searchRes)
+		return "", err
+	}
+	return searchRes.Entries[0].GetAttributeValue("seeAlso"), err
 }
