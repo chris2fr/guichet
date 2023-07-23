@@ -55,8 +55,12 @@ type PasswordLostData struct {
 }
 
 func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
-	l := openLdap(config)
-	err := l.Bind(config.NewUserDN, config.NewUserPassword)
+	l, err := openLdap(config)
+	if err != nil {
+		log.Printf(fmt.Sprintf("openNewUserLdap : %v %v", err, l))
+		// data.ErrorMessage = err.Error()
+	}
+	err = l.Bind(config.NewUserDN, config.NewUserPassword)
 	if err != nil {
 		log.Printf(fmt.Sprintf("openNewUserLdap : %v %v", err, l))
 		// data.ErrorMessage = err.Error()

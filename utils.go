@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"crypto/tls"
+	"net"
 
 	"math/rand"
 
@@ -10,15 +10,25 @@ import (
 	// "golang.org/x/text/encoding/unicode"
 )
 
-func openLdap(config *ConfigFile) *ldap.Conn {
-	l, err := ldap.DialURL(config.LdapServerAddr)
-	if err != nil {
-		log.Printf(fmt.Sprint("Erreur connect LDAP %v", err))
-		log.Printf(fmt.Sprint("Erreur connect LDAP %v", config.LdapServerAddr))
-		return nil
+func openLdap(config *ConfigFile) (*ldap.Conn, error) {
+	if config.LdapTLS {
+		tlsConf := &tls.Config{
+			ServerName:         config.LdapServerAddr,
+			InsecureSkipVerify: true,
+		}
+		return ldap.DialTLS("tcp", net.JoinHostPort(config.LdapServerAddr, "636"), tlsConf)
 	} else {
-		return l
+		return ldap.DialURL("ldap://" + config.LdapServerAddr)
 	}
+
+	// l, err := ldap.DialURL(config.LdapServerAddr)
+	// if err != nil {
+	// 	log.Printf(fmt.Sprint("Erreur connect LDAP %v", err))
+	// 	log.Printf(fmt.Sprint("Erreur connect LDAP %v", config.LdapServerAddr))
+	// 	return nil
+	// } else {
+	// 	return l
+	// }
 }
 
 func suggestPassword() string {
