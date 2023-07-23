@@ -47,6 +47,7 @@
         <ul id="menu">
           <li><a href="/">Home</a>
             <ul class="submenu">
+              <li><a href="/">Home</a></li>
               <li><a href="/profile">Modifier mon profil</a></li>
               <li><a href="/passwd">Modifier mon mot de passe</a></li>
               <li><a href="/SOGo">Accéder à mes courriels, mon agenda et à mes contacts</a></li>
@@ -54,16 +55,28 @@
               </li>
             </ul>
           </li>
-
-          <li><a href="/invite/new_account">Créer un nouveau compte</a>
+          {{if .Login && .Login.CanAdmin}}
+          <li><a href="/admin/activate">Administrer LDAP</a>
           <ul class="submenu">
             <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
             <li><a href="/admin/users">Utilisateur·ices</a></li>
             <li><a href="/admin/groups">Groupes</a></li>
           </ul>
           </li>
+          {{end}}
+          {{if .Login}}
           <li><a href="/logout">Se déconnecter</a></li>
+          {{else}}
+          <li><a href="/">Se connecter</a>
+            <ul class="submenu">
+              <li><a href="/">Se connecter</a></li>
+              <li><a href="/gpas">Mal de passe oublié</a></li>
+              <li><a href="/invite/new_account">S'enregistrer</a></li>
+            </ul>
+          </li>
+          {{end}}
         </ul>
+        
       </div>
     </nav>
 
