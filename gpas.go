@@ -46,18 +46,18 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
-	// Préparation du courriel à envoyer
-	// code := "GPas"
-	// templateMail := template.Must(template.ParseFiles(templatePath + "/invite_mail.txt"))
-	// buf := bytes.NewBuffer([]byte{})
-	// templateMail.Execute(buf, &CodeMailFields{
-	// 	To:             user.OtherMailbox,
-	// 	From:           config.MailFrom,
-	// 	InviteFrom:     "GPas",
-	// 	Code:           code,
-	// 	WebBaseAddress: config.WebAddress,
-	// })
-	message := []byte("Hi " + user.OtherMailbox)
+	Préparation du courriel à envoyer
+	code := "GPas"
+	templateMail := template.Must(template.ParseFiles(templatePath + "/invite_mail.txt"))
+	buf := bytes.NewBuffer([]byte{})
+	templateMail.Execute(buf, &CodeMailFields{
+		To:             user.OtherMailbox,
+		From:           config.MailFrom,
+		InviteFrom:     "GPas",
+		Code:           code,
+		WebBaseAddress: config.WebAddress,
+	})
+	// message := []byte("Hi " + user.OtherMailbox)
 	log.Printf("Sending mail to: %s", user.OtherMailbox)
 	// var auth sasl.Client = nil
 	// if config.SMTPUsername != "" {
@@ -65,7 +65,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// }
 	auth := smtp.PlainAuth("", config.SMTPUsername, config.SMTPPassword, config.SMTPServer)
 	log.Printf("auth: %v", auth)
-	err = smtp.SendMail(config.SMTPServer+":587", auth, config.SMTPUsername, []string{user.OtherMailbox}, message)
+	err = smtp.SendMail(config.SMTPServer+":587", auth, config.SMTPUsername, []string{user.OtherMailbox}, buf)
 	if err != nil {
 		log.Printf("email send error %v", err)
 		return err
