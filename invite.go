@@ -48,11 +48,7 @@ type LostPasswordData struct {
 
 func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 	templateLostPasswordPage := getTemplate("lost_password.html")
-	data := LostPasswordData{
-		Username:     "",
-		Mail:         "",
-		OtherMailbox: "",
-	}
+	data := LostPasswordData{}
 	l, err := ldapOpen(w)
 	if err != nil {
 		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))

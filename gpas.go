@@ -24,13 +24,13 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		return errors.New("Il n'y a pas de quoi identifier l'utilisateur")
 	}
 	searchFilter := "(|"
-	if user.CN == "" {
+	if user.CN != "" {
 		searchFilter += "(cn=" + user.CN + ")"
 	}
-	if user.Mail == "" {
+	if user.Mail != "" {
 		searchFilter += "(mail=" + user.Mail + ")"
 	}
-	if user.OtherMailbox == "" {
+	if user.OtherMailbox != "" {
 		searchFilter += "(carLicense=" + user.OtherMailbox + ")"
 	}
 	searchFilter += ")"
