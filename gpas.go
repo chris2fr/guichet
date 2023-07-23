@@ -17,6 +17,7 @@ import (
 
 	"github.com/go-ldap/ldap/v3"
 	// "strings"
+	b64 "encoding/base64"
 )
 
 // type InvitationAccount struct {
@@ -55,13 +56,19 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
 	// Préparation du courriel à envoyer
-	code := "GPas"
+	user.Password = suggestPassword()
+	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
+	err = passwd(user, config, ldapConn)
+	if err != nil {
+		log.Printf(fmt.Sprintf("passwordLost : %v", err))
+		return err
+	}
 	templateMail := template.Must(template.ParseFiles(templatePath + "/invite_mail.txt"))
 	buf := bytes.NewBuffer([]byte{})
 	templateMail.Execute(buf, &CodeMailFields{
 		To:             user.OtherMailbox,
 		From:           config.MailFrom,
-		InviteFrom:     "GPas",
+		InviteFrom:     user.UID,
 		Code:           code,
 		WebBaseAddress: config.WebAddress,
 	})
