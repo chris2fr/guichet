@@ -19,6 +19,12 @@ import (
 	// "strings"
 )
 
+// type InvitationAccount struct {
+// 	UID string
+// 	Password string
+// 	BaseDN string
+// }
+
 // var EMAIL_REGEXP := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
 func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
@@ -75,4 +81,13 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	}
 	log.Printf("Mail sent.")
 	return nil
+}
+
+func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (bool, error) {
+	l := openLdap(*config)
+	err := l.Bind(user.DN, user.Password)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

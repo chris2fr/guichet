@@ -38,7 +38,21 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 // New account creation directly from interface
 
-type LostPasswordData struct {
+type PasswordFoundData struct {
+	ErrorMessage string
+	Success      bool
+	Username     string
+	Mail         string
+	OtherMailbox string
+}
+
+func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
+	templateFoundPasswordPage := getTemplate("passwd.html")
+	data := PasswordFoundData{}
+	templateFoundPasswordPage.Execute(w, data)
+}
+
+type PasswordLostData struct {
 	ErrorMessage string
 	Success      bool
 	Username     string
@@ -47,8 +61,8 @@ type LostPasswordData struct {
 }
 
 func handleLostPassword(w http.ResponseWriter, r *http.Request) {
-	templateLostPasswordPage := getTemplate("lost_password.html")
-	data := LostPasswordData{}
+	templateLostPasswordPage := getTemplate("password_lost.html")
+	data := PasswordLostData{}
 	l, err := ldapOpen(w)
 	if err != nil {
 		log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, l))
