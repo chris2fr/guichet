@@ -48,3 +48,12 @@ img.lesgv.hero {
   margin: 0 auto;
   max-height: 35vh;
 }
+
+div.card {
+  flex-direction: row;
+}
+
+div.card-header {
+  transform: rotate(180deg);
+  writing-mode: vertical-lr;
+}
