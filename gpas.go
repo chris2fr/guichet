@@ -5,8 +5,10 @@ gpas is GVoisin password reset
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"html/template"
 	"log"
 
 	// "github.com/emersion/go-sasl"
@@ -46,7 +48,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
-	Préparation du courriel à envoyer
+	// Préparation du courriel à envoyer
 	code := "GPas"
 	templateMail := template.Must(template.ParseFiles(templatePath + "/invite_mail.txt"))
 	buf := bytes.NewBuffer([]byte{})
