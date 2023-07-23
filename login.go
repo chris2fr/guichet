@@ -220,6 +220,7 @@ type LoginFormData struct {
 	WrongUser    bool
 	WrongPass    bool
 	ErrorMessage string
+	Login        bool
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
