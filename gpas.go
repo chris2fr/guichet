@@ -35,9 +35,8 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	}
 	searchReq := ldap.NewSearchRequest(config.UserBaseDN, ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false, "(|()()())", []string{"cn", "uid", "mail", "carLicense"}, nil)
 	searchRes, err := ldapConn.Search(searchReq)
-	err = l.Bind(config.NewUserDN, config.NewUserPassword)
 	if err != nil {
-		log.Printf(fmt.Sprintf("passwordLost : %v %v", err, l))
+		log.Printf(fmt.Sprintf("passwordLost : %v %v", err, ldapConn))
 	}
 	if len(searchRes.Entries) == 0 {
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
