@@ -1,5 +1,14 @@
 {{define "title"}}Profile |{{end}}
 {{define "admenu"}}
+{{if .Login.CanAdmin}}
+<li><a href="/admin/activate">Administrer LDAP</a>
+<ul class="submenu">
+  <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
+  <li><a href="/admin/users">Utilisateur·ices</a></li>
+  <li><a href="/admin/groups">Groupes</a></li>
+</ul>
+</li>
+{{end}}
 {{if .Login}}
 <li><a href="/logout">Se déconnecter</a></li>
 {{else}}

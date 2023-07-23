@@ -57,3 +57,9 @@ div.card-header {
   transform: rotate(180deg);
   writing-mode: vertical-lr;
 }
+
+@media (max-width: 700px) {
+  div.card {
+    flex-direction: column;
+  }
+}

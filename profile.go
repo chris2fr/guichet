@@ -19,6 +19,7 @@ type ProfileTplData struct {
 	GivenName    string
 	Surname      string
 	Description  string
+	Login        *LoginStatus
 }
 
 //ProfilePicture string
@@ -34,6 +35,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 
 	data := &ProfileTplData{
 		Status:       login,
+		Login:        login,
 		ErrorMessage: "",
 		Success:      false,
 	}
