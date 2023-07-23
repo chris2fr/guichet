@@ -43,7 +43,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		searchFilter += "(carLicense=" + user.OtherMailbox + ")"
 	}
 	searchFilter += ")"
-	searchReq := ldap.NewSearchRequest(config.UserBaseDN, ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false, searchFilter, []string{"cn", "uid", "mail", "carLicense"}, nil)
+	searchReq := ldap.NewSearchRequest(config.UserBaseDN, ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false, searchFilter, []string{"cn", "uid", "mail", "carLicense", "sn", "displayName", "givenName"}, nil)
 	searchRes, err := ldapConn.Search(searchReq)
 	if err != nil {
 		log.Printf(fmt.Sprintf("passwordLost : %v %v", err, ldapConn))
@@ -55,6 +55,8 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
+	log.Printf(fmt.Sprintf("passwordLost : %v", user))
+	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0]))
 	// Préparation du courriel à envoyer
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
