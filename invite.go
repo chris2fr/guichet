@@ -45,6 +45,7 @@ type PasswordFoundData struct {
 	Mail         string
 	OtherMailbox string
 	CanAdmin     bool
+	LoggedIn     bool
 }
 
 type PasswordLostData struct {
@@ -54,6 +55,7 @@ type PasswordLostData struct {
 	Mail         string
 	OtherMailbox string
 	CanAdmin     bool
+	LoggedIn     bool
 }
 
 func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
@@ -76,7 +78,10 @@ func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
 
 func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 	templateLostPasswordPage := getTemplate("password_lost.html")
-	data := PasswordLostData{}
+	data := PasswordLostData{
+		CanAdmin: false,
+		LoggedIn: false,
+	}
 
 	if r.Method == "POST" {
 		r.ParseForm()
