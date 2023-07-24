@@ -26,11 +26,26 @@ type ProfileTplData struct {
 //ProfilePicture string
 //Visibility     string
 
+type PasswdTplData struct {
+	Status        *LoginStatus
+	ErrorMessage  string
+	TooShortError bool
+	NoMatchError  bool
+	Success       bool
+	CanAdmin      bool
+	Login         bool
+}
+
 func handleProfile(w http.ResponseWriter, r *http.Request) {
 	templateProfile := getTemplate("profile.html")
 
 	login := checkLogin(w, r)
 	if login == nil {
+		templatePasswd := getTemplate("passwd.html")
+		templatePasswd.Execute(w, PasswdTplData{
+			Login:    false,
+			CanAdmin: false,
+		})
 		return
 	}
 
@@ -123,16 +138,6 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	templateProfile.Execute(w, data)
 }
 
-type PasswdTplData struct {
-	Status        *LoginStatus
-	ErrorMessage  string
-	TooShortError bool
-	NoMatchError  bool
-	Success       bool
-	CanAdmin      bool
-	Login         bool
-}
-
 func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 	templateFoundPasswordPage := getTemplate("passwd.html")
 	data := PasswdTplData{
@@ -187,19 +192,19 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 
 func handlePasswd(w http.ResponseWriter, r *http.Request) {
 	templatePasswd := getTemplate("passwd.html")
-
-	login := checkLogin(w, r)
-	if login == nil {
-		return
-	}
-
 	data := &PasswdTplData{
-		Status:       login,
 		ErrorMessage: "",
 		Success:      false,
 		CanAdmin:     false,
 		Login:        false,
 	}
+
+	login := checkLogin(w, r)
+	if login == nil {
+		templatePasswd.Execute(w, data)
+		return
+	}
+	data.Status = login
 
 	if r.Method == "POST" {
 		r.ParseForm()
