@@ -75,6 +75,7 @@ func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 		UserNameAttr: config.UserNameAttr,
 		UserBaseDN:   config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
+		CanAdmin:     login.CanAdmin,
 	}
 	templateAdminActivateUsers.Execute(w, data)
 
@@ -134,6 +135,7 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 		UserNameAttr: config.UserNameAttr,
 		UserBaseDN:   config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
+		CanAdmin:     login.CanAdmin,
 	}
 	sort.Sort(data.Users)
 
@@ -183,6 +185,7 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 		GroupNameAttr: config.GroupNameAttr,
 		GroupBaseDN:   config.GroupBaseDN,
 		Groups:        EntryList(sr.Entries),
+		CanAdmin:      login.CanAdmin,
 	}
 	sort.Sort(data.Groups)
 
@@ -223,6 +226,7 @@ func handleAdminMailing(w http.ResponseWriter, r *http.Request) {
 		MailingNameAttr: config.MailingNameAttr,
 		MailingBaseDN:   config.MailingBaseDN,
 		MailingLists:    EntryList(sr.Entries),
+		CanAdmin:        login.CanAdmin,
 	}
 	sort.Sort(data.MailingLists)
 
@@ -423,8 +427,9 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 		PossibleNewMembers: possibleNewMembers,
 		AllowGuest:         config.MailingGuestsBaseDN != "",
 
-		Error:   dError,
-		Success: dSuccess,
+		Error:    dError,
+		Success:  dSuccess,
+		CanAdmin: login.CanAdmin,
 	}
 	sort.Sort(data.Members)
 	sort.Sort(data.PossibleNewMembers)
@@ -910,8 +915,9 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		Groups:             groups,
 		PossibleNewGroups:  possibleNewGroups,
 
-		Error:   dError,
-		Success: dSuccess,
+		Error:    dError,
+		Success:  dSuccess,
+		CanAdmin: true,
 	})
 }
 
@@ -1099,6 +1105,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			// }
 		}
 	}
+	data.CanAdmin = true
 
 	templateAdminCreate.Execute(w, data)
 }

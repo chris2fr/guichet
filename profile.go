@@ -39,7 +39,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		Login:        login,
 		ErrorMessage: "",
 		Success:      false,
-		CanAdmin:     false,
+		CanAdmin:     login.CanAdmin,
 	}
 
 	data.Mail = login.UserEntry.GetAttributeValue("mail")
@@ -177,6 +177,7 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+	data.CanAdmin = false
 	templateFoundPasswordPage.Execute(w, data)
 }
 
@@ -216,6 +217,6 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-
+	data.CanAdmin = false
 	templatePasswd.Execute(w, data)
 }

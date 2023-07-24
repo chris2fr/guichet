@@ -22,9 +22,10 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &HomePageData{
-		Login:  login,
-		BaseDN: config.BaseDN,
-		Org:    config.Org,
+		Login:    login,
+		BaseDN:   config.BaseDN,
+		Org:      config.Org,
+		CanAdmin: login.CanAdmin,
 	}
 
 	templateHome.Execute(w, data)

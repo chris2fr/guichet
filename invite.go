@@ -103,6 +103,7 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 			data.Success = true
 		}
 	}
+	data.CanAdmin = false
 	templateLostPasswordPage.Execute(w, data)
 }
 
@@ -251,6 +252,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	} else {
 		data.SuggestPW = fmt.Sprintf("%s", suggestPassword())
 	}
+	data.CanAdmin = false
 
 	templateInviteNewAccount.Execute(w, data)
 	return data.Success
@@ -411,6 +413,7 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 			data.Success = true
 			data.CodeDisplay = code
 		}
+		data.CanAdmin = login.CanAdmin
 
 		templateInviteSendCode.Execute(w, data)
 

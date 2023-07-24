@@ -228,7 +228,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 	templateLogin := getTemplate("login.html")
 
 	if r.Method == "GET" {
-		templateLogin.Execute(w, LoginFormData{})
+		templateLogin.Execute(w, LoginFormData{CanAdmin: false})
 		return nil
 	} else if r.Method == "POST" {
 		// log.Printf("%v", "Parsing Form handleLogin")
@@ -250,6 +250,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 			data := &LoginFormData{
 				Username: username,
 				Login:    false,
+				CanAdmin: false,
 			}
 			if ldap.IsErrorWithCode(err, ldap.LDAPResultInvalidCredentials) {
 				data.WrongPass = true
