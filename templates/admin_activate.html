@@ -1,8 +1,10 @@
 {{define "title"}}Activer des utilisateurs |{{end}}
+
 {{define "admenu"}}
 {{if .Login.CanAdmin}}
-<li><a href="/admin/activate">Administrer LDAP</a>
+<li><a href="#">Administration</a>
 <ul class="submenu">
+  <li><a href="/admin/activate">Administrer LDAP</a>
   <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
   <li><a href="/admin/users">Utilisateur·ices</a></li>
   <li><a href="/admin/groups">Groupes</a></li>
@@ -21,6 +23,7 @@
 </li>
 {{end}}
 {{end}}
+
 {{define "body"}}
 <table class="table mt-4">
   <thead>

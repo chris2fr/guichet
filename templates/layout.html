@@ -45,18 +45,24 @@
         but hey, it's pure CSS magic.
         -->
         <ul id="menu">
-          <li><a href="/">Home</a>
+          <li><a href="https://www.lesgrandsvoisins.com">Les Grands Voisins (.com)</a></li>
+          {{template "admenu" .}}
+          <li>&nbsp;&lt;&nbsp;<a href="#">Les Outils</a><ul class="submenu">
+            <li><a href="https://www.lesgrandsvoisins.com/les-outils/">Les Outils</a></li>
+            <li><a href="https://www.avmeet.com">AVMeet.com</a></li>
+            <li><a href="https://wiki.lesgrandsvoisins.com">Wiki</a></li>
+            <li><a href="https://www.lesgrandsvoisins.com/admin">Admin</a></li>
+          </ul></li>
+          <li><a href="#">Compte</a>
             <ul class="submenu">
-              <li><a href="/">Home</a></li>
+              <li><a href="/">Tableau de bord</a></li>
               <li><a href="/profile">Modifier mon profil</a></li>
               <li><a href="/passwd">Modifier mon mot de passe</a></li>
-              <li><a href="/SOGo">Accéder à mes courriels, mon agenda et à mes contacts</a></li>
-              <li><a href="https://www.lesgrandsvoisins.com/resdigita">Accéder au numérique des Grands Voisins .com</a>
               </li>
             </ul>
           </li>
           <li> &nbsp;&lt;&nbsp;<a href="#" class="jour-nuit" id="jour-nuit">Jour et nuit</a></li>
-          {{template "admenu" .}}
+          
         </ul>
         
       </div>
