@@ -44,6 +44,7 @@ type AdminUsersTplData struct {
 	UserBaseDN   string
 	Users        EntryList
 	CanAdmin     bool
+	LoggedIn     bool
 }
 
 func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
@@ -76,6 +77,7 @@ func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 		UserBaseDN:   config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
 		CanAdmin:     login.CanAdmin,
+		LoggedIn:     bool,
 	}
 	templateAdminActivateUsers.Execute(w, data)
 
@@ -136,6 +138,7 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 		UserBaseDN:   config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
 		CanAdmin:     login.CanAdmin,
+		LoggedIn:     false,
 	}
 	sort.Sort(data.Users)
 
@@ -157,6 +160,7 @@ type AdminGroupsTplData struct {
 	GroupBaseDN   string
 	Groups        EntryList
 	CanAdmin      bool
+	LoggedIn      bool
 }
 
 func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
@@ -186,6 +190,7 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 		GroupBaseDN:   config.GroupBaseDN,
 		Groups:        EntryList(sr.Entries),
 		CanAdmin:      login.CanAdmin,
+		LoogedIn:      false,
 	}
 	sort.Sort(data.Groups)
 
@@ -198,6 +203,7 @@ type AdminMailingTplData struct {
 	MailingBaseDN   string
 	MailingLists    EntryList
 	CanAdmin        bool
+	LoggedIn        bool
 }
 
 func handleAdminMailing(w http.ResponseWriter, r *http.Request) {
@@ -227,6 +233,7 @@ func handleAdminMailing(w http.ResponseWriter, r *http.Request) {
 		MailingBaseDN:   config.MailingBaseDN,
 		MailingLists:    EntryList(sr.Entries),
 		CanAdmin:        login.CanAdmin,
+		LoggedIn:        false,
 	}
 	sort.Sort(data.MailingLists)
 
@@ -234,18 +241,17 @@ func handleAdminMailing(w http.ResponseWriter, r *http.Request) {
 }
 
 type AdminMailingListTplData struct {
-	Login           *LoginStatus
-	MailingNameAttr string
-	MailingBaseDN   string
-
+	Login              *LoginStatus
+	MailingNameAttr    string
+	MailingBaseDN      string
 	MailingList        *ldap.Entry
 	Members            EntryList
 	PossibleNewMembers EntryList
 	AllowGuest         bool
-
-	Error    string
-	Success  bool
-	CanAdmin bool
+	Error              string
+	Success            bool
+	CanAdmin           bool
+	LoggedIn           bool
 }
 
 func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
@@ -430,6 +436,7 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 		Error:    dError,
 		Success:  dSuccess,
 		CanAdmin: login.CanAdmin,
+		LoggedIn: true,
 	}
 	sort.Sort(data.Members)
 	sort.Sort(data.PossibleNewMembers)

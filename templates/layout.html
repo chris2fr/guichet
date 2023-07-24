@@ -65,15 +65,15 @@
           {{end}}
           <li>&lt;&nbsp;<a href="#">Compte</a>
             <ul class="submenu">
-              {{if .Login}}
+              {{if .LoggedIn}}
                   <a href="/logout">Se déconnecter</a>
                   <li><a href="/">Tableau de bord</a></li>
                   <li><a href="/profile">Modifier mon profil</a></li>
                   <li><a href="/passwd">Modifier mon mot de passe</a></li>
               {{else}}
-              <li><a href="/">Se connecter</a></li>
-              <li><a href="/gpas">Mal de passe oublié</a></li>
-              <li><a href="/invite/new_account">S'enregistrer</a></li>
+                <li><a href="/">Se connecter</a></li>
+                <li><a href="/gpas">Mal de passe oublié</a></li>
+                <li><a href="/invite/new_account">S'enregistrer</a></li>
               {{end}}
             </ul></li>
           <li> &nbsp;&lt;&nbsp;<a href="#" class="jour-nuit" id="jour-nuit">Jour et nuit</a></li>

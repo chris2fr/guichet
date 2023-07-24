@@ -220,7 +220,7 @@ type LoginFormData struct {
 	WrongUser    bool
 	WrongPass    bool
 	ErrorMessage string
-	Login        bool
+	LoggedIn     bool
 	CanAdmin     bool
 }
 
@@ -249,7 +249,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		if err != nil {
 			data := &LoginFormData{
 				Username: username,
-				Login:    false,
+				LoggedIn: false,
 				CanAdmin: false,
 			}
 			if ldap.IsErrorWithCode(err, ldap.LDAPResultInvalidCredentials) {

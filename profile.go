@@ -21,6 +21,7 @@ type ProfileTplData struct {
 	Description  string
 	Login        *LoginStatus
 	CanAdmin     bool
+	LoggedIn     bool
 }
 
 //ProfilePicture string
@@ -33,7 +34,7 @@ type PasswdTplData struct {
 	NoMatchError  bool
 	Success       bool
 	CanAdmin      bool
-	Login         bool
+	LoggedIn      bool
 }
 
 func handleProfile(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +44,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	if login == nil {
 		templatePasswd := getTemplate("passwd.html")
 		templatePasswd.Execute(w, PasswdTplData{
-			Login:    false,
+			LoggedIn: false,
 			CanAdmin: false,
 		})
 		return
@@ -55,6 +56,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		ErrorMessage: "",
 		Success:      false,
 		CanAdmin:     login.CanAdmin,
+		LoggedIn:     true,
 	}
 
 	data.Mail = login.UserEntry.GetAttributeValue("mail")
@@ -97,7 +99,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		data.Surname = findUser.SN
 		data.Description = findUser.Description
 		data.Mail = findUser.Mail
-		data.Login = nil
+		data.LoggedIn = false
 
 		/*
 					visible := strings.TrimSpace(strings.Join(r.Form["visibility"], ""))
@@ -143,7 +145,7 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 	templateFoundPasswordPage := getTemplate("passwd.html")
 	data := PasswdTplData{
 		CanAdmin: false,
-		Login:    false,
+		LoggedIn: false,
 	}
 	code := mux.Vars(r)["code"]
 	// code = strings.TrimSpace(strings.Join([]string{code}, ""))
@@ -197,7 +199,7 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 		ErrorMessage: "",
 		Success:      false,
 		CanAdmin:     false,
-		Login:        false,
+		LoggedIn:     false,
 	}
 
 	login := checkLogin(w, r)

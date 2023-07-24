@@ -11,6 +11,7 @@ type HomePageData struct {
 	BaseDN   string
 	Org      string
 	CanAdmin bool
+	LoggedIn bool
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
@@ -26,6 +27,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		BaseDN:   config.BaseDN,
 		Org:      config.Org,
 		CanAdmin: login.CanAdmin,
+		LoggedIn: true,
 	}
 
 	templateHome.Execute(w, data)
