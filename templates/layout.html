@@ -53,6 +53,16 @@
             <li><a href="https://wiki.lesgrandsvoisins.com">Wiki</a></li>
             <li><a href="https://www.lesgrandsvoisins.com/admin">Admin</a></li>
           </ul></li>
+          {{if .Login.CanAdmin}}
+            <li><a href="#">Administration</a>
+            <ul class="submenu">
+              <li><a href="/admin/activate">Administrer LDAP</a>
+              <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
+              <li><a href="/admin/users">Utilisateur·ices</a></li>
+              <li><a href="/admin/groups">Groupes</a></li>
+            </ul>
+            </li>
+          {{end}}
           <li>&lt;&nbsp;<a href="#">Compte</a>
             <ul class="submenu">
               {{if .Login}}
