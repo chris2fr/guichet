@@ -53,7 +53,7 @@
             <li><a href="https://wiki.lesgrandsvoisins.com">Wiki</a></li>
             <li><a href="https://www.lesgrandsvoisins.com/admin">Admin</a></li>
           </ul></li>
-          {{if .Login.CanAdmin}}
+          {{if .CanAdmin}}
             <li><a href="#">Administration</a>
             <ul class="submenu">
               <li><a href="/admin/activate">Administrer LDAP</a>
