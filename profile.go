@@ -97,6 +97,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		data.Surname = findUser.SN
 		data.Description = findUser.Description
 		data.Mail = findUser.Mail
+		data.Login = nil
 
 		/*
 					visible := strings.TrimSpace(strings.Join(r.Form["visibility"], ""))
