@@ -58,6 +58,10 @@ div.card-header {
   writing-mode: vertical-lr;
 }
 
+body.darkmode div.card-header {
+  color: var(--color-text-inverted);
+}
+
 @media (max-width: 700px) {
   div.card {
     flex-direction: column;

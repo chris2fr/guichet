@@ -130,11 +130,15 @@ type PasswdTplData struct {
 	NoMatchError  bool
 	Success       bool
 	CanAdmin      bool
+	Login         bool
 }
 
 func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 	templateFoundPasswordPage := getTemplate("passwd.html")
-	data := PasswdTplData{}
+	data := PasswdTplData{
+		CanAdmin: false,
+		Login:    false,
+	}
 	code := mux.Vars(r)["code"]
 	// code = strings.TrimSpace(strings.Join([]string{code}, ""))
 	newCode, _ := b64.URLEncoding.DecodeString(code)
@@ -193,6 +197,8 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 		Status:       login,
 		ErrorMessage: "",
 		Success:      false,
+		CanAdmin:     false,
+		Login:        false,
 	}
 
 	if r.Method == "POST" {
