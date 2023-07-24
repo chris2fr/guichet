@@ -44,6 +44,7 @@ type PasswordFoundData struct {
 	Username     string
 	Mail         string
 	OtherMailbox string
+	CanAdmin     bool
 }
 
 type PasswordLostData struct {
@@ -52,6 +53,7 @@ type PasswordLostData struct {
 	Username     string
 	Mail         string
 	OtherMailbox string
+	CanAdmin     bool
 }
 
 func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
@@ -204,6 +206,7 @@ type NewAccountData struct {
 	ErrorMessage          string
 	WarningMessage        string
 	Success               bool
+	CanAdmin              bool
 }
 
 func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
@@ -349,6 +352,7 @@ type SendCodeData struct {
 	CodeDisplay       string
 	CodeSentTo        string
 	WebBaseAddress    string
+	CanAdmin          bool
 }
 
 type CodeMailFields struct {
@@ -357,6 +361,7 @@ type CodeMailFields struct {
 	Code           string
 	InviteFrom     string
 	WebBaseAddress string
+	CanAdmin       bool
 }
 
 func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {

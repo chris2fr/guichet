@@ -20,6 +20,7 @@ type ProfileTplData struct {
 	Surname      string
 	Description  string
 	Login        *LoginStatus
+	CanAdmin     bool
 }
 
 //ProfilePicture string
@@ -38,6 +39,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		Login:        login,
 		ErrorMessage: "",
 		Success:      false,
+		CanAdmin:     false,
 	}
 
 	data.Mail = login.UserEntry.GetAttributeValue("mail")
@@ -127,6 +129,7 @@ type PasswdTplData struct {
 	TooShortError bool
 	NoMatchError  bool
 	Success       bool
+	CanAdmin      bool
 }
 
 func handleFoundPassword(w http.ResponseWriter, r *http.Request) {

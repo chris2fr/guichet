@@ -221,6 +221,7 @@ type LoginFormData struct {
 	WrongPass    bool
 	ErrorMessage string
 	Login        bool
+	CanAdmin     bool
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {

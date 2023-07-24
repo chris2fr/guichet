@@ -43,6 +43,7 @@ type AdminUsersTplData struct {
 	UserNameAttr string
 	UserBaseDN   string
 	Users        EntryList
+	CanAdmin     bool
 }
 
 func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
@@ -153,6 +154,7 @@ type AdminGroupsTplData struct {
 	GroupNameAttr string
 	GroupBaseDN   string
 	Groups        EntryList
+	CanAdmin      bool
 }
 
 func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
@@ -192,6 +194,7 @@ type AdminMailingTplData struct {
 	MailingNameAttr string
 	MailingBaseDN   string
 	MailingLists    EntryList
+	CanAdmin        bool
 }
 
 func handleAdminMailing(w http.ResponseWriter, r *http.Request) {
@@ -236,8 +239,9 @@ type AdminMailingListTplData struct {
 	PossibleNewMembers EntryList
 	AllowGuest         bool
 
-	Error   string
-	Success bool
+	Error    string
+	Success  bool
+	CanAdmin bool
 }
 
 func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
@@ -451,8 +455,9 @@ type AdminLDAPTplData struct {
 
 	ListMemGro map[string]string
 
-	Error   string
-	Success bool
+	Error    string
+	Success  bool
+	CanAdmin bool
 }
 
 type EntryName struct {
@@ -926,7 +931,8 @@ type CreateData struct {
 	ObjectClass           string
 	SN                    string
 
-	Error string
+	Error    string
+	CanAdmin bool
 }
 
 func handleAdminCreate(w http.ResponseWriter, r *http.Request) {

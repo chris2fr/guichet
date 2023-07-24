@@ -7,9 +7,10 @@ package main
 import "net/http"
 
 type HomePageData struct {
-	Login  *LoginStatus
-	BaseDN string
-	Org    string
+	Login    *LoginStatus
+	BaseDN   string
+	Org      string
+	CanAdmin bool
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
