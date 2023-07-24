@@ -49,7 +49,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("passwordLost : %v %v", err, ldapConn))
 		log.Printf(fmt.Sprintf("passwordLost : %v", searchReq))
 		log.Printf(fmt.Sprintf("passwordLost : %v", user))
-		return errors.New("Chose LDAP")
+		return err
 	}
 	if len(searchRes.Entries) == 0 {
 		log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
