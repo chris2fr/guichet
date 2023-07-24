@@ -2,8 +2,9 @@
 
 {{define "admenu"}}
 {{if .Login.CanAdmin}}
-<li><a href="/admin/activate">Administrer LDAP</a>
+<li><a href="#">Administration</a>
 <ul class="submenu">
+  <li><a href="/admin/activate">Administrer LDAP</a>
   <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
   <li><a href="/admin/users">Utilisateur·ices</a></li>
   <li><a href="/admin/groups">Groupes</a></li>
@@ -11,15 +12,14 @@
 </li>
 {{end}}
 {{if .Login}}
-<li><a href="/logout">Se déconnecter</a></li>
-{{else}}
-<li><a href="#">Se connecter</a>
+<li>&lt;&ngsp; <a href="#">Compte</a>
   <ul class="submenu">
-    <li><a href="/">Se connecter</a></li>
+    <a href="/logout">Se déconnecter</a>
     <li><a href="/gpas">Mal de passe oublié</a></li>
     <li><a href="/invite/new_account">S'enregistrer</a></li>
-  </ul>
-</li>
+  </ul></li>
+{{else}}
+<li> &lt;&ngsp;<a href="/">Se connecter</a></li>
 {{end}}
 {{end}}
 
