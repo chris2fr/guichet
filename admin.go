@@ -77,7 +77,7 @@ func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 		UserBaseDN:   config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
 		CanAdmin:     login.CanAdmin,
-		LoggedIn:     bool,
+		LoggedIn:     true,
 	}
 	templateAdminActivateUsers.Execute(w, data)
 
@@ -190,7 +190,7 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 		GroupBaseDN:   config.GroupBaseDN,
 		Groups:        EntryList(sr.Entries),
 		CanAdmin:      login.CanAdmin,
-		LoogedIn:      false,
+		LoggedIn:      false,
 	}
 	sort.Sort(data.Groups)
 
