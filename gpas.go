@@ -46,21 +46,21 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	searchReq := ldap.NewSearchRequest(config.UserBaseDN, ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false, searchFilter, []string{"cn", "uid", "mail", "carLicense", "sn", "displayName", "givenName"}, nil)
 	searchRes, err := ldapConn.Search(searchReq)
 	if err != nil {
-		log.Printf(fmt.Sprintf("passwordLost : %v %v", err, ldapConn))
-		log.Printf(fmt.Sprintf("passwordLost : %v", searchReq))
-		log.Printf(fmt.Sprintf("passwordLost : %v", user))
+		log.Printf(fmt.Sprintf("passwordLost 49 : %v %v", err, ldapConn))
+		log.Printf(fmt.Sprintf("passwordLost 50 : %v", searchReq))
+		log.Printf(fmt.Sprintf("passwordLost 51: %v", user))
 		return err
 	}
 	if len(searchRes.Entries) == 0 {
 		log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
-	log.Printf(fmt.Sprintf("passwordLost : %v", user))
-	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0]))
-	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0].GetAttributeValue("cn")))
-	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0].GetAttributeValue("uid")))
-	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0].GetAttributeValue("mail")))
-	log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0].GetAttributeValue("carLicense")))
+	log.Printf(fmt.Sprintf("passwordLost 58 : %v", user))
+	log.Printf(fmt.Sprintf("passwordLost 59 : %v", searchRes.Entries[0]))
+	log.Printf(fmt.Sprintf("passwordLost 60 : %v", searchRes.Entries[0].GetAttributeValue("cn")))
+	log.Printf(fmt.Sprintf("passwordLost 61 : %v", searchRes.Entries[0].GetAttributeValue("uid")))
+	log.Printf(fmt.Sprintf("passwordLost 62 : %v", searchRes.Entries[0].GetAttributeValue("mail")))
+	log.Printf(fmt.Sprintf("passwordLost 63 : %v", searchRes.Entries[0].GetAttributeValue("carLicense")))
 	// Préparation du courriel à envoyer
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
@@ -71,9 +71,9 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
 	err = passwd(user, config, ldapConn)
 	if err != nil {
-		log.Printf(fmt.Sprintf("passwordLost : %v", err))
-		log.Printf(fmt.Sprintf("passwordLost : %v", user))
-		log.Printf(fmt.Sprintf("passwordLost : %v", searchRes.Entries[0]))
+		log.Printf(fmt.Sprintf("passwordLost 74 : %v", err))
+		log.Printf(fmt.Sprintf("passwordLost 75 : %v", user))
+		log.Printf(fmt.Sprintf("passwordLost 76 : %v", searchRes.Entries[0]))
 		return err
 	}
 	templateMail := template.Must(template.ParseFiles(templatePath + "/lost_password_email.txt"))
