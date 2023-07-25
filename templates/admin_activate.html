@@ -19,12 +19,12 @@
       {{range $user := $root.Users}}
         <tr>
           <td>
-            <a href="/admin/activate/{{ $user.GetAttributeValue "cn" }}">
+            <a href="/admin-activate/{{ $user.GetAttributeValue "cn" }}">
               Activer
             </a>
           </td>
           <td>
-            <a href="/admin/ldap/{{$user.DN}}">{{$user.GetAttributeValue "cn"}}</a>
+            <a href="/admin-ldap/{{$user.DN}}">{{$user.GetAttributeValue "cn"}}</a>
           </td>
           <td>{{$user.GetAttributeValue "mail"}}</td>
           <td>{{$user.GetAttributeValue "displayName"}}</td>

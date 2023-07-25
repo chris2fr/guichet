@@ -5,9 +5,9 @@
 
 <div class="d-flex">
   <h2>ML {{.MailingList.GetAttributeValue .MailingNameAttr}}
-    <a class="ml-auto btn btn-sm btn-dark" href="/admin/ldap/{{.MailingList.DN}}">Vue avancée</a>
+    <a class="ml-auto btn btn-sm btn-dark" href="/admin-ldap/{{.MailingList.DN}}">Vue avancée</a>
   </h2>
-  <a class="ml-auto btn btn-dark" href="/admin/mailing">Liste des ML</a>
+  <a class="ml-auto btn btn-dark" href="/admin-mailing">Liste des ML</a>
 </div>
 
 {{if .Common.Success}}
@@ -35,7 +35,7 @@
       {{range $member := $root.Members}}
         <tr>
           <td>
-            <a href="/admin/ldap/{{$member.DN}}">
+            <a href="/admin-ldap/{{$member.DN}}">
               {{$member.GetAttributeValue "mail"}}
             </a>
           </td>

@@ -8,7 +8,7 @@
 
 <div class="d-flex">
   <h2>Liste des utilisateurs</h2>
-  <a class="ml-auto btn btn-success" href="/admin/create/user/{{.UserBaseDN}}">Nouvel utilisateur</a>
+  <a class="ml-auto btn btn-success" href="/admin-create/user/{{.UserBaseDN}}">Nouvel utilisateur</a>
 </div>
 
 <table class="table mt-4">
@@ -23,12 +23,12 @@
       {{range $user := $root.Users}}
         <tr>
           <td>
-            <a href="/admin/unactivate/{{ $user.GetAttributeValue "cn" }}">
+            <a href="/admin-unactivate/{{ $user.GetAttributeValue "cn" }}">
               Dèsactiver
             </a>
           </td>
           <td>
-            <a href="/admin/ldap/{{$user.DN}}">
+            <a href="/admin-ldap/{{$user.DN}}">
               {{$user.GetAttributeValue $root.UserNameAttr}}
             </a>
           </td>

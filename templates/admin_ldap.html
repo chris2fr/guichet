@@ -17,7 +17,7 @@
         {{if .Active}}
           <li class="breadcrumb-item active" aria-current="page">{{.Identifier}}</li>
         {{else}}
-          <li class="breadcrumb-item"><a href="/admin/ldap/{{.DN}}">{{.Identifier}}</a></li>
+          <li class="breadcrumb-item"><a href="/admin-ldap/{{.DN}}">{{.Identifier}}</a></li>
         {{end}}
       {{end}}
     </ol>
@@ -29,7 +29,7 @@
     {{range .ChildrenOU}}
         <tr>
           <td>
-            <a href="/admin/ldap/{{.DN}}">
+            <a href="/admin-ldap/{{.DN}}">
               🗀 {{.Identifier}}
             </a>
           </td>
@@ -39,7 +39,7 @@
     {{range .ChildrenOther}}
         <tr>
           <td>
-            <a href="/admin/ldap/{{.DN}}">
+            <a href="/admin-ldap/{{.DN}}">
               {{.Identifier}}
             </a>
           </td>
@@ -51,10 +51,10 @@
 
 {{if .CanAddChild}}
   <div class="mt-2">
-      <a class="btn btn-sm btn-success" href="/admin/create/user/{{.DN}}">+utilisateur</a>
-      <a class="ml-4 btn btn-sm btn-success" href="/admin/create/group/{{.DN}}">+groupe</a>
-      <a class="ml-4 btn btn-sm btn-success" href="/admin/create/ou/{{.DN}}">+ou</a>
-      <a class="ml-4 btn btn-sm btn-success" href="/admin/create/generic/{{.DN}}">+objet</a>
+      <a class="btn btn-sm btn-success" href="/admin-create/user/{{.DN}}">+utilisateur</a>
+      <a class="ml-4 btn btn-sm btn-success" href="/admin-create/group/{{.DN}}">+groupe</a>
+      <a class="ml-4 btn btn-sm btn-success" href="/admin-create/ou/{{.DN}}">+ou</a>
+      <a class="ml-4 btn btn-sm btn-success" href="/admin-create/generic/{{.DN}}">+objet</a>
   </div>
   <hr class="mt-4" />
 {{end}}
@@ -108,7 +108,7 @@
           <div class="col-md-9">
           {{range $value.Values}}
             {{if eq $key "creatorsname" "modifiersname" }}
-              <div><a href="/admin/ldap/{{.}}">{{.}}</a></div>
+              <div><a href="/admin-ldap/{{.}}">{{.}}</a></div>
             {{else}}
               <div>{{.}}</div>
             {{end}}
@@ -145,7 +145,7 @@
           <strong>{{.Name}}</strong>
         </div>
         <div class="col-md-5">
-          <a href="/admin/ldap/{{.DN}}">{{.DN}}</a>
+          <a href="/admin-ldap/{{.DN}}">{{.DN}}</a>
         </div>
         <div class="col-md-2">
             <form method="POST" onsubmit="return confirm('Supprimer du groupe ?');">
@@ -187,7 +187,7 @@
           <strong>{{.Name}}</strong>
         </div>
         <div class="col-md-5">
-          <a href="/admin/ldap/{{.DN}}">{{.DN}}</a>
+          <a href="/admin-ldap/{{.DN}}">{{.DN}}</a>
         </div>
         <div class="col-md-2">
             <form method="POST" onsubmit="return confirm('Supprimer du groupe ?');">

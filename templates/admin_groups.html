@@ -8,12 +8,12 @@
 
 <div class="d-flex">
   <h2>Liste des groupes</h2>
-  <a class="ml-auto btn btn-success" href="/admin/create/group/{{.GroupBaseDN}}">Nouveau groupe</a>
+  <a class="ml-auto btn btn-success" href="/admin-create/group/{{.GroupBaseDN}}">Nouveau groupe</a>
 </div>
 
 <div class="alert alert-warning mt-4">
     Les groupes servent uniquement à contrôler l'accès à différentes fonctionalités de Deuxfleurs.
-    Ce ne sont pas des <a href="/admin/mailing">mailing lists</a>.
+    Ce ne sont pas des <a href="/admin-mailing">mailing lists</a>.
 </div>
 
 <table class="table mt-4">
@@ -26,7 +26,7 @@
       {{range $group := $root.Groups}}
         <tr>
           <td>
-            <a href="/admin/ldap/{{$group.DN}}">
+            <a href="/admin-ldap/{{$group.DN}}">
               {{$group.GetAttributeValue $root.GroupNameAttr}}
             </a>
           </td>

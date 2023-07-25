@@ -7,7 +7,7 @@
 
 <div class="d-flex">
   <h4>Mailing lists</h4>
-  <a class="ml-auto btn btn-success" href="/admin/create/ml/{{.MailingBaseDN}}">Nouvelle mailing list</a>
+  <a class="ml-auto btn btn-success" href="/admin-create/ml/{{.MailingBaseDN}}">Nouvelle mailing list</a>
   <a class="ml-4 btn btn-info" href="/">Menu principal</a>
 </div>
 
@@ -21,7 +21,7 @@
       {{range $ml := $root.MailingLists}}
         <tr>
           <td>
-            <a href="/admin/mailing/{{$ml.GetAttributeValue $root.MailingNameAttr}}">
+            <a href="/admin-mailing/{{$ml.GetAttributeValue $root.MailingNameAttr}}">
               {{$ml.GetAttributeValue $root.MailingNameAttr}}
             </a>
           </td>

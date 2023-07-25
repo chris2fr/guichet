@@ -87,7 +87,7 @@ func makeGVRouter() (*mux.Router, error) {
 
 	r.HandleFunc("/admin-users", handleAdminUsers)
 	r.HandleFunc("/admin-groups", handleAdminGroups)
-	r.HandleFunc("/admin-mailing", handleAdminMailing)
+	// r.HandleFunc("/admin-mailing", handleAdminMailing)
 	// r.HandleFunc("/admin/mailing/{id}", handleAdminMailingList)
 	r.HandleFunc("/admin-ldap/{dn}", handleAdminLDAP)
 	r.HandleFunc("/admin-create/{template}/{super_dn}", handleAdminCreate)
