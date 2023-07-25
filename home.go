@@ -28,7 +28,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 
 	can_admin := false
 	if login != nil {
-		can_admin = login.CanAdmin
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	}
 
 	data := HomePageData{
