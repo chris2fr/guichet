@@ -29,8 +29,9 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		BaseDN: config.BaseDN,
 		Org:    config.Org,
 		Common: NestedCommonTplData{
-			CanAdmin: can_admin,
-			LoggedIn: true},
+			CanAdmin:  can_admin,
+			CanInvite: true,
+			LoggedIn:  true},
 	}
 	templateHome.Execute(w, data)
 
