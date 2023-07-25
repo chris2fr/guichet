@@ -91,7 +91,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		if err != nil {
 			log.Printf(fmt.Sprintf("passwordLost 83 : %v", err))
 			log.Printf(fmt.Sprintf("passwordLost 84 : %v", user))
-			log.Printf(fmt.Sprintf("passwordLost 85 : %v", searchRes.Entries[0]))
+			// log.Printf(fmt.Sprintf("passwordLost 85 : %v", searchRes.Entries[0]))
 			return err
 		}
 	}
