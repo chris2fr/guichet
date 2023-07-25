@@ -19,8 +19,7 @@
             <!--
             <a class="list-group-item list-group-item-action" href="/directory">Annuaire</a>
             -->
-            <a class="list-group-item list-group-item-action" href="/SOGo">Accéder à mes courriels, mon agenda et à mes contacts</a>
-            <a class="list-group-item list-group-item-action" href="https://www.lesgrandsvoisins.com/resdigita">Accéder au numérique des Grands Voisins .com</a>
+
           </div>
     </div>
 </div>
@@ -40,11 +39,13 @@
 {{if .Common.CanInvite}}
 <div class="card mt-3">
   <div class="card-header">
-    Inviter des gens sur {{.Org}}
+    Outils
   </div>
   <div class="list-group list-group-flush">
     <!-- <a class="list-group-item list-group-item-action" href="/invite/send_code">Envoyer un code d'invitation</a> -->
     <a class="list-group-item list-group-item-action" href="/inscription">Créer un nouveau compte directement</a>
+    <a class="list-group-item list-group-item-action" href="/SOGo">Accéder à mes courriels, mon agenda et à mes contacts</a>
+    <a class="list-group-item list-group-item-action" href="https://www.lesgrandsvoisins.com/resdigita">Accéder au numérique des Grands Voisins .com</a>
   </div>
 </div>
 {{end}}
@@ -58,7 +59,7 @@
       <a class="list-group-item list-group-item-action" href="/admin-activate">Activer des Utilisateur·ices</a>
       <a class="list-group-item list-group-item-action" href="/admin-users">Utilisateur·ices</a>
       <a class="list-group-item list-group-item-action" href="/admin-groups">Groupes</a>
-      <a class="list-group-item list-group-item-action" href="/admin-mailing">Mailing lists</a>
+      <!-- <a class="list-group-item list-group-item-action" href="/admin-mailing">Mailing lists</a> -->
       <a class="list-group-item list-group-item-action" href="/admin-ldap/{{.BaseDN}}">Explorateur LDAP</a>
     </div>
   </div>

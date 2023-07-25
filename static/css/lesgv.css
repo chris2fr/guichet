@@ -66,6 +66,10 @@ body.darkmode div.card-header {
   div.card {
     flex-direction: column;
   }
+  div.card-header {
+    transform: unset;
+    writing-mode: unset;
+  }
 }
 
 
