@@ -15,20 +15,19 @@ type HomePageData struct {
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
-	templateHome := getTemplate("home.html")
 
 	login := checkLogin(w, r)
 	if login == nil {
 		return
+	} else {
+		templateHome := getTemplate("home.html")
+		data := &HomePageData{
+			Login:    login,
+			BaseDN:   config.BaseDN,
+			Org:      config.Org,
+			CanAdmin: login.CanAdmin,
+			LoggedIn: true,
+		}
+		templateHome.Execute(w, data)
 	}
-
-	data := &HomePageData{
-		Login:    login,
-		BaseDN:   config.BaseDN,
-		Org:      config.Org,
-		CanAdmin: login.CanAdmin,
-		LoggedIn: true,
-	}
-
-	templateHome.Execute(w, data)
 }
