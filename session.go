@@ -15,58 +15,58 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		return nil
 	}
 	session, err := store.Get(r, SESSION_NAME)
-	if err == nil {
-		username, ok := session.Values["login_username"]
-		password, ok2 := session.Values["login_password"]
-		user_dn, ok3 := session.Values["login_dn"]
-
-		if ok && ok2 && ok3 {
-			login_info = &LoginInfo{
-				DN:       user_dn.(string),
-				Username: username.(string),
-				Password: password.(string),
-			}
-			if err != nil {
-				log.Printf("checkLogin ldapOpen : %v", err)
-				log.Printf("checkLogin ldapOpen : %v", session)
-				log.Printf("checkLogin ldapOpen : %v", session.Values)
-				return nil
-			}
-			err = bind(User{
-				DN:       login_info.DN,
-				Password: login_info.Password,
-			}, config, l)
-			if err != nil {
-				delete(session.Values, "login_username")
-				delete(session.Values, "login_password")
-				delete(session.Values, "login_dn")
-
-				err = session.Save(r, w)
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return nil
-				}
-				return checkLogin(w, r)
-			}
-		}
-	}
-	ldapUser, err := get(User{
-		DN: login_info.DN,
-		CN: login_info.Username,
-	}, config, l)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("checkLogin ldapOpen : %v", err)
+		log.Printf("checkLogin ldapOpen : %v", session)
+		log.Printf("checkLogin ldapOpen : %v", session.Values)
 		return nil
 	}
-	userEntry := ldapUser.UserEntry
-	loginStatus := &LoginStatus{
-		Info:      login_info,
-		conn:      l,
-		UserEntry: userEntry,
-		CanAdmin:  ldapUser.CanAdmin,
-		CanInvite: ldapUser.CanInvite,
+	username, ok := session.Values["login_username"]
+	password, ok2 := session.Values["login_password"]
+	user_dn, ok3 := session.Values["login_dn"]
+
+	if ok && ok2 && ok3 {
+		login_info = &LoginInfo{
+			DN:       user_dn.(string),
+			Username: username.(string),
+			Password: password.(string),
+		}
+		err = bind(User{
+			DN:       login_info.DN,
+			Password: login_info.Password,
+		}, config, l)
+		if err != nil {
+			delete(session.Values, "login_username")
+			delete(session.Values, "login_password")
+			delete(session.Values, "login_dn")
+
+			err = session.Save(r, w)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return nil
+			}
+			return checkLogin(w, r)
+		}
+		ldapUser, err := get(User{
+			DN: login_info.DN,
+			CN: login_info.Username,
+		}, config, l)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return nil
+		}
+		userEntry := ldapUser.UserEntry
+		loginStatus := &LoginStatus{
+			Info:      login_info,
+			conn:      l,
+			UserEntry: userEntry,
+			CanAdmin:  ldapUser.CanAdmin,
+			CanInvite: ldapUser.CanInvite,
+		}
+		return loginStatus
+	} else {
+		return nil
 	}
-	return loginStatus
 }
 
 /*
