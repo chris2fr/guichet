@@ -222,6 +222,7 @@ type NewAccountData struct {
 	WarningMessage        string
 	Success               bool
 	CanAdmin              bool
+	LoggedIn              bool
 }
 
 func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
@@ -267,6 +268,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		data.SuggestPW = fmt.Sprintf("%s", suggestPassword())
 	}
 	data.CanAdmin = false
+	data.LoggedIn = false
 
 	templateInviteNewAccount.Execute(w, data)
 	return data.Success
