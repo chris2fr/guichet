@@ -59,7 +59,6 @@ type LoginFormData struct {
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
-	templateLogin := getTemplate("login.html")
 
 	loginStatus := checkLogin(w, r)
 	if loginStatus != nil {
@@ -68,6 +67,8 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		// 	handleHome(w, r)
 		// 	return loginStatus.Info
 	}
+
+	templateLogin := getTemplate("login.html")
 
 	if r.Method == "GET" {
 		templateLogin.Execute(w, LoginFormData{CanAdmin: false})
