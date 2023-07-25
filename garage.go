@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	garage "git.deuxfleurs.fr/garage-sdk/garage-admin-sdk-golang"
-	"github.com/go-ldap/ldap/v3"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"strings"
+
+	garage "git.deuxfleurs.fr/garage-sdk/garage-admin-sdk-golang"
+	"github.com/go-ldap/ldap/v3"
+	"github.com/gorilla/mux"
 )
 
 func gadmin() (*garage.APIClient, context.Context) {
