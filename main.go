@@ -12,35 +12,21 @@ import (
 	// "encoding/json"
 	"flag"
 	// "fmt"
-	"html/template"
 	// "io/ioutil"
 	"log"
-	"net/http"
 
 	// "os"
-	"strings"
+	// "strings"
 
-	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 )
 
 const SESSION_NAME = "guichet_session"
 
-var staticPath = "./static"
-var templatePath = "./templates"
-
 var store sessions.Store = nil
 
-func getTemplate(name string) *template.Template {
-	return template.Must(template.New("layout.html").Funcs(template.FuncMap{
-		"contains": strings.Contains,
-	}).ParseFiles(
-		templatePath+"/layout.html",
-		templatePath+"/"+name,
-	))
-}
-
 func main() {
+
 	flag.Parse()
 
 	config_file := readConfig()
@@ -52,45 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 	store = sessions.NewCookieStore(session_key)
-
-	r := mux.NewRouter()
-	r.HandleFunc("/", handleHome)
-	r.HandleFunc("/logout", handleLogout)
-
-	r.HandleFunc("/profile", handleProfile)
-	r.HandleFunc("/passwd", handlePasswd)
-	r.HandleFunc("/picture/{name}", handleDownloadPicture)
-
-	r.HandleFunc("/admin/activate", handleAdminActivateUsers)
-	r.HandleFunc("/admin/unactivate/{cn}", handleAdminUnactivateUser)
-	r.HandleFunc("/admin/activate/{cn}", handleAdminActivateUser)
-
-	r.HandleFunc("/directory/search", handleDirectorySearch)
-	r.HandleFunc("/directory", handleDirectory)
-
-	r.HandleFunc("/garage/key", handleGarageKey)
-	r.HandleFunc("/garage/website", handleGarageWebsiteList)
-	r.HandleFunc("/garage/website/new", handleGarageWebsiteNew)
-	r.HandleFunc("/garage/website/b/{bucket}", handleGarageWebsiteInspect)
-
-	r.HandleFunc("/invite/new_account", handleInviteNewAccount)
-	r.HandleFunc("/invite/send_code", handleInviteSendCode)
-	r.HandleFunc("/gpassword/{code}", handleFoundPassword)
-	r.HandleFunc("/gpas", handleLostPassword)
-	r.HandleFunc("/invitation/{code}", handleInvitationCode)
-
-	r.HandleFunc("/admin/users", handleAdminUsers)
-	r.HandleFunc("/admin/groups", handleAdminGroups)
-	r.HandleFunc("/admin/mailing", handleAdminMailing)
-	r.HandleFunc("/admin/mailing/{id}", handleAdminMailingList)
-	r.HandleFunc("/admin/ldap/{dn}", handleAdminLDAP)
-	r.HandleFunc("/admin/create/{template}/{super_dn}", handleAdminCreate)
-
-	staticfiles := http.FileServer(http.Dir(staticPath))
-	r.Handle("/static/{file:.*}", http.StripPrefix("/static/", staticfiles))
-
-	// log.Printf("Starting HTTP server on %s", config.HttpBindAddr)
-	err = http.ListenAndServe(config.HttpBindAddr, logRequest(r))
+	_, err = makeGVRouter()
 	if err != nil {
 		log.Fatal("Cannot start http server: ", err)
 	}

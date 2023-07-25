@@ -8,12 +8,12 @@
   <a class="ml-auto btn btn-info" href="/">Retour</a>
 </div>
 
-  {{if .ErrorMessage}}
+  {{if .Common.ErrorMessage}}
     <div class="alert alert-danger mt-4">Impossible de génerer ou d'envoyer le code.
-      <div style="font-size: 0.8em">{{ .ErrorMessage }}</div>
+      <div style="font-size: 0.8em">{{ .Common.ErrorMessage }}</div>
     </div>
   {{end}}
-  {{if .Success}}
+  {{if .Common.Success}}
     <div class="alert alert-success mt-4">
       {{if .CodeSentTo}}
         Un code d'invitation a bien été envoyé à <code>{{ .CodeSentTo }}</code>.
@@ -41,7 +41,7 @@
         </label>
         <input class="form-control" type="text" name="sendto" id="sendto" placeholder="Addresse mail..." onclick="document.getElementById('choice_send').checked = true;" />
       </div>
-      {{if .ErrorInvalidEmail}}
+      {{if .Common.ErrorInvalidEmail}}
         <div class="alert alert-warning mt-4">
           Addresse mail invalide.
         </div>

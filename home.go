@@ -6,14 +6,6 @@ package main
 
 import "net/http"
 
-type HomePageData struct {
-	Login    *LoginStatus
-	BaseDN   string
-	Org      string
-	CanAdmin bool
-	LoggedIn bool
-}
-
 func handleHome(w http.ResponseWriter, r *http.Request) {
 	templateHome := getTemplate("home.html")
 
@@ -28,15 +20,17 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 
 	can_admin := false
 	if login != nil {
-		can_admin = login.CanAdmin
+		can_admin = login.Common.CanAdmin
 	}
 
 	data := HomePageData{
-		Login:    login,
-		BaseDN:   config.BaseDN,
-		Org:      config.Org,
-		CanAdmin: can_admin,
-		LoggedIn: true,
+		Login: NestedLoginTplData{
+			Login: login},
+		BaseDN: config.BaseDN,
+		Org:    config.Org,
+		Common: NestedCommonTplData{
+			CanAdmin: can_admin,
+			LoggedIn: true},
 	}
 	templateHome.Execute(w, data)
 

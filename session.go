@@ -60,8 +60,10 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 			Info:      login_info,
 			conn:      l,
 			UserEntry: userEntry,
-			CanAdmin:  ldapUser.CanAdmin,
-			CanInvite: ldapUser.CanInvite,
+			Common: NestedCommonTplData{
+				CanAdmin:  ldapUser.CanAdmin,
+				CanInvite: ldapUser.CanInvite,
+			},
 		}
 		return loginStatus
 	} else {

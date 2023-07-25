@@ -38,32 +38,12 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 // New account creation directly from interface
 
-type PasswordFoundData struct {
-	ErrorMessage string
-	Success      bool
-	Username     string
-	Mail         string
-	OtherMailbox string
-	CanAdmin     bool
-	LoggedIn     bool
-}
-
-type PasswordLostData struct {
-	ErrorMessage string
-	Success      bool
-	Username     string
-	Mail         string
-	OtherMailbox string
-	CanAdmin     bool
-	LoggedIn     bool
-}
-
 func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
 	l, err := openLdap(config)
 	if err != nil {
 		log.Printf(fmt.Sprintf("openNewUserLdap 1 : %v %v", err, l))
 		log.Printf(fmt.Sprintf("openNewUserLdap 1 : %v", config))
-		// data.ErrorMessage = err.Error()
+		// data.Common.ErrorMessage = err.Error()
 	}
 	err = l.Bind(config.NewUserDN, config.NewUserPassword)
 	if err != nil {
@@ -71,7 +51,7 @@ func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
 		log.Printf(fmt.Sprintf("openNewUserLdap 2 : %v", config.NewUserDN))
 		log.Printf(fmt.Sprintf("openNewUserLdap 2 : %v", config.NewUserPassword))
 		log.Printf(fmt.Sprintf("openNewUserLdap 2 : %v", config))
-		// data.ErrorMessage = err.Error()
+		// data.Common.ErrorMessage = err.Error()
 	}
 	return l, err
 }
@@ -83,8 +63,9 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := PasswordLostData{
-		CanAdmin: false,
-		LoggedIn: false,
+		Common: NestedCommonTplData{
+			CanAdmin: false,
+			LoggedIn: false},
 	}
 
 	if r.Method == "POST" {
@@ -101,23 +82,23 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 		ldapConn, err := openNewUserLdap(config)
 		if err != nil {
 			log.Printf(fmt.Sprintf("handleLostPassword 99 : %v %v", err, ldapConn))
-			data.ErrorMessage = err.Error()
+			data.Common.ErrorMessage = err.Error()
 		}
 		err = passwordLost(user, config, ldapConn)
 		if err != nil {
 			log.Printf(fmt.Sprintf("handleLostPassword 104 : %v %v", err, ldapConn))
-			data.ErrorMessage = err.Error()
+			data.Common.ErrorMessage = err.Error()
 		} else {
 			err = ldapConn.Bind(config.NewUserDN, config.NewUserPassword)
 			if err != nil {
 				log.Printf(fmt.Sprintf("handleLostPassword 109 : %v %v", err, ldapConn))
-				data.ErrorMessage = err.Error()
+				data.Common.ErrorMessage = err.Error()
 			} else {
-				data.Success = true
+				data.Common.Success = true
 			}
 		}
 	}
-	data.CanAdmin = false
+	data.Common.CanAdmin = false
 	templateLostPasswordPage.Execute(w, data)
 }
 
@@ -205,26 +186,6 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 
 // Common functions for new account
 
-type NewAccountData struct {
-	Username    string
-	DisplayName string
-	GivenName   string
-	Surname     string
-	Mail        string
-	SuggestPW   string
-	OtherEmail  string
-
-	ErrorUsernameTaken    bool
-	ErrorInvalidUsername  bool
-	ErrorPasswordTooShort bool
-	ErrorPasswordMismatch bool
-	ErrorMessage          string
-	WarningMessage        string
-	Success               bool
-	CanAdmin              bool
-	LoggedIn              bool
-}
-
 func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
 	templateInviteNewAccount := getTemplate("invite_new_account.html")
 
@@ -249,15 +210,15 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		password2 := strings.Join(r.Form["password2"], "")
 
 		if password1 != password2 {
-			data.Success = false
+			data.Common.Success = false
 			data.ErrorPasswordMismatch = true
 		} else {
 			newUser.Password = password2
 			l.Bind(config.NewUserDN, config.NewUserPassword)
 			err := add(newUser, config, l)
 			if err != nil {
-				data.Success = false
-				data.ErrorMessage = err.Error()
+				data.Common.Success = false
+				data.Common.ErrorMessage = err.Error()
 			}
 			http.Redirect(w, r, "/admin/activate", http.StatusFound)
 		}
@@ -267,11 +228,11 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	} else {
 		data.SuggestPW = fmt.Sprintf("%s", suggestPassword())
 	}
-	data.CanAdmin = false
-	data.LoggedIn = false
+	data.Common.CanAdmin = false
+	data.Common.LoggedIn = false
 
 	templateInviteNewAccount.Execute(w, data)
-	return data.Success
+	return data.Common.Success
 }
 
 func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 string, invitedBy string) {
@@ -294,7 +255,7 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 
 	sr, err := l.Search(searchRq)
 	if err != nil {
-		data.ErrorMessage = err.Error()
+		data.Common.ErrorMessage = err.Error()
 		checkFailed = true
 	}
 
@@ -324,7 +285,7 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 	req.Attribute("structuralobjectclass", []string{"inetOrgPerson"})
 	pw, err := SSHAEncode(pass1)
 	if err != nil {
-		data.ErrorMessage = err.Error()
+		data.Common.ErrorMessage = err.Error()
 		return
 	}
 	req.Attribute("userpassword", []string{pw})
@@ -345,7 +306,7 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 
 	err = l.Add(req)
 	if err != nil {
-		data.ErrorMessage = err.Error()
+		data.Common.ErrorMessage = err.Error()
 		return
 	}
 
@@ -354,33 +315,14 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 		req.Add("member", []string{userDn})
 		err = l.Modify(req)
 		if err != nil {
-			data.WarningMessage += fmt.Sprintf("Cannot add to %s: %s\n", group, err.Error())
+			data.Common.WarningMessage += fmt.Sprintf("Cannot add to %s: %s\n", group, err.Error())
 		}
 	}
 
-	data.Success = true
+	data.Common.Success = true
 }
 
 // ---- Code generation ----
-
-type SendCodeData struct {
-	ErrorMessage      string
-	ErrorInvalidEmail bool
-	Success           bool
-	CodeDisplay       string
-	CodeSentTo        string
-	WebBaseAddress    string
-	CanAdmin          bool
-}
-
-type CodeMailFields struct {
-	From           string
-	To             string
-	Code           string
-	InviteFrom     string
-	WebBaseAddress string
-	CanAdmin       bool
-}
 
 func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 	templateInviteSendCode := getTemplate("invite_send_code.html")
@@ -407,10 +349,10 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		// modify_request.Add("carLicense", []string{fmt.Sprintf("%s,%s,%s",code, code_id, code_pw)})
 		// err := login.conn.Modify(modify_request)
 		// if err != nil {
-		// 	data.ErrorMessage = err.Error()
+		// 	data.Common.ErrorMessage = err.Error()
 		// 	// return
 		// } else {
-		// 	data.Success = true
+		// 	data.Common.Success = true
 		// 	data.CodeDisplay = code
 		// }
 		log.Printf(fmt.Sprintf("279: %v %v %v", code, code_id, code_pw))
@@ -423,13 +365,13 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		log.Printf(fmt.Sprintf("286: %v", addReq))
 		err := login.conn.Add(addReq)
 		if err != nil {
-			data.ErrorMessage = err.Error()
+			data.Common.ErrorMessage = err.Error()
 			// return
 		} else {
-			data.Success = true
+			data.Common.Success = true
 			data.CodeDisplay = code
 		}
-		data.CanAdmin = login.CanAdmin
+		data.Common.CanAdmin = login.Common.CanAdmin
 
 		templateInviteSendCode.Execute(w, data)
 
@@ -513,7 +455,7 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	//     // log.Printf(fmt.Sprintf("899: %v",req))
 	//     // log.Printf(fmt.Sprintf("899: %v",data))
 	// 		if err != nil {
-	// 			data.Error = err.Error()
+	// 			data.Common.Error = err.Error()
 	// 		} else {
 	// 			if template == "ml" {
 	// 				http.Redirect(w, r, "/admin/mailing/"+data.IdValue, http.StatusFound)
@@ -526,7 +468,7 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// req := ldap.NewAddRequest(inviteDn, nil)
 	// pw, err := SSHAEncode(code_pw)
 	// if err != nil {
-	// 	data.ErrorMessage = err.Error()
+	// 	data.Common.ErrorMessage = err.Error()
 	// 	return
 	// }
 	// req.Attribute("employeeNumber", []string{pw})
@@ -535,13 +477,13 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// err = login.conn.Add(req)
 	// if err != nil {
 	// 	log.Printf(fmt.Sprintf("286: %v", req))
-	// 	data.ErrorMessage = err.Error()
+	// 	data.Common.ErrorMessage = err.Error()
 	// 	return
 	// }
 
 	// If we want to display it, do so
 	if choice == "display" {
-		data.Success = true
+		data.Common.Success = true
 		data.CodeDisplay = code
 		return
 	}
@@ -569,12 +511,12 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// }
 	// err = smtp.SendMail(config.SMTPServer, auth, config.MailFrom, []string{sendto}, buf)
 	// if err != nil {
-	// 	data.ErrorMessage = err.Error()
+	// 	data.Common.ErrorMessage = err.Error()
 	// 	return
 	// }
 	// log.Printf("Mail sent.")
 
-	data.Success = true
+	data.Common.Success = true
 	data.CodeSentTo = sendto
 }
 

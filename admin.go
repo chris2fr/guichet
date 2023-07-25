@@ -17,14 +17,12 @@ func checkAdminLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		return nil
 	}
 
-	if !login.CanAdmin {
+	if !login.Common.CanAdmin {
 		http.Error(w, "Not authorized to perform administrative operations.", http.StatusUnauthorized)
 		return nil
 	}
 	return login
 }
-
-type EntryList []*ldap.Entry
 
 func (d EntryList) Len() int {
 	return len(d)
@@ -36,15 +34,6 @@ func (d EntryList) Swap(i, j int) {
 
 func (d EntryList) Less(i, j int) bool {
 	return d[i].DN < d[j].DN
-}
-
-type AdminUsersTplData struct {
-	Login        *LoginStatus
-	UserNameAttr string
-	UserBaseDN   string
-	Users        EntryList
-	CanAdmin     bool
-	LoggedIn     bool
 }
 
 func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
@@ -72,12 +61,16 @@ func handleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &AdminUsersTplData{
-		Login:        login,
+		Login: NestedLoginTplData{
+			Login: login,
+		},
 		UserNameAttr: config.UserNameAttr,
 		UserBaseDN:   config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
-		CanAdmin:     login.CanAdmin,
-		LoggedIn:     true,
+		Common: NestedCommonTplData{
+			CanAdmin: true,
+			LoggedIn: true,
+		},
 	}
 	templateAdminActivateUsers.Execute(w, data)
 
@@ -133,12 +126,13 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &AdminUsersTplData{
-		Login:        login,
+		Login:        NestedLoginTplData{Login: login},
 		UserNameAttr: config.UserNameAttr,
 		UserBaseDN:   config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
-		CanAdmin:     login.CanAdmin,
-		LoggedIn:     false,
+		Common: NestedCommonTplData{
+			CanAdmin: login.Common.CanAdmin,
+			LoggedIn: false},
 	}
 	sort.Sort(data.Users)
 
@@ -152,15 +146,6 @@ func handleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	// }, config, login)
 
 	templateAdminUsers.Execute(w, data)
-}
-
-type AdminGroupsTplData struct {
-	Login         *LoginStatus
-	GroupNameAttr string
-	GroupBaseDN   string
-	Groups        EntryList
-	CanAdmin      bool
-	LoggedIn      bool
 }
 
 func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
@@ -185,25 +170,18 @@ func handleAdminGroups(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &AdminGroupsTplData{
-		Login:         login,
+		Login: NestedLoginTplData{
+			Login: login},
 		GroupNameAttr: config.GroupNameAttr,
 		GroupBaseDN:   config.GroupBaseDN,
 		Groups:        EntryList(sr.Entries),
-		CanAdmin:      login.CanAdmin,
-		LoggedIn:      false,
+		Common: NestedCommonTplData{
+			CanAdmin: login.Common.CanAdmin,
+			LoggedIn: false},
 	}
 	sort.Sort(data.Groups)
 
 	templateAdminGroups.Execute(w, data)
-}
-
-type AdminMailingTplData struct {
-	Login           *LoginStatus
-	MailingNameAttr string
-	MailingBaseDN   string
-	MailingLists    EntryList
-	CanAdmin        bool
-	LoggedIn        bool
 }
 
 func handleAdminMailing(w http.ResponseWriter, r *http.Request) {
@@ -228,30 +206,18 @@ func handleAdminMailing(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &AdminMailingTplData{
-		Login:           login,
+		Login: NestedLoginTplData{
+			Login: login},
 		MailingNameAttr: config.MailingNameAttr,
 		MailingBaseDN:   config.MailingBaseDN,
 		MailingLists:    EntryList(sr.Entries),
-		CanAdmin:        login.CanAdmin,
-		LoggedIn:        false,
+		Common: NestedCommonTplData{
+			CanAdmin: login.Common.CanAdmin,
+			LoggedIn: false},
 	}
 	sort.Sort(data.MailingLists)
 
 	templateAdminMailing.Execute(w, data)
-}
-
-type AdminMailingListTplData struct {
-	Login              *LoginStatus
-	MailingNameAttr    string
-	MailingBaseDN      string
-	MailingList        *ldap.Entry
-	Members            EntryList
-	PossibleNewMembers EntryList
-	AllowGuest         bool
-	Error              string
-	Success            bool
-	CanAdmin           bool
-	LoggedIn           bool
 }
 
 func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
@@ -424,7 +390,9 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &AdminMailingListTplData{
-		Login:           login,
+		Login: NestedLoginTplData{
+			Login: login,
+		},
 		MailingNameAttr: config.MailingNameAttr,
 		MailingBaseDN:   config.MailingBaseDN,
 
@@ -432,11 +400,11 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 		Members:            members,
 		PossibleNewMembers: possibleNewMembers,
 		AllowGuest:         config.MailingGuestsBaseDN != "",
-
-		Error:    dError,
-		Success:  dSuccess,
-		CanAdmin: login.CanAdmin,
-		LoggedIn: true,
+		Common: NestedCommonTplData{
+			CanAdmin: true,
+			Error:    dError,
+			Success:  dSuccess,
+			LoggedIn: true},
 	}
 	sort.Sort(data.Members)
 	sort.Sort(data.PossibleNewMembers)
@@ -447,54 +415,6 @@ func handleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 // ===================================================
 // 					   LDAP EXPLORER
 // ===================================================
-
-type AdminLDAPTplData struct {
-	DN string
-
-	Path          []PathItem
-	ChildrenOU    []Child
-	ChildrenOther []Child
-	CanAddChild   bool
-	Props         map[string]*PropValues
-	CanDelete     bool
-
-	HasMembers         bool
-	Members            []EntryName
-	PossibleNewMembers []EntryName
-	HasGroups          bool
-	Groups             []EntryName
-	PossibleNewGroups  []EntryName
-
-	ListMemGro map[string]string
-
-	Error    string
-	Success  bool
-	CanAdmin bool
-}
-
-type EntryName struct {
-	DN   string
-	Name string
-}
-
-type Child struct {
-	DN         string
-	Identifier string
-	Name       string
-}
-
-type PathItem struct {
-	DN         string
-	Identifier string
-	Active     bool
-}
-
-type PropValues struct {
-	Name      string
-	Values    []string
-	Editable  bool
-	Deletable bool
-}
 
 func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	templateAdminLDAP := getTemplate("admin_ldap.html")
@@ -922,30 +842,13 @@ func handleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		Groups:             groups,
 		PossibleNewGroups:  possibleNewGroups,
 
-		Error:    dError,
-		Success:  dSuccess,
-		CanAdmin: true,
+		Common: NestedCommonTplData{
+			CanAdmin: true,
+			LoggedIn: true,
+			Error:    dError,
+			Success:  dSuccess,
+		},
 	})
-}
-
-type CreateData struct {
-	SuperDN  string
-	Path     []PathItem
-	Template string
-
-	IdType                string
-	IdValue               string
-	DisplayName           string
-	GivenName             string
-	Member                string
-	Mail                  string
-	Description           string
-	StructuralObjectClass string
-	ObjectClass           string
-	SN                    string
-
-	Error    string
-	CanAdmin bool
 }
 
 func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
@@ -1044,11 +947,11 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if len(object_class) == 0 {
-			data.Error = "No object class specified"
+			data.Common.Error = "No object class specified"
 		} else if match, err := regexp.MatchString("^[a-z]+$", data.IdType); err != nil || !match {
-			data.Error = "Invalid identifier type"
+			data.Common.Error = "Invalid identifier type"
 		} else if len(data.IdValue) == 0 {
-			data.Error = "No identifier specified"
+			data.Common.Error = "No identifier specified"
 		} else {
 			newUser := User{
 				DN: data.IdType + "=" + data.IdValue + "," + super_dn,
@@ -1058,9 +961,9 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			// req.Attribute("objectclass", object_class)
 			// req.Attribute("mail", []string{data.IdValue})
 			/*
-				if data.StructuralObjectClass != "" {
-					req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
-				}
+			   if data.StructuralObjectClass != "" {
+			     req.Attribute("structuralobjectclass", []string{data.StructuralObjectClass})
+			   }
 			*/
 			if data.Mail != "" {
 				newUser.Mail = data.Mail
@@ -1102,7 +1005,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			// // log.Printf(fmt.Sprintf("899: %v",req))
 			// // log.Printf(fmt.Sprintf("899: %v",data))
 			// if err != nil {
-			// 	data.Error = err.Error()
+			// 	data.Common.Error = err.Error()
 			// } else {
 			if template == "ml" {
 				http.Redirect(w, r, "/admin/mailing/"+data.IdValue, http.StatusFound)
@@ -1112,7 +1015,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			// }
 		}
 	}
-	data.CanAdmin = true
+	data.Common.CanAdmin = true
 
 	templateAdminCreate.Execute(w, data)
 }

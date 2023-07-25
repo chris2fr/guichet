@@ -20,9 +20,9 @@
   </nav>
 </div>
 
-{{if .Error}}
+{{if .Common.Error}}
   <div class="alert alert-danger mt-4">Impossible de créer l'objet.
-    <div style="font-size: 0.8em">{{ .Error }}</div>
+    <div style="font-size: 0.8em">{{ .Common.Error }}</div>
   </div>
 {{end}}
 

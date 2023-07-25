@@ -8,12 +8,12 @@
   <h2>Modifier mon profil</h2>
 </div>
 
-  {{if .ErrorMessage}}
+  {{if .Common.ErrorMessage}}
     <div class="alert alert-danger mt-4">Impossible d'effectuer la modification.
-      <div style="font-size: 0.8em">{{ .ErrorMessage }}</div>
+      <div style="font-size: 0.8em">{{ .Common.ErrorMessage }}</div>
     </div>
   {{end}}
-  {{if .Success}}
+  {{if .Common.Success}}
     <div class="alert alert-success mt-4">
         Profil enregistré.
     </div>
@@ -22,7 +22,7 @@
     <div class="form-row">
       <div class="form-group col-md-6">
         <label>Identifiant:</label>
-        <input type="text" disabled="true" class="form-control" value="{{ .Status.Info.Username }}" />
+        <input type="text" disabled="true" class="form-control" value="{{ .Login.Status.Info.Username }}" />
       </div>
       <div class="form-group col-md-6">
         <label for="mail">Adresse e-mail:</label>

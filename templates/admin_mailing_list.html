@@ -10,10 +10,10 @@
   <a class="ml-auto btn btn-dark" href="/admin/mailing">Liste des ML</a>
 </div>
 
-{{if .Success}}
+{{if .Common.Success}}
   <div class="alert alert-success mt-2">Modification enregistrée.</div>
 {{end}}
-{{if .Error}}
+{{if .Common.Error}}
   <div class="alert alert-danger mt-2">
     Impossible d'effectuer la modification.
     <div style="font-size: 0.8em">{{.Error}}</div>

@@ -179,7 +179,7 @@ hugo deploy
             <tbody>
                 <tr>
                     <th scope="row">Nom d'utilisateur-ice</th>
-                    <td>{{ .Status.Info.Username }}</td>
+                    <td>{{ .Login.Status.Info.Username }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Mot de passe</th>
@@ -210,7 +210,7 @@ hugo deploy
                     <div class="card-body">
                         <p>Un exemple avec SCP :</p>
                         <pre>
-scp -oHostKeyAlgorithms=+ssh-rsa -P2222 -r ./public {{ .Status.Info.Username }}@bagage.resdigita.org:mon_bucket/
+scp -oHostKeyAlgorithms=+ssh-rsa -P2222 -r ./public {{ .Login.Status.Info.Username }}@bagage.resdigita.org:mon_bucket/
                         </pre>
                     </div>
                 </div>

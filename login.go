@@ -13,20 +13,6 @@ import (
 	"github.com/go-ldap/ldap/v3"
 )
 
-type LoginInfo struct {
-	Username string
-	DN       string
-	Password string
-}
-
-type LoginStatus struct {
-	Info      *LoginInfo
-	conn      *ldap.Conn
-	UserEntry *ldap.Entry
-	CanAdmin  bool
-	CanInvite bool
-}
-
 func (login *LoginStatus) WelcomeName() string {
 	ret := login.UserEntry.GetAttributeValue("givenName")
 	if ret == "" {
@@ -47,15 +33,6 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusFound)
-}
-
-type LoginFormData struct {
-	Username     string
-	WrongUser    bool
-	WrongPass    bool
-	ErrorMessage string
-	LoggedIn     bool
-	CanAdmin     bool
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
@@ -80,8 +57,11 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		if err != nil {
 			data := &LoginFormData{
 				Username: username,
-				LoggedIn: false,
-				CanAdmin: false,
+				Common: NestedCommonTplData{
+					CanAdmin:  false,
+					CanInvite: true,
+					LoggedIn:  false,
+				},
 			}
 			if ldap.IsErrorWithCode(err, ldap.LDAPResultInvalidCredentials) {
 				data.WrongPass = true
@@ -91,7 +71,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 				log.Printf("%v", err)
 				log.Printf("%v", user_dn)
 				log.Printf("%v", username)
-				data.ErrorMessage = err.Error()
+				data.Common.ErrorMessage = err.Error()
 			}
 			templateLogin.Execute(w, data)
 		}
@@ -99,7 +79,11 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		return loginInfo
 
 	} else if r.Method == "GET" {
-		templateLogin.Execute(w, LoginFormData{CanAdmin: false})
+		templateLogin.Execute(w, LoginFormData{
+			Common: NestedCommonTplData{
+				CanAdmin:  false,
+				CanInvite: true,
+				LoggedIn:  false}})
 		return nil
 	} else {
 		http.Error(w, "Unsupported method", http.StatusBadRequest)

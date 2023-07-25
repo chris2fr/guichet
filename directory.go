@@ -23,19 +23,6 @@ func handleDirectory(w http.ResponseWriter, r *http.Request) {
 	templateDirectory.Execute(w, nil)
 }
 
-type SearchResult struct {
-	DN             string
-	Id             string
-	DisplayName    string
-	Email          string
-	Description    string
-	ProfilePicture string
-}
-
-type SearchResults struct {
-	Results []SearchResult
-}
-
 func handleDirectorySearch(w http.ResponseWriter, r *http.Request) {
 	templateDirectoryResults := template.Must(template.ParseFiles(templatePath + "/directory_results.html"))
 

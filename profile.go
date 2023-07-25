@@ -10,33 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type ProfileTplData struct {
-	Status       *LoginStatus
-	ErrorMessage string
-	Success      bool
-	Mail         string
-	DisplayName  string
-	GivenName    string
-	Surname      string
-	Description  string
-	Login        *LoginStatus
-	CanAdmin     bool
-	LoggedIn     bool
-}
-
-//ProfilePicture string
-//Visibility     string
-
-type PasswdTplData struct {
-	Status        *LoginStatus
-	ErrorMessage  string
-	TooShortError bool
-	NoMatchError  bool
-	Success       bool
-	CanAdmin      bool
-	LoggedIn      bool
-}
-
 func handleProfile(w http.ResponseWriter, r *http.Request) {
 	templateProfile := getTemplate("profile.html")
 
@@ -44,19 +17,25 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	if login == nil {
 		templatePasswd := getTemplate("passwd.html")
 		templatePasswd.Execute(w, PasswdTplData{
-			LoggedIn: false,
-			CanAdmin: false,
+
+			Common: NestedCommonTplData{
+				CanAdmin: false,
+				LoggedIn: false},
 		})
 		return
 	}
 
 	data := &ProfileTplData{
-		Status:       login,
-		Login:        login,
-		ErrorMessage: "",
-		Success:      false,
-		CanAdmin:     login.CanAdmin,
-		LoggedIn:     true,
+		Login: NestedLoginTplData{
+			Status: login,
+			Login:  login,
+		},
+		Common: NestedCommonTplData{
+			CanAdmin:     login.Common.CanAdmin,
+			LoggedIn:     true,
+			ErrorMessage: "",
+			Success:      false,
+		},
 	}
 
 	data.Mail = login.UserEntry.GetAttributeValue("mail")
@@ -85,21 +64,21 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		if user.DisplayName != "" {
 			err := modify(user, config, login.conn)
 			if err != nil {
-				data.ErrorMessage = "handleProfile : " + err.Error()
+				data.Common.ErrorMessage = "handleProfile : " + err.Error()
 			} else {
-				data.Success = true
+				data.Common.Success = true
 			}
 		}
 		findUser, err := get(user, config, login.conn)
 		if err != nil {
-			data.ErrorMessage = "handleProfile : " + err.Error()
+			data.Common.ErrorMessage = "handleProfile : " + err.Error()
 		}
 		data.DisplayName = findUser.DisplayName
 		data.GivenName = findUser.GivenName
 		data.Surname = findUser.SN
 		data.Description = findUser.Description
 		data.Mail = findUser.Mail
-		data.LoggedIn = false
+		data.Common.LoggedIn = false
 
 		/*
 					visible := strings.TrimSpace(strings.Join(r.Form["visibility"], ""))
@@ -113,7 +92,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		/*
 					profilePicture, err := uploadProfilePicture(w, r, login)
 					if err != nil {
-						data.ErrorMessage = err.Error()
+						data.Common.ErrorMessage = err.Error()
 					}
 			    if profilePicture != "" {
 						data.ProfilePicture = profilePicture
@@ -131,9 +110,9 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		// log.Printf(fmt.Sprintf("Profile:079: %v",err))
 		// log.Printf(fmt.Sprintf("Profile:079: %v",data))
 		// if err != nil {
-		// 	data.ErrorMessage = err.Error()
+		// 	data.Common.ErrorMessage = err.Error()
 		// } else {
-		// 	data.Success = true
+		// 	data.Common.Success = true
 		// }
 
 	}
@@ -144,8 +123,9 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 	templateFoundPasswordPage := getTemplate("passwd.html")
 	data := PasswdTplData{
-		CanAdmin: false,
-		LoggedIn: false,
+		Common: NestedCommonTplData{
+			CanAdmin: false,
+			LoggedIn: false},
 	}
 	code := mux.Vars(r)["code"]
 	// code = strings.TrimSpace(strings.Join([]string{code}, ""))
@@ -153,7 +133,7 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 	ldapConn, err := openNewUserLdap(config)
 	if err != nil {
 		log.Printf(fmt.Sprint("handleFoundPassword / openNewUserLdap / %v", err))
-		data.ErrorMessage = err.Error()
+		data.Common.ErrorMessage = err.Error()
 	}
 	codeArray := strings.Split(string(newCode), ";")
 	user := User{
@@ -165,7 +145,7 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("handleFoundPassword / passwordFound %v", err)
 		log.Printf("handleFoundPassword / passwordFound %v", err)
-		data.ErrorMessage = err.Error()
+		data.Common.ErrorMessage = err.Error()
 	}
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -183,23 +163,25 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 				Password: password,
 			}, config, ldapConn)
 			if err != nil {
-				data.ErrorMessage = err.Error()
+				data.Common.ErrorMessage = err.Error()
 			} else {
-				data.Success = true
+				data.Common.Success = true
 			}
 		}
 	}
-	data.CanAdmin = false
+	data.Common.CanAdmin = false
 	templateFoundPasswordPage.Execute(w, data)
 }
 
 func handlePasswd(w http.ResponseWriter, r *http.Request) {
 	templatePasswd := getTemplate("passwd.html")
 	data := &PasswdTplData{
-		ErrorMessage: "",
-		Success:      false,
-		CanAdmin:     false,
-		LoggedIn:     false,
+		Common: NestedCommonTplData{
+			CanAdmin:     false,
+			LoggedIn:     false,
+			ErrorMessage: "",
+			Success:      false,
+		},
 	}
 
 	login := checkLogin(w, r)
@@ -207,7 +189,7 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 		templatePasswd.Execute(w, data)
 		return
 	}
-	data.Status = login
+	data.Login.Status = login
 
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -225,12 +207,12 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 				Password: password,
 			}, config, login.conn)
 			if err != nil {
-				data.ErrorMessage = err.Error()
+				data.Common.ErrorMessage = err.Error()
 			} else {
-				data.Success = true
+				data.Common.Success = true
 			}
 		}
 	}
-	data.CanAdmin = false
+	data.Common.CanAdmin = false
 	templatePasswd.Execute(w, data)
 }
