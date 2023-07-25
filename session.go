@@ -4,6 +4,7 @@ Handles session login and lougout with HTTP stuff
 package main
 
 import (
+	"log"
 	"net/http"
 )
 
@@ -27,6 +28,12 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
 	l, err := ldapOpen(w)
 	if l == nil {
+		return nil
+	}
+	if err != nil {
+		log.Printf("checkLogin ldapOpen : %v", err)
+		log.Printf("checkLogin ldapOpen : %v", session)
+		log.Printf("checkLogin ldapOpen : %v", session.Values)
 		return nil
 	}
 
