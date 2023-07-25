@@ -70,13 +70,12 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
 	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
 	/* Check for outstanding invitation */
-	searchReq = ldap.NewSearchRequest(user.DN, ldap.ScopeBaseObject,
+	searchReq = ldap.NewSearchRequest(config.InvitationBaseDN, ldap.ScopeBaseObject,
 		ldap.NeverDerefAliases, 0, 0, false, "(uid="+user.UID+")", []string{"seeAlso"}, nil)
 	searchRes, err = ldapConn.Search(searchReq)
 	if err != nil {
 		log.Printf(fmt.Sprintf("passwordLost (Check existing invitation) : %v", err))
 		log.Printf(fmt.Sprintf("passwordLost (Check existing invitation) : %v", user))
-		log.Printf(fmt.Sprintf("passwordLost (Check existing invitation) : %v", searchRes.Entries[0]))
 		return err
 	}
 	if len(searchRes.Entries) == 0 {
