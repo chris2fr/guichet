@@ -23,6 +23,8 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 				Username: username.(string),
 				Password: password.(string),
 			}
+		} else {
+			return nil
 		}
 	}
 
@@ -30,9 +32,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	if l == nil {
 		return nil
 	}
-	if login_info == nil {
-		return nil
-	}
+
 	if err != nil {
 		log.Printf("checkLogin ldapOpen : %v", err)
 		log.Printf("checkLogin ldapOpen : %v", session)
