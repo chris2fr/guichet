@@ -92,7 +92,8 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 			log.Printf(fmt.Sprintf("passwordLost 83 : %v", err))
 			log.Printf(fmt.Sprintf("passwordLost 84 : %v", user))
 			// log.Printf(fmt.Sprintf("passwordLost 85 : %v", searchRes.Entries[0]))
-			return err
+			// For some reason I get here even if the entry exists already
+			// return err
 		}
 	}
 	err = passwd(user, config, ldapConn)
