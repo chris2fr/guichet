@@ -69,20 +69,32 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
 	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
-	/* Add the invitation */
-	addReq := ldap.NewAddRequest(
-		user.DN,
-		nil)
-	addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
-	addReq.Attribute("uid", []string{user.UID})
-	addReq.Attribute("userPassword", []string{"absdefghi"})
-	addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN})
-	err = ldapConn.Add(addReq)
+	/* Check for outstanding invitation */
+	searchReq = ldap.NewSearchRequest(user.DN, ldap.ScopeBaseObject,
+		ldap.NeverDerefAliases, 0, 0, false, "(uid="+user.UID+")", []string{"seeAlso"}, nil)
+	searchRes, err = ldapConn.Search(searchReq)
 	if err != nil {
-		log.Printf(fmt.Sprintf("passwordLost 83 : %v", err))
-		log.Printf(fmt.Sprintf("passwordLost 84 : %v", user))
-		log.Printf(fmt.Sprintf("passwordLost 85 : %v", searchRes.Entries[0]))
+		log.Printf(fmt.Sprintf("passwordLost (Check existing invitation) : %v", err))
+		log.Printf(fmt.Sprintf("passwordLost (Check existing invitation) : %v", user))
+		log.Printf(fmt.Sprintf("passwordLost (Check existing invitation) : %v", searchRes.Entries[0]))
 		return err
+	}
+	if len(searchRes.Entries == 0) {
+		/* Add the invitation */
+		addReq := ldap.NewAddRequest(
+			user.DN,
+			nil)
+		addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
+		addReq.Attribute("uid", []string{user.UID})
+		addReq.Attribute("userPassword", []string{"absdefghi"})
+		addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN})
+		err = ldapConn.Add(addReq)
+		if err != nil {
+			log.Printf(fmt.Sprintf("passwordLost 83 : %v", err))
+			log.Printf(fmt.Sprintf("passwordLost 84 : %v", user))
+			log.Printf(fmt.Sprintf("passwordLost 85 : %v", searchRes.Entries[0]))
+			return err
+		}
 	}
 	err = passwd(user, config, ldapConn)
 	if err != nil {
