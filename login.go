@@ -95,6 +95,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 			}
 			templateLogin.Execute(w, data)
 		}
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return loginInfo
 
 	} else if r.Method == "GET" {
