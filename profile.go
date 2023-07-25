@@ -178,7 +178,7 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 	data := &PasswdTplData{
 		Common: NestedCommonTplData{
 			CanAdmin:     false,
-			LoggedIn:     false,
+			LoggedIn:     true,
 			ErrorMessage: "",
 			Success:      false,
 		},
@@ -190,6 +190,7 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	data.Login.Status = login
+	data.Common.CanAdmin = login.Common.CanAdmin
 
 	if r.Method == "POST" {
 		r.ParseForm()
