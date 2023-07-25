@@ -78,6 +78,10 @@ func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
 
 func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 	templateLostPasswordPage := getTemplate("password_lost.html")
+	if checkLogin(w, r) != nil {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	}
+
 	data := PasswordLostData{
 		CanAdmin: false,
 		LoggedIn: false,

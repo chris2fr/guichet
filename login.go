@@ -59,15 +59,6 @@ type LoginFormData struct {
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
-
-	loginStatus := checkLogin(w, r)
-	if loginStatus != nil {
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
-		return nil
-		// 	handleHome(w, r)
-		// 	return loginStatus.Info
-	}
-
 	templateLogin := getTemplate("login.html")
 
 	if r.Method == "GET" {
