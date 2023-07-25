@@ -55,12 +55,12 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
-	log.Printf(fmt.Sprintf("passwordLost 58 : %v", user))
-	log.Printf(fmt.Sprintf("passwordLost 59 : %v", searchRes.Entries[0]))
-	log.Printf(fmt.Sprintf("passwordLost 60 : %v", searchRes.Entries[0].GetAttributeValue("cn")))
-	log.Printf(fmt.Sprintf("passwordLost 61 : %v", searchRes.Entries[0].GetAttributeValue("uid")))
-	log.Printf(fmt.Sprintf("passwordLost 62 : %v", searchRes.Entries[0].GetAttributeValue("mail")))
-	log.Printf(fmt.Sprintf("passwordLost 63 : %v", searchRes.Entries[0].GetAttributeValue("carLicense")))
+	// log.Printf(fmt.Sprintf("passwordLost 58 : %v", user))
+	// log.Printf(fmt.Sprintf("passwordLost 59 : %v", searchRes.Entries[0]))
+	// log.Printf(fmt.Sprintf("passwordLost 60 : %v", searchRes.Entries[0].GetAttributeValue("cn")))
+	// log.Printf(fmt.Sprintf("passwordLost 61 : %v", searchRes.Entries[0].GetAttributeValue("uid")))
+	// log.Printf(fmt.Sprintf("passwordLost 62 : %v", searchRes.Entries[0].GetAttributeValue("mail")))
+	// log.Printf(fmt.Sprintf("passwordLost 63 : %v", searchRes.Entries[0].GetAttributeValue("carLicense")))
 	// Préparation du courriel à envoyer
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
