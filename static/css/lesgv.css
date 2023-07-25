@@ -69,6 +69,7 @@ body.darkmode div.card-header {
   div.card-header {
     transform: unset;
     writing-mode: unset;
+    text-align: right;
   }
 }
 
