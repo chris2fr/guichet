@@ -96,17 +96,17 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 		}
 		ldapConn, err := openNewUserLdap(config)
 		if err != nil {
-			log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, ldapConn))
+			log.Printf(fmt.Sprintf("handleLostPassword 99 : %v %v", err, ldapConn))
 			data.ErrorMessage = err.Error()
 		}
 		err = passwordLost(user, config, ldapConn)
 		if err != nil {
-			log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, ldapConn))
+			log.Printf(fmt.Sprintf("handleLostPassword 104 : %v %v", err, ldapConn))
 			data.ErrorMessage = err.Error()
 		} else {
 			err = ldapConn.Bind(config.NewUserDN, config.NewUserPassword)
 			if err != nil {
-				log.Printf(fmt.Sprintf("handleLostPassword : %v %v", err, ldapConn))
+				log.Printf(fmt.Sprintf("handleLostPassword 109 : %v %v", err, ldapConn))
 				data.ErrorMessage = err.Error()
 			} else {
 				data.Success = true
