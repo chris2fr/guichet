@@ -18,16 +18,18 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 
 	login := checkLogin(w, r)
 	if login == nil {
+		handleLogin(w, r)
 		return
-	} else {
-		templateHome := getTemplate("home.html")
-		data := &HomePageData{
-			Login:    login,
-			BaseDN:   config.BaseDN,
-			Org:      config.Org,
-			CanAdmin: login.CanAdmin,
-			LoggedIn: true,
-		}
-		templateHome.Execute(w, data)
 	}
+
+	templateHome := getTemplate("home.html")
+	data := &HomePageData{
+		Login:    login,
+		BaseDN:   config.BaseDN,
+		Org:      config.Org,
+		CanAdmin: login.CanAdmin,
+		LoggedIn: true,
+	}
+	templateHome.Execute(w, data)
+
 }

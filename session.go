@@ -25,13 +25,6 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 		}
 	}
 
-	if login_info == nil {
-		login_info = handleLogin(w, r)
-		if login_info == nil {
-			return nil
-		}
-	}
-
 	l, err := ldapOpen(w)
 	if l == nil {
 		return nil
