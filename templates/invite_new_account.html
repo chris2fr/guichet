@@ -53,13 +53,13 @@
   </div>
   <div id="calc-uid"></div>
   <div id="calc-cn"></div>
-  {{if .Common.ErrorInvalidUsername}}
+  {{if .ErrorInvalidUsername}}
   <div class="alert alert-warning">
     Nom d'utilisateur invalide. Ne peut contenir que les caractères suivants : chiffres, lettres minuscules, point,
     tiret bas (_) et tiret du milieu (-).
   </div>
   {{end}}
-  {{if .Common.ErrorUsernameTaken}}
+  {{if .ErrorUsernameTaken}}
   <div class="alert alert-warning">
     Ce nom d'utilisateur est déjà pris.
   </div>
@@ -80,7 +80,7 @@
       caractères spéciaux sans modération !
     </small>
   </div>
-  {{if .Common.ErrorPasswordTooShort}}
+  {{if .ErrorPasswordTooShort}}
   <div class="alert alert-warning">
     Le mot de passe choisi est trop court (minimum 8 caractères).
   </div>
@@ -89,7 +89,7 @@
     <label for="password2">Répéter le mot de passe :</label>
     <input type="password" id="password2" name="password2" class="form-control" />
   </div>
-  {{if .Common.ErrorPasswordMismatch}}
+  {{if .ErrorPasswordMismatch}}
   <div class="alert alert-warning">
     Les deux mots de passe entrés ne correspondent pas.
   </div>
