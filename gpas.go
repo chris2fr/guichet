@@ -79,7 +79,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("passwordLost (Check existing invitation) : %v", searchRes.Entries[0]))
 		return err
 	}
-	if len(searchRes.Entries == 0) {
+	if len(searchRes.Entries) == 0 {
 		/* Add the invitation */
 		addReq := ldap.NewAddRequest(
 			user.DN,
