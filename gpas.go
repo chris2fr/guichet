@@ -70,15 +70,14 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
 	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
 	/* Add the invitation */
-	addReq = ldap.NewAddRequest(
+	addReq := ldap.NewAddRequest(
 		user.DN,
-		nil
-	)
+		nil)
 	addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
-	addReq.Attribute("uid", user.UID)
-	addReq.Attribute("userPassword", "absdefghi")
-	addReq.Attribute("seeAlso", config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN)
-	err = ldapConn.Add(req)
+	addReq.Attribute("uid", []string{user.UID})
+	addReq.Attribute("userPassword", []string{"absdefghi"})
+	addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN})
+	err = ldapConn.Add(addReq)
 	if err != nil {
 		log.Printf(fmt.Sprintf("passwordLost 83 : %v", err))
 		log.Printf(fmt.Sprintf("passwordLost 84 : %v", user))
