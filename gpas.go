@@ -69,11 +69,27 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
 	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
+	/* Add the invitation */
+	addReq = ldap.NewAddRequest(
+		user.DN,
+		nil
+	)
+	addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
+	addReq.Attribute("uid", user.UID)
+	addReq.Attribute("userPassword", "absdefghi")
+	addReq.Attribute("seeAlso", config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN)
+	err = ldapConn.Add(req)
+	if err != nil {
+		log.Printf(fmt.Sprintf("passwordLost 83 : %v", err))
+		log.Printf(fmt.Sprintf("passwordLost 84 : %v", user))
+		log.Printf(fmt.Sprintf("passwordLost 85 : %v", searchRes.Entries[0]))
+		return err
+	}
 	err = passwd(user, config, ldapConn)
 	if err != nil {
-		log.Printf(fmt.Sprintf("passwordLost 74 : %v", err))
-		log.Printf(fmt.Sprintf("passwordLost 75 : %v", user))
-		log.Printf(fmt.Sprintf("passwordLost 76 : %v", searchRes.Entries[0]))
+		log.Printf(fmt.Sprintf("passwordLost 90 : %v", err))
+		log.Printf(fmt.Sprintf("passwordLost 91 : %v", user))
+		log.Printf(fmt.Sprintf("passwordLost 92 : %v", searchRes.Entries[0]))
 		return err
 	}
 	templateMail := template.Must(template.ParseFiles(templatePath + "/lost_password_email.txt"))
