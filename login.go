@@ -61,10 +61,7 @@ type LoginFormData struct {
 func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 	templateLogin := getTemplate("login.html")
 
-	if r.Method == "GET" {
-		templateLogin.Execute(w, LoginFormData{CanAdmin: false})
-		return nil
-	} else if r.Method == "POST" {
+	if r.Method == "POST" {
 		// log.Printf("%v", "Parsing Form handleLogin")
 		r.ParseForm()
 
@@ -100,6 +97,9 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 		}
 		return loginInfo
 
+	} else if r.Method == "GET" {
+		templateLogin.Execute(w, LoginFormData{CanAdmin: false})
+		return nil
 	} else {
 		http.Error(w, "Unsupported method", http.StatusBadRequest)
 		return nil

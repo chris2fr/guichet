@@ -19,8 +19,11 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 
 	login := checkLogin(w, r)
 	if login == nil {
-		handleLogin(w, r)
-		return
+		status := handleLogin(w, r)
+		if status == nil {
+			return
+		}
+		login = checkLogin(w, r)
 	}
 
 	data := HomePageData{
