@@ -30,6 +30,9 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	if l == nil {
 		return nil
 	}
+	if login_info == nil {
+		return nil
+	}
 	if err != nil {
 		log.Printf("checkLogin ldapOpen : %v", err)
 		log.Printf("checkLogin ldapOpen : %v", session)
