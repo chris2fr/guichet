@@ -28,6 +28,7 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 			"sn",
 			"mail",
 			"description",
+			"carLicense",
 		},
 		nil)
 	searchRes, err := ldapConn.Search(searchReq)

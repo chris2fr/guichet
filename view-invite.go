@@ -220,7 +220,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 				data.Common.Success = false
 				data.Common.ErrorMessage = err.Error()
 			}
-			http.Redirect(w, r, "/admin/activate", http.StatusFound)
+			http.Redirect(w, r, "/user/wait", http.StatusFound)
 		}
 
 		// tryCreateAccount(l, data, password1, password2, invitedBy)

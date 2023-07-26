@@ -11,7 +11,12 @@ import (
 
 func handleUserWait(w http.ResponseWriter, r *http.Request) {
 	templateProfile := getTemplate("user/wait.html")
-	templateProfile.Execute(w, nil)
+	templateProfile.Execute(w, HomePageData{
+		Common: NestedCommonTplData{
+			CanAdmin: false,
+			LoggedIn: false,
+		},
+	})
 }
 
 func handleUser(w http.ResponseWriter, r *http.Request) {
