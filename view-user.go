@@ -40,6 +40,7 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	data.DisplayName = login.UserEntry.GetAttributeValue("displayName")
 	data.GivenName = login.UserEntry.GetAttributeValue("givenName")
 	data.Surname = login.UserEntry.GetAttributeValue("sn")
+	data.OtherEmail = login.UserEntry.GetAttributeValue("carLicense")
 	//	data.Visibility = login.UserEntry.GetAttributeValue(FIELD_NAME_DIRECTORY_VISIBILITY)
 	data.Description = login.UserEntry.GetAttributeValue("description")
 	//data.ProfilePicture = login.UserEntry.GetAttributeValue(FIELD_NAME_PROFILE_PICTURE)

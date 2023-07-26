@@ -187,6 +187,7 @@ type ProfileTplData struct {
 	GivenName   string
 	Surname     string
 	Description string
+	OtherEmail  string
 	Common      NestedCommonTplData
 	Login       NestedLoginTplData
 }
