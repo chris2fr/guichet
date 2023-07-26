@@ -1,5 +1,5 @@
 BIN=guichet
-SRC=main.go model.go view.go controller.go utils.go model-user.go view-admin.go view-home.go view-invite.go view-login.go view-passwd.go view-user.go utils-http.go utils-ldap.go utils-config.go directory.go garage.go picture.go session.go utils-ssha.go 
+SRC=main.go model.go view.go controller.go utils.go model-user.go model-passwd.go view-admin.go view-home.go view-invite.go view-login.go view-passwd.go view-user.go utils-http.go utils-ldap.go utils-config.go directory.go garage.go picture.go session.go utils-ssha.go 
 
 # ssha.go profile.go admin.go invite.go directory.go utils.go picture.go login.go config.go http-utils.go home.go model-user.go gpas.go session.go model.go view.go controller.go utils-ldap.go
 
