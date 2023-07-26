@@ -112,15 +112,16 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", user))
 		//return err
 	}
-	passwordModifyRequest := ldap.NewPasswordModifyRequest(user.DN, "", user.Password)
-	_, err = ldapConn.PasswordModify(passwordModifyRequest)
-	if err != nil {
-		return err
-	}
+	// passwordModifyRequest := ldap.NewPasswordModifyRequest(user.DN, "", user.Password)
+	// _, err = ldapConn.PasswordModify(passwordModifyRequest)
+	// if err != nil {
+	// 	return err
+	// }
 
 	// Send the email
 
-	err = passwordLost(user, config, ldapConn)
+	newUserLdapConn, _ := openNewUserLdap(config)
+	err = passwordLost(user, config, newUserLdapConn)
 
 	// sendMailTplData := SendMailTplData{
 	// 	From:            "alice@resdigita.org",
