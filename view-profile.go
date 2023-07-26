@@ -11,7 +11,7 @@ import (
 )
 
 func handleProfile(w http.ResponseWriter, r *http.Request) {
-	templateProfile := getTemplate("profile.html")
+	templateProfile := getTemplate("user.html")
 
 	login := checkLogin(w, r)
 	if login == nil {
