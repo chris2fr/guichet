@@ -103,7 +103,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("passwordLost 92 : %v", searchRes.Entries[0]))
 		return err
 	}
-	templateMail := template.Must(template.ParseFiles(templatePath + "/lost_password_email.txt"))
+	templateMail := template.Must(template.ParseFiles(templatePath + "/passwd/lost_password_email.txt"))
 	buf := bytes.NewBuffer([]byte{})
 	templateMail.Execute(buf, &CodeMailFields{
 		To:             user.OtherMailbox,
