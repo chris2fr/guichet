@@ -162,13 +162,15 @@ func logout(w http.ResponseWriter, r *http.Request) error {
 	session, err := store.Get(r, SESSION_NAME)
 	if err != nil {
 		session, _ = store.New(r, SESSION_NAME)
-		return err
+		// return err
+	} else {
+		delete(session.Values, "login_username")
+		delete(session.Values, "login_password")
+		delete(session.Values, "login_dn")
+
+		err = session.Save(r, w)
 	}
 
-	delete(session.Values, "login_username")
-	delete(session.Values, "login_password")
-	delete(session.Values, "login_dn")
-
-	err = session.Save(r, w)
-	return err
+	// return err
+	return nil
 }
