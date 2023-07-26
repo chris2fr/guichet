@@ -45,6 +45,8 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	searchFilter += ")"
 	searchReq := ldap.NewSearchRequest(config.UserBaseDN, ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false, searchFilter, []string{"cn", "uid", "mail", "carLicense", "sn", "displayName", "givenName"}, nil)
 	searchRes, err := ldapConn.Search(searchReq)
+	log.Printf("passwordLost search : %v", searchReq)
+	log.Printf("passwordLost search : %v", searchRes)
 	if err != nil {
 		log.Printf("passwordLost search : %v %v", err, ldapConn)
 		log.Printf("passwordLost search : %v", searchReq)
