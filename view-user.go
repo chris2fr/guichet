@@ -19,7 +19,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 		templatePasswd.Execute(w, PasswdTplData{
 
 			Common: NestedCommonTplData{
-				CanAdmin: login.CanAdmin,
+				CanAdmin: login.Common.CanAdmin,
 				LoggedIn: true},
 		})
 		return
