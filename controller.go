@@ -52,6 +52,7 @@ type ConfigFile struct {
 	DomainName      string `json:"domain_name"`
 	NewUserDN       string `json:"new_user_dn"`
 	NewUserPassword string `json:"new_user_password"`
+	NewUsersBaseDN  string `json:"new_users_base_dn"`
 }
 
 var staticPath = "./static"
