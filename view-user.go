@@ -14,14 +14,7 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 
 	login := checkLogin(w, r)
 	if login == nil {
-		templatePasswd := getTemplate("passwd.html")
-		templatePasswd.Execute(w, PasswdTplData{
-
-			Common: NestedCommonTplData{
-				// CanAdmin: login.Common.CanAdmin,
-				CanAdmin: false,
-				LoggedIn: true},
-		})
+		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
