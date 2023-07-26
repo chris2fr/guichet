@@ -218,6 +218,19 @@ type LoginFormData struct {
 	Common    NestedCommonTplData
 }
 
+// Data to be passed to an email for sending
+type SendMailTplData struct {
+	// Sender of the email
+	To string
+	// Receiver of the email
+	From string
+	// Relative path (without leading /) to the email template in the templates folder
+	// usually ending in .txt
+	RelTemplatePath string
+	// Variables to be included in the template of the email
+	ContentVars map[string]string
+}
+
 var templatePath = "./templates"
 
 func getTemplate(name string) *template.Template {

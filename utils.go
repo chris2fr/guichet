@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"crypto/tls"
 	"log"
 	"net"
 
 	"math/rand"
+
+	"html/template"
 
 	"github.com/go-ldap/ldap/v3"
 	// "golang.org/x/text/encoding/unicode"
@@ -46,4 +49,12 @@ func suggestPassword() string {
 		password += string([]rune(chars)[rand.Intn(len(chars))])
 	}
 	return password
+}
+
+// Sends an email according to the enclosed information
+func sendMail(sendMailTplData SendMailTplData) error {
+	templateMail := template.Must(template.ParseFiles(templatePath + "/" + sendMailTplData.RelTemplatePath))
+	buf := bytes.NewBuffer([]byte{})
+	err := templateMail.Execute(buf, sendMailTplData)
+	return err
 }

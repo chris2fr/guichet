@@ -165,5 +165,7 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 		log.Printf("passwordFound %v", searchRes)
 		return "", err
 	}
+	delReq := ldap.NewDelRequest("uid="+user.CN+","+config.InvitationBaseDN, nil)
+	ldapConn.Del(delReq)
 	return searchRes.Entries[0].GetAttributeValue("seeAlso"), err
 }

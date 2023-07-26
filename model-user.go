@@ -86,6 +86,9 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	if user.SN != "" {
 		req.Attribute("sn", []string{user.SN})
 	}
+	if user.OtherMailbox != "" {
+		req.Attribute("carLicense", []string{user.OtherMailbox})
+	}
 	if user.Description != "" {
 		req.Attribute("description", []string{user.Description})
 	}
@@ -112,8 +115,18 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		if err != nil {
 			return err
 		}
-		return nil
 	}
+	// Send the email
+	err = sendMail(SendMailTplData{
+		From: "alice@resdigita.org",
+		To:   user.OtherMailbox,
+		ContentVars: map[string]string{
+			"InviteFrom": "alice@resdigita.org",
+			"SebAddress": "https://www.gvoisins.org",
+			"Code":       "...",
+		},
+	})
+	return err
 }
 
 func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
