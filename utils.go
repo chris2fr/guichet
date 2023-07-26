@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"log"
 	"net"
+	"net/smtp"
 
 	"math/rand"
 
@@ -56,5 +57,14 @@ func sendMail(sendMailTplData SendMailTplData) error {
 	templateMail := template.Must(template.ParseFiles(templatePath + "/" + sendMailTplData.RelTemplatePath))
 	buf := bytes.NewBuffer([]byte{})
 	err := templateMail.Execute(buf, sendMailTplData)
+	message := buf.Bytes()
+	auth := smtp.PlainAuth("", config.SMTPUsername, config.SMTPPassword, config.SMTPServer)
+	log.Printf("auth: %v", auth)
+	err = smtp.SendMail(config.SMTPServer+":587", auth, config.SMTPUsername, []string{user.OtherMailbox}, message)
+	if err != nil {
+		log.Printf("email send error %v", err)
+		return err
+	}
+	log.Printf("Mail sent.")
 	return err
 }
