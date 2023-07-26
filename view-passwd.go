@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
 )
 
@@ -33,23 +34,24 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 			Mail:         strings.TrimSpace(strings.Join(r.Form["mail"], "")),
 			OtherMailbox: strings.TrimSpace(strings.Join(r.Form["othermailbox"], "")),
 		}
-		ldapConn, err := openNewUserLdap(config)
+		ldapNewConn, err := openNewUserLdap(config)
 		if err != nil {
-			log.Printf(fmt.Sprintf("handleLostPassword 99 : %v %v", err, ldapConn))
+			log.Printf(fmt.Sprintf("handleLostPassword 99 : %v %v", err, ldapNewConn))
 			data.Common.ErrorMessage = err.Error()
 		}
 		if err != nil {
-			log.Printf(fmt.Sprintf("handleLostPassword 104 : %v %v", err, ldapConn))
+			log.Printf(fmt.Sprintf("handleLostPassword 104 : %v %v", err, ldapNewConn))
 			data.Common.ErrorMessage = err.Error()
 		} else {
-			err = ldapConn.Bind(config.NewUserDN, config.NewUserPassword)
+			// err = ldapConn.Bind(config.NewUserDN, config.NewUserPassword)
 			if err != nil {
-				log.Printf(fmt.Sprintf("handleLostPassword 109 : %v %v", err, ldapConn))
+				log.Printf(fmt.Sprintf("handleLostPassword 109 : %v %v", err, ldapNewConn))
 				data.Common.ErrorMessage = err.Error()
 			} else {
 				data.Common.Success = true
 			}
 		}
+		err = passwordLost(user, config, ldapNewConn)
 	}
 	data.Common.CanAdmin = false
 	templateLostPasswordPage.Execute(w, data)
