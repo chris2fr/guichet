@@ -63,7 +63,8 @@ func sendMail(sendMailTplData SendMailTplData) error {
 	log.Printf("auth: %v", auth)
 	err = smtp.SendMail(config.SMTPServer+":587", auth, config.SMTPUsername, []string{sendMailTplData.To}, message)
 	if err != nil {
-		log.Printf("email send error %v", err)
+		log.Printf("sendMail smtp.SendMail %v", err)
+		log.Printf("sendMail smtp.SendMail %v", sendMailTplData)
 		return err
 	}
 	log.Printf("Mail sent.")
