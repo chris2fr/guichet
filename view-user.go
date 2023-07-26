@@ -9,6 +9,11 @@ import (
 	// "github.com/gorilla/mux"
 )
 
+func handleUserWait(w http.ResponseWriter, r *http.Request) {
+	templateProfile := getTemplate("user/wait.html")
+	templateProfile.Execute(w, nil)
+}
+
 func handleUser(w http.ResponseWriter, r *http.Request) {
 	templateProfile := getTemplate("user.html")
 

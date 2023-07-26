@@ -218,6 +218,12 @@ type LoginFormData struct {
 	Common    NestedCommonTplData
 }
 
+type EmailContentVarsTplData struct {
+	Code        string
+	SendAddress string
+	InviteFrom  string
+}
+
 // Data to be passed to an email for sending
 type SendMailTplData struct {
 	// Sender of the email
@@ -228,7 +234,7 @@ type SendMailTplData struct {
 	// usually ending in .txt
 	RelTemplatePath string
 	// Variables to be included in the template of the email
-	ContentVars map[string]string
+	EmailContentVars EmailContentVarsTplData
 }
 
 var templatePath = "./templates"

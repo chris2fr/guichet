@@ -5,7 +5,7 @@ Content-type: text/plain; charset=utf-8
 
 Vous avez été invité à créer un compte sur GVoisin.com par {{.InviteFrom}} :)
 
-Pour créer votre compte, rendez-vous à l'addresse suivante:
+Pour créer votre compte, rendez-vous à l'adresse suivante:
 
 {{.WebBaseAddress}}/invitation/{{.Code}}
 

@@ -1,0 +1,26 @@
+{{define "title"}}Attente de validation{{end}}
+
+{{define "admenu"}}
+{{end}}
+
+{{define "body"}}
+{{if .Common.ErrorMessage}}
+<div class="alert alert-danger mt-4">Impossible de créer le compte.
+  <div style="font-size: 0.8em">{{ .Common.ErrorMessage }}</div>
+</div>
+{{end}}
+{{if .Common.WarningMessage}}
+<div class="alert alert-danger mt-4">Des erreurs se sont produites, le compte pourrait ne pas être totalement
+  fonctionnel.
+  <div style="font-size: 0.8em">{{ .Common.WarningMessage }}</div>
+</div>
+{{end}}
+{{if .Common.Success}}
+<div class="alert alert-success mt-4">
+  Le compe a été créé !
+  Rendez-vous <a href="/session/logout">sur la page d'accueil</a> pour vous connecter avec ce nouveau compte.
+</div>
+{{else}}
+<p>Vous avez reçu un courriel. Nous allons valider votre compte. </p>
+{{end}}
+{{end}}

@@ -121,11 +121,11 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	sendMailTplData := SendMailTplData{
 		From:            "alice@resdigita.org",
 		To:              user.OtherMailbox,
-		RelTemplatePath: "user/mail.txt",
-		ContentVars: map[string]string{
-			"InviteFrom": "alice@resdigita.org",
-			"SebAddress": "https://www.gvoisins.org",
-			"Code":       "...",
+		RelTemplatePath: "user/new.email.txt",
+		EmailContentVars: EmailContentVarsTplData{
+			InviteFrom:  "alice@resdigita.org",
+			SendAddress: "https://www.gvoisins.org",
+			Code:        "...",
 		},
 	}
 	err = sendMail(sendMailTplData)
