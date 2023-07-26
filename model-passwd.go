@@ -64,7 +64,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// Préparation du courriel à envoyer
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
-	user.DN = "uid=" + searchRes.Entries[0].GetAttributeValue("cn") + ",ou=invitations,dc=resdigita,dc=org"
+	user.DN = "uid=" + searchRes.Entries[0].GetAttributeValue("cn") + "," + config.InvitationBaseDN
 	user.UID = searchRes.Entries[0].GetAttributeValue("cn")
 	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
@@ -81,11 +81,11 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	if len(searchRes.Entries) == 0 {
 		/* Add the invitation */
 		addReq := ldap.NewAddRequest(
-			user.DN,
+			"uid="+searchRes.Entries[0].GetAttributeValue("cn")+","+config.InvitationBaseDN,
 			nil)
 		addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
-		addReq.Attribute("uid", []string{user.UID})
-		addReq.Attribute("userPassword", []string{"absdefghi"})
+		addReq.Attribute("uid", []string{searchRes.Entries[0].GetAttributeValue("cn")})
+		addReq.Attribute("userPassword", []string{suggestPassword()})
 		addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN})
 		err = ldapConn.Add(addReq)
 		if err != nil {

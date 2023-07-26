@@ -56,52 +56,6 @@ func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
 	return l, err
 }
 
-func handleLostPassword(w http.ResponseWriter, r *http.Request) {
-	templateLostPasswordPage := getTemplate("passwd/lost.html")
-	if checkLogin(w, r) != nil {
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	}
-
-	data := PasswordLostData{
-		Common: NestedCommonTplData{
-			CanAdmin: false,
-			LoggedIn: false},
-	}
-
-	if r.Method == "POST" {
-		r.ParseForm()
-		data.Username = strings.TrimSpace(strings.Join(r.Form["username"], ""))
-		data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
-		data.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
-		user := User{
-			CN:           strings.TrimSpace(strings.Join(r.Form["username"], "")),
-			UID:          strings.TrimSpace(strings.Join(r.Form["username"], "")),
-			Mail:         strings.TrimSpace(strings.Join(r.Form["mail"], "")),
-			OtherMailbox: strings.TrimSpace(strings.Join(r.Form["othermailbox"], "")),
-		}
-		ldapConn, err := openNewUserLdap(config)
-		if err != nil {
-			log.Printf(fmt.Sprintf("handleLostPassword 99 : %v %v", err, ldapConn))
-			data.Common.ErrorMessage = err.Error()
-		}
-		err = passwordLost(user, config, ldapConn)
-		if err != nil {
-			log.Printf(fmt.Sprintf("handleLostPassword 104 : %v %v", err, ldapConn))
-			data.Common.ErrorMessage = err.Error()
-		} else {
-			err = ldapConn.Bind(config.NewUserDN, config.NewUserPassword)
-			if err != nil {
-				log.Printf(fmt.Sprintf("handleLostPassword 109 : %v %v", err, ldapConn))
-				data.Common.ErrorMessage = err.Error()
-			} else {
-				data.Common.Success = true
-			}
-		}
-	}
-	data.Common.CanAdmin = false
-	templateLostPasswordPage.Execute(w, data)
-}
-
 func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	l, err := ldapOpen(w)
 	if err != nil {

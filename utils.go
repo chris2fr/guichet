@@ -43,6 +43,7 @@ func openLdap(config *ConfigFile) (*ldap.Conn, error) {
 	// }
 }
 
+// Suggesting a 12 char password with some excentrics
 func suggestPassword() string {
 	password := ""
 	chars := "abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*+_-="
