@@ -1,0 +1,96 @@
+{{define "title"}}Nouvel objet |{{end}}
+
+{{define "admenu"}}
+{{end}}
+
+
+{{define "body"}}
+<div class="d-flex">
+  <h2>Créer un objet</h2>
+</div>
+
+<div class="mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      {{range .Path}}
+        <li class="breadcrumb-item"><a href="/admin/ldap/{{.DN}}">{{.Identifier}}</a></li>
+      {{end}}
+      <li class="breadcrumb-item active" aria-current="page">Nouvel objet</li>
+    </ol>
+  </nav>
+</div>
+
+{{if .Common.Error}}
+  <div class="alert alert-danger mt-4">Impossible de créer l'objet.
+    <div style="font-size: 0.8em">{{ .Common.Error }}</div>
+  </div>
+{{end}}
+
+<form method="POST" class="mt-4">
+  <!--
+  <div class="form-group">
+    <label>Parent:</label>
+    <input type="text" disabled="true" class="form-control" value="{{ .SuperDN }}" />
+  </div>
+  -->
+  {{if eq .Template "ml"}}
+    <div class="form-group">
+      <label for="idvalue">Adresse complète de la mailing list :</label>
+      <input type="text" id="idvalue" name="idvalue" class="form-control" value="{{ .IdValue }}" placeholder="exemple@resdigita.org" pattern="^[-A-z0-9\.]+@resdigita.org" />
+    </div>
+  {{else}}
+    <div class="form-group">
+      <label for="idvalue">Identifiant :</label>
+      <input type="text" id="idvalue" name="idvalue" class="form-control" value="{{ .IdValue }}" placeholder="exemple@resdigita.org" pattern="^[-A-z0-9\.]+@resdigita.org" />
+    </div>
+  {{end}}
+  <div class="form-group">
+    <label for="idtype">Type d'identifiant :</label>
+    <input type="text" {{if .Template}}disabled="disabled"{{end}} id="idtype" name="idtype" class="form-control" value="{{ .IdType }}" />
+  </div>
+  {{ if eq .Template "user" }}
+    <div class="form-group">
+      <label for="displayname">Nom affiché :</label>
+      <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
+    </div>
+    <div class="form-group">
+      <label for="mail">Email:</label>
+      <input type="text" id="mail" name="mail" class="form-control" value="{{ .Mail }}" />
+    </div>
+    <input type="hidden" name="mail" value="" />
+    <div class="form-group">
+      <label for="givenname">Prénom :</label>
+      <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" />
+    </div>
+    <input type="hidden" name="givenname" value="" />
+    <div class="form-group">
+      <label for="sn">Nom de Famille :</label>
+      <input type="text" id="sn" name="sn" class="form-control" value=" {{ .SN }}" />
+    </div>
+    <input type="hidden" name="sn" value="" />
+  {{ else }}
+    <div class="form-group">
+      <label for="description">Description :</label>
+      <input type="text" id="description" name="description" class="form-control" value="{{ .Description }}" />
+    </div>
+    <input type="hidden" name="description" value="" />
+    <div class="form-group">
+      <label for="member">Member :</label>
+      <input type="text" id="member" name="member" class="form-control" value="{{ .Member }}" />
+    </div>
+    <input type="hidden" name="member" value="" />
+  {{ end }}
+  <!--
+  <div class="form-group">
+    <label for="soc">StructuralObjectClass :</label>
+    <input type="text" {{if .Template}}disabled="disabled"{{end}} id="soc" name="soc" class="form-control" value="{{ .StructuralObjectClass }}" />
+  </div>
+  -->
+  <div class="form-group">
+    <label for="oc">ObjectClass :</label>
+    <textarea  rows="5" {{if .Template}}disabled="disabled"{{end}} id="oc" name="oc" class="form-control">{{ .ObjectClass }}</textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Créer l'objet</button>
+</form>
+
+{{end}}

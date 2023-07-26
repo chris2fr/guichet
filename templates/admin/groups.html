@@ -1,0 +1,40 @@
+{{define "title"}}Liste des groupes |{{end}}
+
+{{define "admenu"}}
+{{end}}
+
+
+{{define "body"}}
+
+<div class="d-flex">
+  <h2>Liste des groupes</h2>
+  <a class="ml-auto btn btn-success" href="/admin/create/group/{{.GroupBaseDN}}">Nouveau groupe</a>
+</div>
+
+<div class="alert alert-warning mt-4">
+    Les groupes servent uniquement à contrôler l'accès à différentes fonctionalités de Deuxfleurs.
+    Ce ne sont pas des <a href="/admin/mailing">mailing lists</a>.
+</div>
+
+<table class="table mt-4">
+  <thead>
+    <th scope="col">Identifiant</th>
+    <th scope="col">Nom complet</th>
+  </thead>
+  <tbody>
+    {{with $root := .}}
+      {{range $group := $root.Groups}}
+        <tr>
+          <td>
+            <a href="/admin/ldap/{{$group.DN}}">
+              {{$group.GetAttributeValue $root.GroupNameAttr}}
+            </a>
+          </td>
+          <td>{{$group.GetAttributeValue "description"}}</td>
+        </tr>
+      {{end}}
+    {{end}}
+  </tbody>
+</table>
+
+{{end}}

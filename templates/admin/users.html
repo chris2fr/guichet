@@ -1,0 +1,43 @@
+{{define "title"}}Liste des utilisateurs |{{end}}
+
+{{define "admenu"}}
+{{end}}
+
+
+{{define "body"}}
+
+<div class="d-flex">
+  <h2>Liste des utilisateurs</h2>
+  <a class="ml-auto btn btn-success" href="/admin/create/user/{{.UserBaseDN}}">Nouvel utilisateur</a>
+</div>
+
+<table class="table mt-4">
+  <thead>
+    <th scope="col"></th>
+    <th scope="col">Identifiant</th>
+    <th scope="col">Nom complet</th>
+    <th scope="col">Email</th>
+  </thead>
+  <tbody>
+    {{with $root := .}}
+      {{range $user := $root.Users}}
+        <tr>
+          <td>
+            <a href="/admin/unactivate/{{ $user.GetAttributeValue "cn" }}">
+              Dèsactiver
+            </a>
+          </td>
+          <td>
+            <a href="/admin/ldap/{{$user.DN}}">
+              {{$user.GetAttributeValue $root.UserNameAttr}}
+            </a>
+          </td>
+          <td>{{$user.GetAttributeValue "displayName"}}</td>
+          <td>{{$user.GetAttributeValue "mail"}}</td>
+        </tr>
+      {{end}}
+    {{end}}
+  </tbody>
+</table>
+
+{{end}}

@@ -1,0 +1,239 @@
+{{define "title"}}Explorateur LDAP |{{end}}
+
+{{define "admenu"}}
+{{end}}
+
+
+{{define "body"}}
+
+<div class="d-flex">
+  <h2>Explorateur LDAP</h2>
+</div>
+
+<div class="mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      {{range .Path}}
+        {{if .Active}}
+          <li class="breadcrumb-item active" aria-current="page">{{.Identifier}}</li>
+        {{else}}
+          <li class="breadcrumb-item"><a href="/admin/ldap/{{.DN}}">{{.Identifier}}</a></li>
+        {{end}}
+      {{end}}
+    </ol>
+  </nav>
+</div>
+
+<table class="table mt-4">
+  <tbody>
+    {{range .ChildrenOU}}
+        <tr>
+          <td>
+            <a href="/admin/ldap/{{.DN}}">
+              🗀 {{.Identifier}}
+            </a>
+          </td>
+          <td>{{.Name}}</td>
+        </tr>
+    {{end}}
+    {{range .ChildrenOther}}
+        <tr>
+          <td>
+            <a href="/admin/ldap/{{.DN}}">
+              {{.Identifier}}
+            </a>
+          </td>
+          <td>{{.Name}}</td>
+        </tr>
+    {{end}}
+  </tbody>
+</table>
+
+{{if .CanAddChild}}
+  <div class="mt-2">
+      <a class="btn btn-sm btn-success" href="/admin/create/user/{{.DN}}">+utilisateur</a>
+      <a class="ml-4 btn btn-sm btn-success" href="/admin/create/group/{{.DN}}">+groupe</a>
+      <a class="ml-4 btn btn-sm btn-success" href="/admin/create/ou/{{.DN}}">+ou</a>
+      <a class="ml-4 btn btn-sm btn-success" href="/admin/create/generic/{{.DN}}">+objet</a>
+  </div>
+  <hr class="mt-4" />
+{{end}}
+
+{{if .Common.Success}}
+  <div class="alert alert-success mt-2">Modification enregistrée.</div>
+{{end}}
+{{if .Common.Error}}
+  <div class="alert alert-danger mt-2">
+    Impossible d'effectuer la modification.
+    <div style="font-size: 0.8em">{{.Error}}</div>
+  </div>
+{{end}}
+
+<h5>Attributs</h5>
+<div class="container">
+    {{range $key, $value := .Props}}
+      {{if $value.Editable}}
+        <div class="row mt-4">
+          <div class="col-md-3"><strong>{{$value.Name}}</strong></div>
+
+          <div class="col-md-7">
+            <form method="POST">
+              <div class="form-row">
+                <input type="hidden" name="action" value="modify" />
+                <input type="hidden" name="attr" value="{{$key}}" />
+                <textarea name="values" rows="{{len $value.Values}}" class="form-control col-md-9">{{range $i, $x := $value.Values}}{{if $i}}{{"\n"}}{{end}}{{$x}}{{end}}</textarea>
+                <div class="col-md-3">
+                  <input type="submit" value="Modifier" class="form-control btn btn-primary" />
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-md-1">
+            {{if $value.Deletable}}
+              <form method="POST" onsubmit="return confirm('Supprimer cet attribut ?');">
+                <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="attr" value="{{$key}}" />
+                <input type="submit" value="Suppr." class="form-control btn btn-danger btn-sm" />
+              </form>
+            {{end}}
+          </div>
+        </div>
+      {{end}}
+    {{end}}
+    {{range $key, $value := .Props}}
+      {{if not $value.Editable}}
+        <div class="row mt-4">
+          <div class="col-md-3"><strong>{{$key}}</strong></div>
+          <div class="col-md-9">
+          {{range $value.Values}}
+            {{if eq $key "creatorsname" "modifiersname" }}
+              <div><a href="/admin/ldap/{{.}}">{{.}}</a></div>
+            {{else}}
+              <div>{{.}}</div>
+            {{end}}
+          {{end}}
+          </div>
+        </div>
+      {{end}}
+    {{end}}
+    <form method="POST">
+      <div class="row mt-4">
+        <div class="col-md-3">
+          <input type="hidden" name="action" value="add" />
+          <input class="form-control" type="text" name="attr" placeholder="Ajouter un attribut..." />
+        </div>
+        <div class="col-md-7">
+          <div class="form-row">
+            <textarea name="values" placeholder="Valeur(s)..." rows="2" class="form-control col-md-9"></textarea>
+            <div class="col-md-3">
+              <input type="submit" value="Ajouter" class="form-control btn btn-success" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+</div>
+
+{{if .HasMembers}}
+  <hr class="mt-4" />
+  <h5 class="mt-4">Membres</h5>
+  <div class="container">
+    {{range .Members}}
+      <div class="row mt-4">
+        <div class="col-md-3">
+          <strong>{{.Name}}</strong>
+        </div>
+        <div class="col-md-5">
+          <a href="/admin/ldap/{{.DN}}">{{.DN}}</a>
+        </div>
+        <div class="col-md-2">
+            <form method="POST" onsubmit="return confirm('Supprimer du groupe ?');">
+              <input type="hidden" name="action" value="delete-member" />
+              <input type="hidden" name="member" value="{{.DN}}" />
+              <input type="submit" value="Supprimer" class="form-control btn btn-danger btn-sm" />
+            </form>
+        </div>
+      </div>
+    {{end}}
+    <form method="POST">
+      <input type="hidden" name="action" value="add" />
+      <input type="hidden" name="attr" value="member" />
+      <div class="row mt-4">
+        <div class="col-md-3"><strong>Ajouter au groupe :</strong>
+      </div>
+      <div class="col-md-5">
+        <input class="form-control" type="text" list="users" name="values" placeholder="Utilisateur..." />
+        <datalist id="users">
+          {{range .PossibleNewMembers}}
+            <option value="{{.DN}}">{{.Name}}</option>
+          {{end}}
+        </datalist>
+      </div>
+      <div class="col-md-2">
+          <input type="submit" value="Ajouter" class="form-control btn btn-success btn-sm" />
+      </div>
+    </form>
+  </div>
+{{end}}
+
+{{if .HasGroups}}
+  <hr class="mt-4" />
+  <h5 class="mt-4">Membre de</h5>
+  <div class="container">
+    {{range .Groups}}
+      <div class="row mt-4">
+        <div class="col-md-3">
+          <strong>{{.Name}}</strong>
+        </div>
+        <div class="col-md-5">
+          <a href="/admin/ldap/{{.DN}}">{{.DN}}</a>
+        </div>
+        <div class="col-md-2">
+            <form method="POST" onsubmit="return confirm('Supprimer du groupe ?');">
+              <input type="hidden" name="action" value="delete-from-group" />
+              <input type="hidden" name="group" value="{{.DN}}" />
+              <input type="submit" value="Supprimer" class="form-control btn btn-danger btn-sm" />
+            </form>
+        </div>
+      </div>
+    {{end}}
+    <form method="POST">
+      <input type="hidden" name="action" value="add-to-group" />
+      <div class="row mt-4">
+        <div class="col-md-3"><strong>Nouveau groupe :</strong>
+      </div>
+      <div class="col-md-5">
+        <input class="form-control" list="groups" type="text" name="group" placeholder="Groupe..." />
+        <datalist id="groups">
+          {{range .PossibleNewGroups}}
+            <option value="{{.DN}}">{{.Name}}</option>
+          {{end}}
+        </datalist>
+      </div>
+      <div class="col-md-2">
+          <input type="submit" value="Ajouter" class="form-control btn btn-success btn-sm" />
+      </div>
+    </form>
+  </div>
+{{end}}
+
+{{if .CanDelete}}
+  <hr class="mt-4">
+  <h5 class="mt-4">Supprimer l'objet</h5>
+  <div class="alert alert-danger">
+    Attention, cette opération est irrévocable !
+  </div>
+  <form method="POST" onsubmit="return confirm('Supprimer cet objet DÉFINITIVEMENT ?');">
+    <div class="form-row">
+      <input type="hidden" name="action" value="delete-object" />
+      <div class="col-sm-5"></div>
+      <input type="submit" value="Supprimer l'objet" class="form-control btn btn-danger col-sm-2" />
+      <div class="col-sm-5"></div>
+    </div>
+  </form>
+{{end}}
+
+<hr class="mt-4" />
+
+{{end}}

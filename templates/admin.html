@@ -1,0 +1,68 @@
+{{define "title"}}Home{{end}}
+
+{{define "admenu"}}
+{{end}}
+
+{{define "body"}}
+<div class="alert alert-info">
+    Bienvenue, <strong>{{ .Login.Login.WelcomeName }}</strong> !
+</div>
+
+<div class="mt-3">
+    <div class="card">
+        <div class="card-header">
+            Mon compte
+        </div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action" href="/user">Modifier mon profil</a>
+            <a class="list-group-item list-group-item-action" href="/passwd">Modifier mon mot de passe</a>
+            <!--
+            <a class="list-group-item list-group-item-action" href="/directory">Annuaire</a>
+            -->
+
+          </div>
+    </div>
+</div>
+<!--
+<div class="mt-3">
+    <div class="card">
+        <div class="card-header">
+            Garage
+        </div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action" href="/garage/key">Mes identifiants</a>
+            <a class="list-group-item list-group-item-action" href="/garage/website">Mes sites webs</a>
+        </div>
+    </div>
+</div>
+-->
+{{if .Common.CanInvite}}
+<div class="card mt-3">
+  <div class="card-header">
+    Outils
+  </div>
+  <div class="list-group list-group-flush">
+    <!-- <a class="list-group-item list-group-item-action" href="/user/send_code">Envoyer un code d'invitation</a> -->
+    <a class="list-group-item list-group-item-action" href="/user/new">Créer un nouveau compte directement</a>
+    <a class="list-group-item list-group-item-action" href="/SOGo">Accéder à mes courriels, mon agenda et à mes contacts</a>
+    <a class="list-group-item list-group-item-action" href="https://www.lesgrandsvoisins.com/resdigita">Accéder au numérique des Grands Voisins .com</a>
+  </div>
+</div>
+{{end}}
+
+{{if .Common.CanAdmin}}
+  <div class="card mt-3">
+    <div class="card-header">
+      Administration
+    </div>
+    <div class="list-group list-group-flush">
+      <a class="list-group-item list-group-item-action" href="/admin/activate">Activer des Utilisateur·ices</a>
+      <a class="list-group-item list-group-item-action" href="/admin/users">Utilisateur·ices</a>
+      <a class="list-group-item list-group-item-action" href="/admin/groups">Groupes</a>
+      <!-- <a class="list-group-item list-group-item-action" href="/admin/mailing">Mailing lists</a> -->
+      <a class="list-group-item list-group-item-action" href="/admin/ldap/{{.BaseDN}}">Explorateur LDAP</a>
+    </div>
+  </div>
+{{end}}
+
+{{end}}

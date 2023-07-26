@@ -1,0 +1,66 @@
+{{define "title"}}Créer un site web |{{end}}
+
+{{define "admenu"}}
+{{end}}
+
+{{define "body"}}
+<div class="d-flex">
+    <h4>Créer un site web</h4>
+    <a class="ml-auto btn btn-link" href="/garage/key">Mes identifiants</a>
+    <a class="ml-4 btn btn-info" href="/garage/website">Mes sites webs</a>
+</div>
+
+<ul class="nav nav-tabs" id="proto" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="dnsint-tab" data-toggle="tab" href="#dnsint" role="tab" aria-controls="dnsint" aria-selected="true">Je n'ai pas de nom de domaine</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="dnsext-tab" data-toggle="tab" href="#dnsext" role="tab" aria-controls="dnsext" aria-selected="false">Utiliser mon propre nom de domaine</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="protocols">
+    <div class="tab-pane fade show active" id="dnsint" role="tabpanel" aria-labelledby="dnsint-tab">
+        <form method="POST" class="mt-4">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="bucket">Sous-domaine désiré :</label>
+                    <input type="text" id="bucket" name="bucket" placeholder="mon-site" class="form-control" value="" onkeyup="document.getElementById('url').value = `https://${document.getElementById('bucket').value}.web.resdigita.org`" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="url">Votre site sera accessible à l'URL suivante :</label>
+                    <input type="text" id="url" disabled="true" name="url" class="form-control" value="https://mon-site.web.resdigita.org" />
+                </div>
+            </div>
+            <div class="mt-4">
+                <p>La première fois que vous chargerez votre site web, une erreur de certificat sera renvoyée. C'est normal, il faudra patienter quelques minutes le temps que le certificat se génère.</p>
+            </div>
+            <button type="submit" class="btn btn-primary">Créer un nouveau site web</button>
+        </form>
+    </div>
+    <div class="tab-pane fade show" id="dnsext" role="tabpanel" aria-labelledby="dnsext-tab">
+        <form method="POST" class="mt-4">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="bucket2">Votre nom de domaine :</label>
+                    <input type="text" id="bucket2" name="bucket2" placeholder="exemple.com" class="form-control" value="" onkeyup="document.getElementById('url2').value = `https://${document.getElementById('bucket2').value}`" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="url2">Votre site sera accessible à l'URL suivante :</label>
+                    <input type="text" id="url2" disabled="true" name="url2" class="form-control" value="https://exemple.com" />
+                </div>
+            </div>
+            <div>
+                <p>Vous devez éditer votre zone DNS, souvent gérée par votre bureau d'enregistrement, comme Gandi, pour la faire pointer vers Deuxfleurs. Si vous utilisez un sous domaine (eg. <code>site.exemple.com</code>), une entrée <code>CNAME</code> est appropriée :</p>
+                <pre>site   CNAME    3600    garage.resdigita.org.</pre>
+                <p>Si vous utilisez la racine de votre nom de domaine (eg. <code>exemple.com</code>, aussi appelée APEX), la solution dépend de votre fournisseur DNS, il vous faudra au choix une entrée <code>ALIAS</code> ou <code>CNAME</code> en fonction de ce que votre fournisseur supporte :</p>
+                <pre>@      ALIAS    3600    garage.resdigita.org.</pre>
+                <p>La première fois que vous chargerez votre site web, une erreur de certificat sera renvoyée. C'est normal, il faudra patienter quelques minutes le temps que le certificat se génère.</p>
+            </div>
+            <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Créer un nouveau site web</button>
+        </form>
+
+    </div>
+</div>
+{{end}}

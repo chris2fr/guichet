@@ -1,0 +1,131 @@
+{{define "title"}}Créer un compte{{end}}
+
+{{define "admenu"}}
+{{end}}
+
+{{define "body"}}
+<div class="d-flex">
+  <h2>Création d'un nouveau compte</h2>
+</div>
+{{if .Common.ErrorMessage}}
+<div class="alert alert-danger mt-4">Impossible de créer le compte.
+  <div style="font-size: 0.8em">{{ .Common.ErrorMessage }}</div>
+</div>
+{{end}}
+{{if .Common.WarningMessage}}
+<div class="alert alert-danger mt-4">Des erreurs se sont produites, le compte pourrait ne pas être totalement
+  fonctionnel.
+  <div style="font-size: 0.8em">{{ .Common.WarningMessage }}</div>
+</div>
+{{end}}
+{{if .Common.Success}}
+<div class="alert alert-success mt-4">
+  Le compe a été créé !
+  Rendez-vous <a href="/session/logout">sur la page d'accueil</a> pour vous connecter avec ce nouveau compte.
+</div>
+{{else}}
+<form method="POST" class="mt-4">
+  <div class="form-group">
+    <label for="givenname">Prénom :</label>
+    <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" />
+  </div>
+  <div class="form-group">
+    <label for="surname">Nom de famille :</label>
+    <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
+  </div>
+  <div class="form-group">
+    <label for="otheremail">Email de secours:</label>
+    <input type="text" id="otheremail" name="otheremail" class="form-control" value="{{ .OtherEmail }}" />
+    <small class="form-text text-muted">
+      Le courriel de l'utilisateur.
+    </small>
+  </div>
+  <div class="form-group">
+    <label for="displayname">Nom affiché :</label>
+    <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
+  </div>
+  <div class="form-group">
+    <label for="username">Identifiant :</label>
+    <input type="text" id="username" name="username" class="form-control" />
+    <small class="form-text text-muted">
+      Votre identifiant doit être en minuscule.
+    </small>
+  </div>
+  <div id="calc-uid"></div>
+  <div id="calc-cn"></div>
+  {{if .ErrorInvalidUsername}}
+  <div class="alert alert-warning">
+    Nom d'utilisateur invalide. Ne peut contenir que les caractères suivants : chiffres, lettres minuscules, point,
+    tiret bas (_) et tiret du milieu (-).
+  </div>
+  {{end}}
+  {{if .ErrorUsernameTaken}}
+  <div class="alert alert-warning">
+    Ce nom d'utilisateur est déjà pris.
+  </div>
+  {{end}}
+  <div class="form-group">
+    <label for="mail">Email des GV:</label>
+    <input type="text" id="mail" name="mail" class="form-control" value="{{ .Mail }}" />
+    <small class="form-text text-muted">
+      Le courriel et login interne.
+    </small>
+  </div>
+  <p><a href="#" onClick="javascript:var suggestPW = Math.random().toString(36).slice(-10); document.getElementById('password').value='{{ .SuggestPW }}';document.getElementById('password2').value='{{ .SuggestPW }}';">Utiliser ce mot de passe :</a> {{ .SuggestPW }}</p>
+  <div class="form-group">
+    <label for="password">Mot de passe :</label>
+    <input type="password" id="password" name="password" class="form-control" />
+    <small class="form-text text-muted">
+      La seule contrainte est que votre mot de passe doit faire au moins 8 caractères. Utilisez chiffres, majuscules, et
+      caractères spéciaux sans modération !
+    </small>
+  </div>
+  {{if .ErrorPasswordTooShort}}
+  <div class="alert alert-warning">
+    Le mot de passe choisi est trop court (minimum 8 caractères).
+  </div>
+  {{end}}
+  <div class="form-group">
+    <label for="password2">Répéter le mot de passe :</label>
+    <input type="password" id="password2" name="password2" class="form-control" />
+  </div>
+  {{if .ErrorPasswordMismatch}}
+  <div class="alert alert-warning">
+    Les deux mots de passe entrés ne correspondent pas.
+  </div>
+  {{end}}
+  <button type="submit" class="btn btn-primary">Créer le compte</button>
+</form>
+
+<script lang="javascript">
+function changeGivenNameOrSurname () {
+  givenname = document.getElementById("givenname");
+  surname = document.getElementById("surname");
+  displayname = document.getElementById("displayname");
+  username = document.getElementById("username");
+  displayname.value = givenname.value + " " + surname.value
+  changeDisplayname();
+}
+function changeDisplayname () {
+  givenname = document.getElementById("givenname");
+  surname = document.getElementById("surname");
+  displayname = document.getElementById("displayname");
+  username = document.getElementById("username");
+  username.value = displayname.value.toLowerCase().replace(/[^A-z0-9.-]/g, '').replace(/^[.-]/, '').replace(/[.-]$/, '');
+  changeUsername();
+}
+function changeUsername () {
+  givenname = document.getElementById("givenname");
+  surname = document.getElementById("surname");
+  displayname = document.getElementById("displayname");
+  username = document.getElementById("username");
+  mail = document.getElementById("mail");
+  mail.value = username.value + "@lesgv.com";
+}
+document.getElementById("givenname").addEventListener("change",changeGivenNameOrSurname);
+document.getElementById("surname").addEventListener("change",changeGivenNameOrSurname);
+document.getElementById("displayname").addEventListener("change",changeDisplayname);
+document.getElementById("username").addEventListener("change",changeUsername);
+</script>
+{{end}}
+{{end}}

@@ -1,0 +1,61 @@
+{{define "title"}}Inspecter le site web |{{end}}
+
+{{define "admenu"}}
+{{end}}
+
+{{define "body"}}
+<div class="d-flex">
+  <h4>Inspecter le site web</h4>
+  <a class="ml-auto btn btn-link" href="/garage/key">Mes identifiants</a>
+  <a class="ml-4 btn btn-success" href="/garage/website/new">Nouveau site web</a>
+  <a class="ml-4 btn btn-info" href="/garage/website">Mes sites webs</a>
+</div>
+
+<table class="table mt-4">
+  <tbody>
+      <tr>
+          <th scope="row">ID</th>
+          <td>{{ .Bucket.Id }}</td>
+      </tr>
+      <tr>
+          <th scope="row">URLs</th>
+          <td>
+              {{ range $alias := .Bucket.GlobalAliases }}
+              {{ if contains $alias "." }}
+              https://{{ $alias }}
+              {{ else }}
+              https://{{ $alias }}.web.resdigita.org
+              {{ end }}
+              {{ end }}
+          </td>
+      </tr>
+      <tr>
+          <th scope="row">Document d'index</th>
+          <td> {{ .IndexDoc }}</td>
+      </tr>
+      <tr>
+          <th scope="row">Document d'erreur</th>
+          <td>{{ .Common.ErrorDoc }}</td>
+      </tr>
+      <tr>
+          <th scope="row">Nombre de fichiers</th>
+          <td>{{ .Bucket.Objects }} / {{ .MaxObjects }}</td>
+      </tr>
+      <tr>
+          <th scope="row">Espace utilisé</th>
+          <td>{{ .Bucket.Bytes }} / {{ .MaxSize }} octets</td>
+      </tr>
+  </tbody>
+</table>
+
+<h4>Configurer le nom de domaine</h4>
+
+{{ range $alias := .Bucket.GlobalAliases }}
+{{ if contains $alias "." }}
+<p> Le nom de domaine {{ $alias }} n'est pas géré par Deuxfleurs, il vous revient donc de configurer la zone DNS. Vous devez ajouter une entrée <code>CNAME garage.resdigita.org</code> ou <code>ALIAS garage.resdigita.org</code> auprès de votre hébergeur DNS, qui est souvent aussi le bureau d'enregistrement (eg. Gandi, GoDaddy, BookMyName, etc.).</p>
+{{ else }}
+<p> Le nom de domaine https://{{ $alias }}.web.resdigita.org est fourni par Deuxfleurs, il n'y a pas de configuration à faire.</p>
+{{ end }}
+{{ end }}
+
+{{end}}
