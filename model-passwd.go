@@ -88,7 +88,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
 	addReq.Attribute("uid", []string{user.UID})
 	addReq.Attribute("userPassword", []string{suggestPassword()})
-	addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.InvitationBaseDN})
+	addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN})
 	err = ldapConn.Add(addReq)
 	if err != nil {
 		log.Printf("passwordLost 83 : %v", err)
