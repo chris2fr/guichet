@@ -201,6 +201,7 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
 		newUser.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
+		newUser.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		newUser.UID = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
 		newUser.CN = strings.TrimSpace(strings.Join(r.Form["username"], ""))

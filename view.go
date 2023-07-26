@@ -113,6 +113,7 @@ type CreateData struct {
 	StructuralObjectClass string
 	ObjectClass           string
 	SN                    string
+	OtherMailbox          string
 
 	Common NestedCommonTplData
 	Login  NestedLoginTplData

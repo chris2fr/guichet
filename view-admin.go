@@ -937,6 +937,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 		data.Member = strings.TrimSpace(strings.Join(r.Form["member"], ""))
 		data.Description = strings.TrimSpace(strings.Join(r.Form["description"], ""))
 		data.SN = strings.TrimSpace(strings.Join(r.Form["sn"], ""))
+		data.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
 
 		object_class := []string{}
 		for _, oc := range strings.Split(data.ObjectClass, "\n") {
@@ -992,6 +993,9 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			if data.SN != "" {
 				newUser.SN = data.SN
 				// req.Attribute("sn", []string{data.SN})
+			}
+			if data.OtherMailbox != "" {
+				newUser.OtherMailbox = data.OtherMailbox
 			}
 			if data.Description != "" {
 				newUser.Description = data.Description

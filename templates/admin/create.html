@@ -59,6 +59,11 @@
     </div>
     <input type="hidden" name="mail" value="" />
     <div class="form-group">
+      <label for="othermailbox">Email de secours:</label>
+      <input type="text" id="othermailbox" name="othermailbox" class="form-control" value="{{ .OtherMailbox }}" />
+    </div>
+    <input type="hidden" name="mail" value="" />
+    <div class="form-group">
       <label for="givenname">Prénom :</label>
       <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" />
     </div>
