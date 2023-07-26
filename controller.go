@@ -62,15 +62,26 @@ Create the different routes
 func makeGVRouter() (*mux.Router, error) {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleHome)
-	r.HandleFunc("/logout", handleLogout)
 
-	r.HandleFunc("/profile", handleProfile)
-	r.HandleFunc("/passwd", handlePasswd)
+	r.HandleFunc("/session/logout", handleLogout)
+
+	r.HandleFunc("/user", handleProfile)
+	r.HandleFunc("/user/new", handleInviteNewAccount)
+
 	r.HandleFunc("/picture/{name}", handleDownloadPicture)
 
-	r.HandleFunc("/admin-activate", handleAdminActivateUsers)
-	r.HandleFunc("/admin-unactivate/{cn}", handleAdminUnactivateUser)
-	r.HandleFunc("/admin-activate/{cn}", handleAdminActivateUser)
+	r.HandleFunc("/passwd", handlePasswd)
+	r.HandleFunc("/passwd/lost", handleLostPassword)
+	r.HandleFunc("/passwd/lost/{code}", handleFoundPassword)
+
+	r.HandleFunc("/admin", handleHome)
+	r.HandleFunc("/admin/activate", handleAdminActivateUsers)
+	r.HandleFunc("/admin/unactivate/{cn}", handleAdminUnactivateUser)
+	r.HandleFunc("/admin/activate/{cn}", handleAdminActivateUser)
+	r.HandleFunc("/admin/users", handleAdminUsers)
+	r.HandleFunc("/admin/groups", handleAdminGroups)
+	r.HandleFunc("/admin/ldap/{dn}", handleAdminLDAP)
+	r.HandleFunc("/admin/create/{template}/{super_dn}", handleAdminCreate)
 
 	// r.HandleFunc("/directory/search", handleDirectorySearch)
 	// r.HandleFunc("/directory", handleDirectory)
@@ -79,18 +90,12 @@ func makeGVRouter() (*mux.Router, error) {
 	// r.HandleFunc("/garage/website/new", handleGarageWebsiteNew)
 	// r.HandleFunc("/garage/website/b/{bucket}", handleGarageWebsiteInspect)
 
-	r.HandleFunc("/inscription", handleInviteNewAccount)
-	// r.HandleFunc("/invite/send_code", handleInviteSendCode)
-	r.HandleFunc("/gpassword/{code}", handleFoundPassword)
-	r.HandleFunc("/gpas", handleLostPassword)
+	// r.HandleFunc("/user/send_code", handleInviteSendCode)
+
 	// r.HandleFunc("/invitation/{code}", handleInvitationCode)
 
-	r.HandleFunc("/admin-users", handleAdminUsers)
-	r.HandleFunc("/admin-groups", handleAdminGroups)
 	// r.HandleFunc("/admin-mailing", handleAdminMailing)
 	// r.HandleFunc("/admin/mailing/{id}", handleAdminMailingList)
-	r.HandleFunc("/admin-ldap/{dn}", handleAdminLDAP)
-	r.HandleFunc("/admin-create/{template}/{super_dn}", handleAdminCreate)
 
 	staticFiles := http.FileServer(http.Dir(staticPath))
 	r.Handle("/static/{file:.*}", http.StripPrefix("/static/", staticFiles))

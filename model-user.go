@@ -148,15 +148,6 @@ func bind(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	return ldapConn.Bind(user.DN, user.Password)
 }
 
-func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string, previousValue string) error {
-	if value != "" {
-		modifReq.Replace(key, []string{value})
-	} else if previousValue != "" {
-		modifReq.Delete(key, []string{previousValue})
-	}
-	return nil
-}
-
 // func encodePassword(inPassword string) (string, error) {
 // 	utf16 := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
 // 	return utf16.NewEncoder().String("\"" + inPassword + "\"")

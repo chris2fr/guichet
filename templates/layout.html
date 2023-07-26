@@ -58,24 +58,24 @@
           {{if .Common.CanAdmin}}
             <li>&lt;&nbsp;<a href="#">Administration</a>
             <ul class="submenu">
-              <!-- <li><a href="/admin-activate">Administrer LDAP</a> -->
-              <li><a href="/admin-activate">Activer des Utilisateur·ices</a></li>
-              <li><a href="/admin-users">Utilisateur·ices</a></li>
-              <!-- <li><a href="/admin-groups">Groupes</a></li> -->
+              <!-- <li><a href="/admin/activate">Administrer LDAP</a> -->
+              <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
+              <li><a href="/admin/users">Utilisateur·ices</a></li>
+              <!-- <li><a href="/admin/groups">Groupes</a></li> -->
             </ul>
             </li>
           {{end}}
           <li>&lt;&nbsp;<a href="#">Compte</a>
             <ul class="submenu">
               {{if .Common.LoggedIn}}
-                  <li><a href="/logout">Se déconnecter</a></li>
+                  <li><a href="/session/logout">Se déconnecter</a></li>
                   <li><a href="/">Tableau de bord</a></li>
-                  <li><a href="/profile">Modifier mon profil</a></li>
+                  <li><a href="/user">Modifier mon profil</a></li>
                   <li><a href="/passwd">Modifier mon mot de passe</a></li>
               {{else}}
                 <li><a href="/">Se connecter</a></li>
-                <li><a href="/gpas">Mal de passe oublié</a></li>
-                <li><a href="/inscription">S'enregistrer</a></li>
+                <li><a href="/passwd/lost">Mal de passe oublié</a></li>
+                <li><a href="/user/new">S'enregistrer</a></li>
               {{end}}
             </ul></li>
           <li> &nbsp;&lt;&nbsp;<a href="#" class="jour-nuit" id="jour-nuit">Jour et nuit</a></li>

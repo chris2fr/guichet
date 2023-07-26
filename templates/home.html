@@ -14,7 +14,7 @@
             Mon compte
         </div>
         <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action" href="/profile">Modifier mon profil</a>
+            <a class="list-group-item list-group-item-action" href="/user">Modifier mon profil</a>
             <a class="list-group-item list-group-item-action" href="/passwd">Modifier mon mot de passe</a>
             <!--
             <a class="list-group-item list-group-item-action" href="/directory">Annuaire</a>
@@ -42,8 +42,8 @@
     Outils
   </div>
   <div class="list-group list-group-flush">
-    <!-- <a class="list-group-item list-group-item-action" href="/invite/send_code">Envoyer un code d'invitation</a> -->
-    <a class="list-group-item list-group-item-action" href="/inscription">Créer un nouveau compte directement</a>
+    <!-- <a class="list-group-item list-group-item-action" href="/user/send_code">Envoyer un code d'invitation</a> -->
+    <a class="list-group-item list-group-item-action" href="/user/new">Créer un nouveau compte directement</a>
     <a class="list-group-item list-group-item-action" href="/SOGo">Accéder à mes courriels, mon agenda et à mes contacts</a>
     <a class="list-group-item list-group-item-action" href="https://www.lesgrandsvoisins.com/resdigita">Accéder au numérique des Grands Voisins .com</a>
   </div>
@@ -56,11 +56,11 @@
       Administration
     </div>
     <div class="list-group list-group-flush">
-      <a class="list-group-item list-group-item-action" href="/admin-activate">Activer des Utilisateur·ices</a>
-      <a class="list-group-item list-group-item-action" href="/admin-users">Utilisateur·ices</a>
-      <a class="list-group-item list-group-item-action" href="/admin-groups">Groupes</a>
-      <!-- <a class="list-group-item list-group-item-action" href="/admin-mailing">Mailing lists</a> -->
-      <a class="list-group-item list-group-item-action" href="/admin-ldap/{{.BaseDN}}">Explorateur LDAP</a>
+      <a class="list-group-item list-group-item-action" href="/admin/activate">Activer des Utilisateur·ices</a>
+      <a class="list-group-item list-group-item-action" href="/admin/users">Utilisateur·ices</a>
+      <a class="list-group-item list-group-item-action" href="/admin/groups">Groupes</a>
+      <!-- <a class="list-group-item list-group-item-action" href="/admin/mailing">Mailing lists</a> -->
+      <a class="list-group-item list-group-item-action" href="/admin/ldap/{{.BaseDN}}">Explorateur LDAP</a>
     </div>
   </div>
 {{end}}

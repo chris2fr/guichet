@@ -150,7 +150,7 @@ func handleGarageKey(w http.ResponseWriter, r *http.Request) {
 	}
 	view := keyView{Status: login, Key: s3key}
 
-	tKey := getTemplate("garage_key.html")
+	tKey := getTemplate("garage/key.html")
 	tKey.Execute(w, &view)
 }
 
@@ -167,7 +167,7 @@ func handleGarageWebsiteList(w http.ResponseWriter, r *http.Request) {
 	}
 	view := webListView{Status: login, Key: s3key}
 
-	tWebsiteList := getTemplate("garage_website_list.html")
+	tWebsiteList := getTemplate("garage/website/list.html")
 	tWebsiteList.Execute(w, &view)
 }
 
@@ -178,7 +178,7 @@ func handleGarageWebsiteNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tWebsiteNew := getTemplate("garage_website_new.html")
+	tWebsiteNew := getTemplate("garage/website/new.html")
 	if r.Method == "POST" {
 		r.ParseForm()
 		log.Println(r.Form)
@@ -247,6 +247,6 @@ func handleGarageWebsiteInspect(w http.ResponseWriter, r *http.Request) {
 		MaxSize:    (&q).GetMaxSize(),
 	}
 
-	tWebsiteInspect := getTemplate("garage_website_inspect.html")
+	tWebsiteInspect := getTemplate("garage/website/inspect.html")
 	tWebsiteInspect.Execute(w, &view)
 }
