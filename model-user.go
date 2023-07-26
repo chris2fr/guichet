@@ -96,7 +96,10 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		req.Attribute("description", []string{user.Description})
 	}
 	// Add the User
-	err := ldapConn.Add(req)
+	// err := ldapConn.Add(req)
+	// var ldapNewConn *ldap.Conn
+	ldapNewConn, err := openNewUserLdap(config)
+	err = ldapNewConn.Add(req)
 	if err != nil {
 		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", err))
 		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", req))
