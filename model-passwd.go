@@ -92,6 +92,8 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	if err != nil {
 		log.Printf("passwordLost 83 : %v", err)
 		log.Printf("passwordLost 84 : %v", user)
+
+		log.Printf("passwordLost 84 : %v", addReq)
 		// // log.Printf("passwordLost 85 : %v", searchRes.Entries[0]))
 		// // For some reason I get here even if the entry exists already
 		// return err
