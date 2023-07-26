@@ -77,7 +77,9 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 	login := checkLogin(w, r)
 	if login == nil {
 		data.Common.LoggedIn = false
-		templatePasswd.Execute(w, data)
+		http.Redirect(w, r, "/", http.StatusFound)
+
+		// templatePasswd.Execute(w, data)
 		return
 	}
 	data.Login.Status = login
