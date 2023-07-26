@@ -115,8 +115,9 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	if err != nil {
 		return err
 	}
+
 	// Send the email
-	err = sendMail(SendMailTplData{
+	sendMailTplData := SendMailTplData{
 		From:            "alice@resdigita.org",
 		To:              user.OtherMailbox,
 		RelTemplatePath: "user/mail.txt",
@@ -125,7 +126,13 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 			"SebAddress": "https://www.gvoisins.org",
 			"Code":       "...",
 		},
-	})
+	}
+	err = sendMail(sendMailTplData)
+	if err != nil {
+		log.Printf("add(user) sendMail: %v", err)
+		log.Printf("add(user) sendMail: %v", user)
+		log.Printf("add(user) sendMail: %v", sendMailTplData)
+	}
 	return err
 }
 

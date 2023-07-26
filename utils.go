@@ -54,6 +54,7 @@ func suggestPassword() string {
 
 // Sends an email according to the enclosed information
 func sendMail(sendMailTplData SendMailTplData) error {
+	log.Printf("sendMail")
 	templateMail := template.Must(template.ParseFiles(templatePath + "/" + sendMailTplData.RelTemplatePath))
 	buf := bytes.NewBuffer([]byte{})
 	err := templateMail.Execute(buf, sendMailTplData)
