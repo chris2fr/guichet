@@ -164,8 +164,10 @@ func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 func passwd(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	passwordModifyRequest := ldap.NewPasswordModifyRequest(user.DN, "", user.Password)
 	_, err := ldapConn.PasswordModify(passwordModifyRequest)
-	log.Printf(fmt.Sprintf("passwd 162 : %v %v", err, ldapConn))
-	log.Printf(fmt.Sprintf("passwd 163 : %v", user))
+	if err != nil {
+		log.Printf(fmt.Sprintf("model-user passwd : %v %v", err, ldapConn))
+		log.Printf(fmt.Sprintf("model-user passwd : %v", user))
+	}
 	return err
 }
 
