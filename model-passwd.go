@@ -79,24 +79,24 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("passwordLost (Check existing invitation) : %v", user))
 		return err
 	}
-	if len(searchRes.Entries) == 0 {
-		/* Add the invitation */
-		addReq := ldap.NewAddRequest(
-			"uid="+user.CN+","+config.InvitationBaseDN,
-			nil)
-		addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
-		addReq.Attribute("uid", []string{user.CN})
-		addReq.Attribute("userPassword", []string{suggestPassword()})
-		addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.InvitationBaseDN})
-		err = ldapConn.Add(addReq)
-		if err != nil {
-			log.Printf("passwordLost 83 : %v", err)
-			log.Printf("passwordLost 84 : %v", user)
-			// // log.Printf("passwordLost 85 : %v", searchRes.Entries[0]))
-			// // For some reason I get here even if the entry exists already
-			return err
-		}
+	// if len(searchRes.Entries) == 0 {
+	/* Add the invitation */
+	addReq := ldap.NewAddRequest(
+		"uid="+user.UID+","+config.InvitationBaseDN,
+		nil)
+	addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
+	addReq.Attribute("uid", []string{user.UID})
+	addReq.Attribute("userPassword", []string{suggestPassword()})
+	addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.InvitationBaseDN})
+	err = ldapConn.Add(addReq)
+	if err != nil {
+		log.Printf("passwordLost 83 : %v", err)
+		log.Printf("passwordLost 84 : %v", user)
+		// // log.Printf("passwordLost 85 : %v", searchRes.Entries[0]))
+		// // For some reason I get here even if the entry exists already
+		// return err
 	}
+	// }
 	ldapNewConn, err := openNewUserLdap(config)
 	if err != nil {
 		log.Printf("passwordLost openNewUserLdap : %v", err)

@@ -175,6 +175,11 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 				data.Common.Success = false
 				data.Common.ErrorMessage = err.Error()
 			}
+			// err = passwordLost(newUser, config, l)
+			// if err != nil {
+			// 	data.Common.Success = false
+			// 	data.Common.ErrorMessage = err.Error()
+			// }
 			http.Redirect(w, r, "/user/wait", http.StatusFound)
 		}
 
