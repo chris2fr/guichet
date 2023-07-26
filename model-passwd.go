@@ -82,12 +82,12 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	if len(searchRes.Entries) == 0 {
 		/* Add the invitation */
 		addReq := ldap.NewAddRequest(
-			"uid="+searchRes.Entries[0].GetAttributeValue("cn")+","+config.InvitationBaseDN,
+			"uid="+user.CN+","+config.InvitationBaseDN,
 			nil)
 		addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
-		addReq.Attribute("uid", []string{searchRes.Entries[0].GetAttributeValue("cn")})
+		addReq.Attribute("uid", []string{user.CN})
 		addReq.Attribute("userPassword", []string{suggestPassword()})
-		addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN})
+		addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.InvitationBaseDN})
 		err = ldapConn.Add(addReq)
 		if err != nil {
 			log.Printf(fmt.Sprintf("passwordLost 83 : %v", err))
