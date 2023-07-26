@@ -138,8 +138,8 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, error) {
 	l, err := openLdap(config)
 	if err != nil {
-		log.Printf("passwordFound %v", err)
-		log.Printf("passwordFound Config : %v", config)
+		log.Printf("passwordFound openLdap %v", err)
+		// log.Printf("passwordFound openLdap Config : %v", config)
 		return "", err
 	}
 	if user.DN == "" && user.UID != "" {
@@ -147,9 +147,9 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 	}
 	err = l.Bind(user.DN, user.Password)
 	if err != nil {
-		log.Printf("passwordFound %v", err)
-		log.Printf("passwordFound %v", user.DN)
-		log.Printf("passwordFound %v", user.UID)
+		log.Printf("passwordFound l.Bind %v", err)
+		log.Printf("passwordFound l.Bind %v", user.DN)
+		log.Printf("passwordFound l.Bind %v", user.UID)
 		return "", err
 	}
 	searchReq := ldap.NewSearchRequest(user.DN, ldap.ScopeBaseObject,

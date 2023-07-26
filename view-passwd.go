@@ -67,21 +67,22 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["code"]
 	// code = strings.TrimSpace(strings.Join([]string{code}, ""))
 	newCode, _ := b64.URLEncoding.DecodeString(code)
-	ldapConn, err := openNewUserLdap(config)
+	ldapNewConn, err := openNewUserLdap(config)
 	if err != nil {
-		log.Printf(fmt.Sprint("handleFoundPassword / openNewUserLdap / %v", err))
+		log.Printf("handleFoundPassword openNewUserLdap(config) : %v", err)
 		data.Common.ErrorMessage = err.Error()
 	}
 	codeArray := strings.Split(string(newCode), ";")
 	user := User{
 		UID:      codeArray[0],
 		Password: codeArray[1],
-		DN:       "uid=" + codeArray[0] + ",ou=invitations,dc=resdigita,dc=org",
+		DN:       "uid=" + codeArray[0] + "," + config.InvitationBaseDN,
 	}
-	user.SeeAlso, err = passwordFound(user, config, ldapConn)
+	user.SeeAlso, err = passwordFound(user, config, ldapNewConn)
 	if err != nil {
-		log.Printf("handleFoundPassword / passwordFound %v", err)
-		log.Printf("handleFoundPassword / passwordFound %v", err)
+		log.Printf("passwordFound(user, config, ldapConn) %v", err)
+		log.Printf("passwordFound(user, config, ldapConn) %v", user)
+		log.Printf("passwordFound(user, config, ldapConn) %v", ldapNewConn)
 		data.Common.ErrorMessage = err.Error()
 	}
 	if r.Method == "POST" {
@@ -98,7 +99,7 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 			err := passwd(User{
 				DN:       user.SeeAlso,
 				Password: password,
-			}, config, ldapConn)
+			}, config, ldapNewConn)
 			if err != nil {
 				data.Common.ErrorMessage = err.Error()
 			} else {
