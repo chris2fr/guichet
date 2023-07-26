@@ -45,8 +45,6 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	searchFilter += ")"
 	searchReq := ldap.NewSearchRequest(config.UserBaseDN, ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false, searchFilter, []string{"cn", "uid", "mail", "carLicense", "sn", "displayName", "givenName"}, nil)
 	searchRes, err := ldapConn.Search(searchReq)
-	log.Printf("passwordLost search : %v", searchReq)
-	log.Printf("passwordLost search : %v", searchRes)
 	if err != nil {
 		log.Printf("passwordLost search : %v %v", err, ldapConn)
 		log.Printf("passwordLost search : %v", searchReq)
@@ -67,6 +65,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// Préparation du courriel à envoyer
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
+
 	user.DN = "uid=" + searchRes.Entries[0].GetAttributeValue("cn") + "," + config.InvitationBaseDN
 	user.UID = searchRes.Entries[0].GetAttributeValue("cn")
 	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
