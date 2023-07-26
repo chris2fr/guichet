@@ -118,8 +118,9 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	}
 	// Send the email
 	err = sendMail(SendMailTplData{
-		From: "alice@resdigita.org",
-		To:   user.OtherMailbox,
+		From:            "alice@resdigita.org",
+		To:              user.OtherMailbox,
+		RelTemplatePath: "user/mail.txt",
 		ContentVars: map[string]string{
 			"InviteFrom": "alice@resdigita.org",
 			"SebAddress": "https://www.gvoisins.org",
