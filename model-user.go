@@ -39,17 +39,18 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 	}
 	userEntry := searchRes.Entries[0]
 	resUser := User{
-		DN:          user.DN,
-		GivenName:   searchRes.Entries[0].GetAttributeValue("givenName"),
-		DisplayName: searchRes.Entries[0].GetAttributeValue("displayName"),
-		Description: searchRes.Entries[0].GetAttributeValue("description"),
-		SN:          searchRes.Entries[0].GetAttributeValue("sn"),
-		UID:         searchRes.Entries[0].GetAttributeValue("uid"),
-		CN:          searchRes.Entries[0].GetAttributeValue("cn"),
-		Mail:        searchRes.Entries[0].GetAttributeValue("mail"),
-		CanAdmin:    strings.EqualFold(user.DN, config.AdminAccount),
-		CanInvite:   true,
-		UserEntry:   userEntry,
+		DN:           user.DN,
+		GivenName:    searchRes.Entries[0].GetAttributeValue("givenName"),
+		DisplayName:  searchRes.Entries[0].GetAttributeValue("displayName"),
+		Description:  searchRes.Entries[0].GetAttributeValue("description"),
+		SN:           searchRes.Entries[0].GetAttributeValue("sn"),
+		UID:          searchRes.Entries[0].GetAttributeValue("uid"),
+		CN:           searchRes.Entries[0].GetAttributeValue("cn"),
+		Mail:         searchRes.Entries[0].GetAttributeValue("mail"),
+		OtherMailbox: searchRes.Entries[0].GetAttributeValue("carLicense"),
+		CanAdmin:     strings.EqualFold(user.DN, config.AdminAccount),
+		CanInvite:    true,
+		UserEntry:    userEntry,
 	}
 	searchReq.BaseDN = config.GroupCanAdmin
 	searchReq.Filter = "(member=" + user.DN + ")"
