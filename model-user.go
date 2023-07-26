@@ -105,16 +105,15 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 	err := ldapConn.Add(req)
 	if err != nil {
-		log.Printf(fmt.Sprintf("71: %v", err))
-		log.Printf(fmt.Sprintf("72: %v", req))
-		log.Printf(fmt.Sprintf("73: %v", user))
+		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", err))
+		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", req))
+		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", user))
+		//return err
+	}
+	passwordModifyRequest := ldap.NewPasswordModifyRequest(user.DN, "", user.Password)
+	_, err = ldapConn.PasswordModify(passwordModifyRequest)
+	if err != nil {
 		return err
-	} else {
-		passwordModifyRequest := ldap.NewPasswordModifyRequest(user.DN, "", user.Password)
-		_, err = ldapConn.PasswordModify(passwordModifyRequest)
-		if err != nil {
-			return err
-		}
 	}
 	// Send the email
 	err = sendMail(SendMailTplData{
