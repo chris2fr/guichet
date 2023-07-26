@@ -45,7 +45,7 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	data.DisplayName = login.UserEntry.GetAttributeValue("displayName")
 	data.GivenName = login.UserEntry.GetAttributeValue("givenName")
 	data.Surname = login.UserEntry.GetAttributeValue("sn")
-	data.OtherEmail = login.UserEntry.GetAttributeValue("carLicense")
+	data.OtherMailbox = login.UserEntry.GetAttributeValue("carLicense")
 	//	data.Visibility = login.UserEntry.GetAttributeValue(FIELD_NAME_DIRECTORY_VISIBILITY)
 	data.Description = login.UserEntry.GetAttributeValue("description")
 	//data.ProfilePicture = login.UserEntry.GetAttributeValue(FIELD_NAME_PROFILE_PICTURE)
@@ -54,15 +54,16 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 		//5MB maximum size files
 		r.ParseMultipartForm(5 << 20)
 		user := User{
-			DN: login.Info.DN,
-			// CN: ,
-			GivenName:   strings.TrimSpace(strings.Join(r.Form["given_name"], "")),
-			DisplayName: strings.TrimSpace(strings.Join(r.Form["display_name"], "")),
-			Mail:        strings.TrimSpace(strings.Join(r.Form["mail"], "")),
-			SN:          strings.TrimSpace(strings.Join(r.Form["surname"], "")),
-			//UID: ,
-			Description: strings.TrimSpace(strings.Join(r.Form["description"], "")),
+			DN:           login.Info.DN,
+			GivenName:    strings.TrimSpace(strings.Join(r.Form["given_name"], "")),
+			DisplayName:  strings.TrimSpace(strings.Join(r.Form["display_name"], "")),
+			Mail:         strings.TrimSpace(strings.Join(r.Form["mail"], "")),
+			SN:           strings.TrimSpace(strings.Join(r.Form["surname"], "")),
+			OtherMailbox: strings.TrimSpace(strings.Join(r.Form["othermailbox"], "")),
+			Description:  strings.TrimSpace(strings.Join(r.Form["description"], "")),
 			// Password: ,
+			//UID: ,
+			// CN: ,
 		}
 
 		if user.DisplayName != "" {

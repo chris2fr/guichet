@@ -150,13 +150,13 @@ type PasswordLostData struct {
 	OtherMailbox string
 }
 type NewAccountData struct {
-	Username    string
-	DisplayName string
-	GivenName   string
-	Surname     string
-	Mail        string
-	SuggestPW   string
-	OtherEmail  string
+	Username     string
+	DisplayName  string
+	GivenName    string
+	Surname      string
+	Mail         string
+	SuggestPW    string
+	OtherMailbox string
 
 	ErrorUsernameTaken    bool
 	ErrorInvalidUsername  bool
@@ -182,14 +182,14 @@ type CodeMailFields struct {
 	Common         NestedCommonTplData
 }
 type ProfileTplData struct {
-	Mail        string
-	DisplayName string
-	GivenName   string
-	Surname     string
-	Description string
-	OtherEmail  string
-	Common      NestedCommonTplData
-	Login       NestedLoginTplData
+	Mail         string
+	DisplayName  string
+	GivenName    string
+	Surname      string
+	Description  string
+	OtherMailbox string
+	Common       NestedCommonTplData
+	Login        NestedLoginTplData
 }
 
 //ProfilePicture string
