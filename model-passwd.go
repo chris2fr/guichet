@@ -46,22 +46,22 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	searchReq := ldap.NewSearchRequest(config.UserBaseDN, ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false, searchFilter, []string{"cn", "uid", "mail", "carLicense", "sn", "displayName", "givenName"}, nil)
 	searchRes, err := ldapConn.Search(searchReq)
 	if err != nil {
-		log.Printf(fmt.Sprintf("passwordLost search : %v %v", err, ldapConn))
-		log.Printf(fmt.Sprintf("passwordLost search : %v", searchReq))
-		log.Printf(fmt.Sprintf("passwordLost search : %v", searchRes))
-		log.Printf(fmt.Sprintf("passwordLost search: %v", user))
+		log.Printf("passwordLost search : %v %v", err, ldapConn)
+		log.Printf("passwordLost search : %v", searchReq)
+		log.Printf("passwordLost search : %v", searchRes)
+		log.Printf("passwordLost search: %v", user)
 		return err
 	}
 	if len(searchRes.Entries) == 0 {
 		log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
-	// log.Printf(fmt.Sprintf("passwordLost 58 : %v", user))
-	// log.Printf(fmt.Sprintf("passwordLost 59 : %v", searchRes.Entries[0]))
-	// log.Printf(fmt.Sprintf("passwordLost 60 : %v", searchRes.Entries[0].GetAttributeValue("cn")))
-	// log.Printf(fmt.Sprintf("passwordLost 61 : %v", searchRes.Entries[0].GetAttributeValue("uid")))
-	// log.Printf(fmt.Sprintf("passwordLost 62 : %v", searchRes.Entries[0].GetAttributeValue("mail")))
-	// log.Printf(fmt.Sprintf("passwordLost 63 : %v", searchRes.Entries[0].GetAttributeValue("carLicense")))
+	// log.Printf("passwordLost 58 : %v", user)
+	// log.Printf("passwordLost 59 : %v", searchRes.Entries[0])
+	// log.Printf("passwordLost 60 : %v", searchRes.Entries[0].GetAttributeValue("cn"))
+	// log.Printf("passwordLost 61 : %v", searchRes.Entries[0].GetAttributeValue("uid"))
+	// log.Printf("passwordLost 62 : %v", searchRes.Entries[0].GetAttributeValue("mail"))
+	// log.Printf("passwordLost 63 : %v", searchRes.Entries[0].GetAttributeValue("carLicense"))
 	// Préparation du courriel à envoyer
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
@@ -90,18 +90,22 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.InvitationBaseDN})
 		err = ldapConn.Add(addReq)
 		if err != nil {
-			log.Printf(fmt.Sprintf("passwordLost 83 : %v", err))
-			log.Printf(fmt.Sprintf("passwordLost 84 : %v", user))
-			// // log.Printf(fmt.Sprintf("passwordLost 85 : %v", searchRes.Entries[0]))
+			log.Printf("passwordLost 83 : %v", err)
+			log.Printf("passwordLost 84 : %v", user)
+			// // log.Printf("passwordLost 85 : %v", searchRes.Entries[0]))
 			// // For some reason I get here even if the entry exists already
 			// return err
 		}
 	}
-	err = passwd(user, config, ldapConn)
+	ldapNewConn, err := openNewUserLdap(config)
 	if err != nil {
-		log.Printf(fmt.Sprintf("passwordLost 90 : %v", err))
-		log.Printf(fmt.Sprintf("passwordLost 91 : %v", user))
-		log.Printf(fmt.Sprintf("passwordLost 92 : %v", searchRes.Entries[0]))
+		log.Printf("passwordLost openNewUserLdap : %v", err)
+	}
+	err = passwd(user, config, ldapNewConn)
+	if err != nil {
+		log.Printf("passwordLost passwd : %v", err)
+		log.Printf("passwordLost 91 : %v", user)
+		log.Printf("passwordLost 92 : %v", searchRes.Entries[0])
 		return err
 	}
 	templateMail := template.Must(template.ParseFiles(templatePath + "/passwd/lost_password_email.txt"))
@@ -139,7 +143,7 @@ func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 		return "", err
 	}
 	if user.DN == "" && user.UID != "" {
-		user.DN = "uid=" + user.UID + ",ou=invitations,dc=resdigita,dc=org"
+		user.DN = "uid=" + user.UID + "," + config.InvitationBaseDN
 	}
 	err = l.Bind(user.DN, user.Password)
 	if err != nil {
