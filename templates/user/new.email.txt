@@ -3,9 +3,9 @@ To: {{.To}}
 Subject: Code d'invitation GVoisin.com
 Content-type: text/plain; charset=utf-8
 
-Vous avez été invité à créer un compte sur GVoisin.com par {{.InviteFrom}} :)
+Votre compte a été initié sur GVoisins.org !
 
-Pour créer votre compte, rendez-vous à l'adresse suivante:
+Pour initier, rendez-vous à l'adresse suivante:
 
 {{.WebBaseAddress}}/invitation/{{.Code}}
 

@@ -71,7 +71,7 @@
       Le courriel et login interne.
     </small>
   </div>
-  <p><a href="#" onClick="javascript:var suggestPW = Math.random().toString(36).slice(-10); document.getElementById('password').value='{{ .SuggestPW }}';document.getElementById('password2').value='{{ .SuggestPW }}';">Utiliser ce mot de passe :</a> {{ .SuggestPW }}</p>
+  <!-- <p><a href="#" onClick="javascript:var suggestPW = Math.random().toString(36).slice(-10); document.getElementById('password').value='{{ .SuggestPW }}';document.getElementById('password2').value='{{ .SuggestPW }}';">Utiliser ce mot de passe :</a> {{ .SuggestPW }}</p>
   <div class="form-group">
     <label for="password">Mot de passe :</label>
     <input type="password" id="password" name="password" class="form-control" />
@@ -79,7 +79,7 @@
       La seule contrainte est que votre mot de passe doit faire au moins 8 caractères. Utilisez chiffres, majuscules, et
       caractères spéciaux sans modération !
     </small>
-  </div>
+  </div> -->
   {{if .ErrorPasswordTooShort}}
   <div class="alert alert-warning">
     Le mot de passe choisi est trop court (minimum 8 caractères).

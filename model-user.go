@@ -119,22 +119,25 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	}
 
 	// Send the email
-	sendMailTplData := SendMailTplData{
-		From:            "alice@resdigita.org",
-		To:              user.OtherMailbox,
-		RelTemplatePath: "user/new.email.txt",
-		EmailContentVars: EmailContentVarsTplData{
-			InviteFrom:  "alice@resdigita.org",
-			SendAddress: "https://www.gvoisins.org",
-			Code:        "...",
-		},
-	}
-	err = sendMail(sendMailTplData)
-	if err != nil {
-		log.Printf("add(user) sendMail: %v", err)
-		log.Printf("add(user) sendMail: %v", user)
-		log.Printf("add(user) sendMail: %v", sendMailTplData)
-	}
+
+	err = passwordLost(user, config, ldapConn)
+
+	// sendMailTplData := SendMailTplData{
+	// 	From:            "alice@resdigita.org",
+	// 	To:              user.OtherMailbox,
+	// 	RelTemplatePath: "user/new.email.txt",
+	// 	EmailContentVars: EmailContentVarsTplData{
+	// 		InviteFrom:  "alice@resdigita.org",
+	// 		SendAddress: "https://www.gvoisins.org",
+	// 		Code:        "...",
+	// 	},
+	// }
+	// err = sendMail(sendMailTplData)
+	// if err != nil {
+	// 	log.Printf("add(user) sendMail: %v", err)
+	// 	log.Printf("add(user) sendMail: %v", user)
+	// 	log.Printf("add(user) sendMail: %v", sendMailTplData)
+	// }
 	return err
 }
 
