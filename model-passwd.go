@@ -71,7 +71,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
 	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
 	/* Check for outstanding invitation */
-	searchReq = ldap.NewSearchRequest(config.InvitationBaseDN, ldap.ScopeBaseObject,
+	searchReq = ldap.NewSearchRequest(user.DN, ldap.ScopeBaseObject,
 		ldap.NeverDerefAliases, 0, 0, false, "(uid="+user.UID+")", []string{"seeAlso"}, nil)
 	searchRes, err = ldapConn.Search(searchReq)
 	if err != nil {
@@ -94,7 +94,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 			log.Printf("passwordLost 84 : %v", user)
 			// // log.Printf("passwordLost 85 : %v", searchRes.Entries[0]))
 			// // For some reason I get here even if the entry exists already
-			// return err
+			return err
 		}
 	}
 	ldapNewConn, err := openNewUserLdap(config)
@@ -104,8 +104,8 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	err = passwd(user, config, ldapNewConn)
 	if err != nil {
 		log.Printf("passwordLost passwd : %v", err)
-		log.Printf("passwordLost 91 : %v", user)
-		log.Printf("passwordLost 92 : %v", searchRes.Entries[0])
+		log.Printf("passwordLost passwd : %v", user)
+		log.Printf("passwordLost passwd : %v", searchRes.Entries[0])
 		return err
 	}
 	templateMail := template.Must(template.ParseFiles(templatePath + "/passwd/lost_password_email.txt"))
@@ -132,7 +132,7 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		return err
 	}
 	log.Printf("Mail sent.")
-	return nil
+	return err
 }
 
 func passwordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, error) {

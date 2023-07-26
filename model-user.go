@@ -64,9 +64,10 @@ func get(user User, config *ConfigFile, ldapConn *ldap.Conn) (*User, error) {
 	return &resUser, nil
 }
 
+// Adds a new user
 func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	log.Printf(fmt.Sprint("Adding New User"))
-
+	// LDAP Add Object
 	dn := user.DN
 	req := ldap.NewAddRequest(dn, nil)
 	req.Attribute("objectClass", []string{"top", "person", "organizationalPerson", "inetOrgPerson"})
@@ -94,17 +95,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	if user.Description != "" {
 		req.Attribute("description", []string{user.Description})
 	}
-	// if user.Password != "" {
-	// 	pwdEncoded, _ := encodePassword(user.Password)
-	// 	// if err != nil {
-	// 	// 	log.Printf("Error encoding password:  %s", err)
-	// 	// 	return err
-	// 	// }
-	// 	req.Attribute("userPassword", []string{pwdEncoded})
-	// }
-
-	// conn :=
-
+	// Add the User
 	err := ldapConn.Add(req)
 	if err != nil {
 		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", err))
@@ -122,6 +113,10 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 	newUserLdapConn, _ := openNewUserLdap(config)
 	err = passwordLost(user, config, newUserLdapConn)
+	if err != nil {
+		log.Printf("add User PasswordLost %v", err)
+		log.Printf("add User PasswordLost %v", newUserLdapConn)
+	}
 
 	// sendMailTplData := SendMailTplData{
 	// 	From:            "alice@resdigita.org",
