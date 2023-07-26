@@ -56,7 +56,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 			return nil
 		}
 		userEntry := ldapUser.UserEntry
-		loginStatus := &LoginStatus{
+		loginStatus := LoginStatus{
 			Info:      login_info,
 			conn:      l,
 			UserEntry: userEntry,
@@ -65,7 +65,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 				CanInvite: ldapUser.CanInvite,
 			},
 		}
-		return loginStatus
+		return &loginStatus
 	} else {
 		return nil
 	}
