@@ -190,6 +190,7 @@ type CodeMailFields struct {
 }
 type ProfileTplData struct {
 	Mail         string
+	MailValues   []string
 	DisplayName  string
 	GivenName    string
 	Surname      string

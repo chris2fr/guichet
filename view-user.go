@@ -10,8 +10,8 @@ import (
 )
 
 func handleUserWait(w http.ResponseWriter, r *http.Request) {
-	templateProfile := getTemplate("user/wait.html")
-	templateProfile.Execute(w, HomePageData{
+	templateUser := getTemplate("user/wait.html")
+	templateUser.Execute(w, HomePageData{
 		Common: NestedCommonTplData{
 			CanAdmin: false,
 			LoggedIn: false,
@@ -20,7 +20,7 @@ func handleUserWait(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleUser(w http.ResponseWriter, r *http.Request) {
-	templateProfile := getTemplate("user.html")
+	templateUser := getTemplate("user.html")
 
 	login := checkLogin(w, r)
 	if login == nil {
@@ -46,6 +46,7 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	data.GivenName = login.UserEntry.GetAttributeValue("givenName")
 	data.Surname = login.UserEntry.GetAttributeValue("sn")
 	data.OtherMailbox = login.UserEntry.GetAttributeValue("carLicense")
+	data.MailValues = login.UserEntry.GetAttributeValues("mail")
 	//	data.Visibility = login.UserEntry.GetAttributeValue(FIELD_NAME_DIRECTORY_VISIBILITY)
 	data.Description = login.UserEntry.GetAttributeValue("description")
 	//data.ProfilePicture = login.UserEntry.GetAttributeValue(FIELD_NAME_PROFILE_PICTURE)
@@ -122,5 +123,6 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	templateProfile.Execute(w, data)
+	// templateUser.Execute(w, data)
+	execTemplate(w, templateUser, data.Common, data.Login, *config, data)
 }
