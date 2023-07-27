@@ -4,89 +4,89 @@
 {{end}}
 
 {{define "body"}}
-<div class="d-flex">
-  <h2>Modifier mon mot de passe</h2>
-</div>
 
-{{if .Common.ErrorMessage}}
-<div class="alert alert-danger mt-4">Impossible d'effectuer la modification.
-  <div style="font-size: 0.8em">{{ .Common.ErrorMessage }}</div>
-</div>
-{{end}}
-{{if .Common.Success}}
-<div class="alert alert-success mt-4">
-  Nouveau mot de passe enregistré.
-</div>
-{{else}}
-<form method="POST" class="mt-4"
-  onsubmit="javascript:var password = document.getElementById('password');var password2 = document.getElementById('password2'); if (password.value != password2.value) {alert('Les maux de passe ne sont pas identiques entre l\'initial et la confirmation.');return false;}; message = checkPasswordStrength(password.value); if (message) {alert(message);return false}else{return true;}">
-  <div class="form-group">
-    <label for="password">Nouveau mot de passe :</label>
-    <input type="password" id="password" name="password" class="form-control" minlength="8" required />
+  <div class="d-flex">
+    <h2>Modifier mon mot de passe</h2>
   </div>
-  {if .Data.TooShortError }}
-  <div class="alert alert-warning">
-    Le mot de passe choisi est trop court (minimum 8 caractères).
+
+  {{if .Common.ErrorMessage}}
+  <div class="alert alert-danger mt-4">Impossible d'effectuer la modification.
+    <div style="font-size: 0.8em">{{ .Common.ErrorMessage }}</div>
   </div>
   {{end}}
-  <div class="form-group">
-    <label for="password2">Répéter le mot de passe :</label>
-    <input type="password" id="password2" name="password2" class="form-control" />
-  </div>
-  {if .Data.NoMatchError }}
-  <div class="alert alert-warning">
-    Les deux mots de passe entrés ne correspondent pas.
-  </div>
+  {{if .Common.Success}}
+    <div class="alert alert-success mt-4">
+      Nouveau mot de passe enregistré.
+    </div>
+  {{else}}
+    <form method="POST" class="mt-4"
+      onsubmit="javascript:var password = document.getElementById('password');var password2 = document.getElementById('password2'); if (password.value != password2.value) {alert('Les maux de passe ne sont pas identiques entre l\'initial et la confirmation.');return false;}; message = checkPasswordStrength(password.value); if (message) {alert(message);return false}else{return true;}">
+      <div class="form-group">
+        <label for="password">Nouveau mot de passe :</label>
+        <input type="password" id="password" name="password" class="form-control" minlength="8" required />
+      </div>
+      {if .Data.TooShortError }}
+      <div class="alert alert-warning">
+        Le mot de passe choisi est trop court (minimum 8 caractères).
+      </div>
+      {{end}}
+      <div class="form-group">
+        <label for="password2">Répéter le mot de passe :</label>
+        <input type="password" id="password2" name="password2" class="form-control" />
+      </div>
+      {if .Data.NoMatchError }}
+      <div class="alert alert-warning">
+        Les deux mots de passe entrés ne correspondent pas.
+      </div>
+      {{end}}
+      <button type="submit" class="btn btn-primary">Changer de mot de passe</button>
+    </form>
+    <script>
+      function checkPasswordStrength(password) {
+        // Initialize variables
+        var strength = 0;
+        var tips = "";
+
+        // Check password length
+        if (password.length < 8) {
+          tips += "Au minimum 8 chars dans votre mot de passe svp. ";
+        } else {
+          strength += 1;
+        }
+
+        // Check for mixed case
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
+          strength += 1;
+        } else {
+          tips += "Merci d'utiliser des minuscules et majuscules. ";
+        }
+
+        // Check for numbers
+        if (password.match(/\d/)) {
+          strength += 1;
+        } else {
+          tips += "Merci d'inclure un chiffre. ";
+        }
+
+        // Check for special characters
+        if (password.match(/[^a-zA-Z\d]/)) {
+          strength += 1;
+        } else {
+          tips += "Inclure au moins un caractère spécial. ";
+        }
+
+        // Return results
+        if (strength < 2) {
+          return "Trop facile à déviner. " + tips;
+        } else if (strength === 2) {
+          return "Difficulté moyenne. " + tips;
+        } else if (strength === 3) {
+          return false; // "Difficile à craquer. " + tips;
+        } else {
+          return false; // "Mot de passe digne de ce nom. " + tips;
+        }
+      }
+
+    </script>
   {{end}}
-  <button type="submit" class="btn btn-primary">Changer de mot de passe</button>
-</form>
-{{end}}
-<script>
-  function checkPasswordStrength(password) {
-    // Initialize variables
-    var strength = 0;
-    var tips = "";
-
-    // Check password length
-    if (password.length < 8) {
-      tips += "Au minimum 8 chars dans votre mot de passe svp. ";
-    } else {
-      strength += 1;
-    }
-
-    // Check for mixed case
-    if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
-      strength += 1;
-    } else {
-      tips += "Merci d'utiliser des minuscules et majuscules. ";
-    }
-
-    // Check for numbers
-    if (password.match(/\d/)) {
-      strength += 1;
-    } else {
-      tips += "Merci d'inclure un chiffre. ";
-    }
-
-    // Check for special characters
-    if (password.match(/[^a-zA-Z\d]/)) {
-      strength += 1;
-    } else {
-      tips += "Inclure au moins un caractère spécial. ";
-    }
-
-    // Return results
-    if (strength < 2) {
-      return "Trop facile à déviner. " + tips;
-    } else if (strength === 2) {
-      return "Difficulté moyenne. " + tips;
-    } else if (strength === 3) {
-      return false; // "Difficile à craquer. " + tips;
-    } else {
-      return false; // "Mot de passe digne de ce nom. " + tips;
-    }
-  }
-
-</script>
-{{end}}
 {{end}}
