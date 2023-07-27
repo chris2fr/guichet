@@ -45,6 +45,7 @@ func handleUserMail(w http.ResponseWriter, r *http.Request) {
 		modifyRequest := ldap.NewModifyRequest(login.Info.DN, nil)
 		modifyRequest.Delete("mail", []string{email})
 
+		log.Printf("handleUserMail %v", modifyRequest)
 		err = login.conn.Modify(modifyRequest)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error deleting the email: %s", err), http.StatusInternalServerError)
