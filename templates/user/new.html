@@ -65,6 +65,13 @@
   </div>
   {{end}}
   <div class="form-group">
+    <label for="defaultdomain">Domain au sein des GV:</label>
+    <input type="text" id="defaultdomain" name="defaultdomain" class="form-control" value="{{ .NewUserDefaultDomain }}" />
+    <small class="form-text text-muted">
+      Le domaine du courriel des GV pour le nouveau utilisateur
+    </small>
+  </div>
+  <div class="form-group">
     <label for="mail">Email des GV:</label>
     <input type="text" id="mail" name="mail" class="form-control" value="{{ .Mail }}" />
     <small class="form-text text-muted">
@@ -96,6 +103,8 @@
   {{end}}
   <button type="submit" class="btn btn-primary">Créer le compte</button>
 </form>
+
+
 
 <script lang="javascript">
 function changeGivenNameOrSurname () {
