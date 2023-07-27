@@ -29,7 +29,7 @@ func handleUserMail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	email := r.FormValue("email")
-	action := r.FormValue("add")
+	action := r.FormValue("action")
 	var err error
 	if action == "Add" {
 		// Add the new mail value to the entry
