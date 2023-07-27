@@ -14,12 +14,12 @@
   <link rel="stylesheet" type="text/css" href="/static/css/lesgv.css" />
 
 
-  <title>GVoisins.org > {{template "title" .}}</title>
+  <title>{{ .Common.WebsiteName }} > {{template "title" .}}</title>
 </head>
 
 <body>
   <div class="container mb-4">
-    <h1><a href="/">App.LesGrandsVoisins.Com > {{ template "title" .}}</a></h1>
+    <h1><a href="/">{{ .Common.WebsiteName }} > {{ template "title" .}}</a></h1>
     <nav role="navigation">
       <div id="menuToggle">
         <!--
