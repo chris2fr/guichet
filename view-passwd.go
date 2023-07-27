@@ -54,7 +54,8 @@ func handleLostPassword(w http.ResponseWriter, r *http.Request) {
 		err = passwordLost(user, config, ldapNewConn)
 	}
 	data.Common.CanAdmin = false
-	templateLostPasswordPage.Execute(w, data)
+	// templateLostPasswordPage.Execute(w, data)
+	execTemplate(w, templateLostPasswordPage, data.Common, NestedLoginTplData{}, *config, data)
 }
 
 func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
@@ -108,7 +109,8 @@ func handleFoundPassword(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	data.Common.CanAdmin = false
-	templateFoundPasswordPage.Execute(w, data)
+	// templateFoundPasswordPage.Execute(w, data)
+	execTemplate(w, templateFoundPasswordPage, data.Common, data.Login, *config, data)
 }
 
 func handlePasswd(w http.ResponseWriter, r *http.Request) {
@@ -153,5 +155,6 @@ func handlePasswd(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	data.Common.CanAdmin = false
-	templatePasswd.Execute(w, data)
+	// templatePasswd.Execute(w, data)
+	execTemplate(w, templatePasswd, data.Common, data.Login, *config, data)
 }

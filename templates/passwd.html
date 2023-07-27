@@ -23,7 +23,7 @@
         <label for="password">Nouveau mot de passe :</label>
         <input type="password" id="password" name="password" class="form-control" minlength="8" required />
       </div>
-      {{if .TooShortError}}
+      {if .DataTooShortError}}
         <div class="alert alert-warning">
           Le mot de passe choisi est trop court (minimum 8 caractères).
         </div>
@@ -32,7 +32,7 @@
         <label for="password2">Répéter le mot de passe :</label>
         <input type="password" id="password2" name="password2" class="form-control" />
       </div>
-      {{if .NoMatchError}}
+      {if .DataNoMatchError}}
         <div class="alert alert-warning">
           Les deux mots de passe entrés ne correspondent pas.
         </div>

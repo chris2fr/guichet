@@ -73,17 +73,26 @@ func handleLogin(w http.ResponseWriter, r *http.Request) *LoginInfo {
 				log.Printf("%v", username)
 				data.Common.ErrorMessage = err.Error()
 			}
-			templateLogin.Execute(w, data)
+			// templateLogin.Execute(w, data)
+			execTemplate(w, templateLogin, data.Common, NestedLoginTplData{}, *config, data)
 		}
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return loginInfo
 
 	} else if r.Method == "GET" {
-		templateLogin.Execute(w, LoginFormData{
+		execTemplate(w, templateLogin, NestedCommonTplData{
+			CanAdmin:  false,
+			CanInvite: true,
+			LoggedIn:  false}, NestedLoginTplData{}, *config, LoginFormData{
 			Common: NestedCommonTplData{
 				CanAdmin:  false,
 				CanInvite: true,
 				LoggedIn:  false}})
+		// templateLogin.Execute(w, LoginFormData{
+		// 	Common: NestedCommonTplData{
+		// 		CanAdmin:  false,
+		// 		CanInvite: true,
+		// 		LoggedIn:  false}})
 		return nil
 	} else {
 		http.Error(w, "Unsupported method", http.StatusBadRequest)

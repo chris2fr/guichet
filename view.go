@@ -5,7 +5,6 @@ package main
 
 import (
 	"html/template"
-	"log"
 	"net/http"
 
 	// "net/http"
@@ -270,7 +269,6 @@ type LayoutTemplateData struct {
 func execTemplate(w http.ResponseWriter, t *template.Template, commonData NestedCommonTplData, loginData NestedLoginTplData, config ConfigFile, data any) error {
 	commonData.WebsiteURL = config.WebAddress
 	commonData.WebsiteName = config.Org
-	log.Printf("execTemplate %v", commonData)
 	return t.Execute(w, LayoutTemplateData{
 		Common: commonData,
 		Login:  loginData,
