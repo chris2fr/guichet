@@ -2,10 +2,13 @@ package main
 
 import (
 	// b64 "encoding/base64"
-	// "fmt"
+	"fmt"
 	// "log"
+	"log"
 	"net/http"
 	"strings"
+
+	"github.com/go-ldap/ldap/v3"
 	// "github.com/gorilla/mux"
 )
 
@@ -17,6 +20,56 @@ func handleUserWait(w http.ResponseWriter, r *http.Request) {
 			LoggedIn: false,
 		},
 	})
+}
+
+func handleUserMail(w http.ResponseWriter, r *http.Request) {
+	login := checkLogin(w, r)
+	if login == nil {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	email := r.FormValue("email")
+	action := r.FormValue("add")
+	index := r.FormValue("index")
+	var err error
+	if action == "Add" {
+		// Add the new mail value to the entry
+		modifyRequest := ldap.NewModifyRequest(login.Info.DN, nil)
+		modifyRequest.Add("mail", []string{email})
+
+		err = login.conn.Modify(modifyRequest)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error adding the email: %s", err), http.StatusInternalServerError)
+			return
+		}
+	} else if action == "Delete" && index != "" {
+		// Delete the specified mail value from the entry
+		i := strings.Index(index, ":")
+		if i > 0 {
+			index = index[:i]
+		}
+		i = strings.Index(index, "/")
+		if i > 0 {
+			index = index[:i]
+		}
+
+		modifyRequest := ldap.NewModifyRequest(login.Info.DN, nil)
+		modifyRequest.Delete("mail", []string{email})
+
+		err = login.conn.Modify(modifyRequest)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error deleting the email: %s", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	message := fmt.Sprintf("Mail value updated successfully to: %s", email)
+	http.Redirect(w, r, "/user?message="+message, http.StatusSeeOther)
+
+}
+
+func toInteger(index string) {
+	panic("unimplemented")
 }
 
 func handleUser(w http.ResponseWriter, r *http.Request) {
@@ -122,6 +175,8 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 		// }
 
 	}
+
+	log.Printf("handleUser : %v", data)
 
 	// templateUser.Execute(w, data)
 	execTemplate(w, templateUser, data.Common, data.Login, *config, data)

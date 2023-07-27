@@ -70,6 +70,7 @@ func makeGVRouter() (*mux.Router, error) {
 	r.HandleFunc("/user", handleUser)
 	r.HandleFunc("/user/new", handleInviteNewAccount)
 	r.HandleFunc("/user/wait", handleUserWait)
+	r.HandleFunc("/user/mail", handleUserMail)
 
 	r.HandleFunc("/picture/{name}", handleDownloadPicture)
 
