@@ -29,8 +29,8 @@
     <label>Courriels existants gérés par Les GV:</label>
     {{range $index, $email := .Data.MailValues }}
     <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
-      <input type="email" name="email" value="{{$email}}" required>
-      <input type="submit" name="delete" value="Delete">
+      <input type="email" class="form-control" name="email" value="{{$email}}" required>
+      <input type="submit" class="form-control" name="delete" value="Delete">
       <input type="hidden" name="action" value="Delete">
       <input type="hidden" name="index" value="{{$index}}">
     </form>
@@ -39,9 +39,9 @@
   <div class="form-group col-md-6">
     <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
       <label>Ajouter un courriel sous un domaine géré par Les GV :</label>
-      <input type="email" name="email" required>
+      <input type="email" class="form-control" name="email" required>
       <input type="hidden" name="action" value="Add">
-      <input type="submit" name="add" value="Add">
+      <input type="submit" class="form-control" name="add" value="Add">
   </div>
 </div>
 
