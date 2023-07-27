@@ -39,7 +39,7 @@ func handleUserMail(w http.ResponseWriter, r *http.Request) {
 
 		err = login.conn.Modify(modifyRequest)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Error adding the email: %s", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Error adding the email: %v", modifyRequest), http.StatusInternalServerError)
 			return
 		}
 	} else if action == "Delete" && index != "" {
