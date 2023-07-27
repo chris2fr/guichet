@@ -26,27 +26,27 @@
 {{else}}
 <form method="POST" class="mt-4">
   <div class="form-group">
-    <label for="givenname">Prénom :</label>
-    <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" />
+    <label for="givenname" class="required">Prénom :</label>
+    <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" required />
   </div>
   <div class="form-group">
-    <label for="surname">Nom de famille :</label>
-    <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" />
+    <label for="surname" class="required">Nom de famille :</label>
+    <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" required />
   </div>
   <div class="form-group">
-    <label for="othermailbox">Email de secours:</label>
-    <input type="text" id="othermailbox" name="othermailbox" class="form-control" value="{{ .OtherMailbox }}" />
+    <label for="othermailbox" class="required">Email de secours:</label>
+    <input type="email" id="othermailbox" name="othermailbox" class="form-control" value="{{ .OtherMailbox }}" required />
     <small class="form-text text-muted">
       Le courriel de l'utilisateur.
     </small>
   </div>
   <div class="form-group">
-    <label for="displayname">Nom affiché :</label>
-    <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" />
+    <label for="displayname" class="required">Nom affiché :</label>
+    <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" required />
   </div>
   <div class="form-group">
-    <label for="username">Identifiant :</label>
-    <input type="text" id="username" name="username" class="form-control" />
+    <label for="username" class="required">Identifiant :</label>
+    <input type="text" id="username" name="username" class="form-control" required />
     <small class="form-text text-muted">
       Votre identifiant doit être en minuscule.
     </small>
@@ -65,16 +65,16 @@
   </div>
   {{end}}
   <div class="form-group">
-    <label for="defaultdomain">Domain au sein des GV:</label>
+    <label for="defaultdomain" class="required">Domain au sein des GV:</label>
     <input type="text" id="defaultdomain" name="defaultdomain" class="form-control"
-      value="{{ .NewUserDefaultDomain }}" />
+      value="{{ .NewUserDefaultDomain }}" required />
     <small class="form-text text-muted">
       Le domaine du courriel des GV pour le nouveau utilisateur
     </small>
   </div>
   <div class="form-group">
-    <label for="mail">Email des GV:</label>
-    <input type="text" id="mail" name="mail" class="form-control" value="{{ .Mail }}" />
+    <label for="mail" class="required">Email des GV:</label>
+    <input type="email" id="mail" name="mail" class="form-control" value="{{ .Mail }}" required />
     <small class="form-text text-muted">
       Le courriel et login interne.
     </small>
@@ -102,24 +102,13 @@
     Les deux mots de passe entrés ne correspondent pas.
   </div>
   {{end}}
-  <button type="submit" class="btn btn-primary" onClick="ValidateEmail(document.getElementById('othermailbox'))">Créer
+  <button type="submit" class="btn btn-primary">Créer
     le compte</button>
 </form>
 
 
 
 <script lang="javascript">
-  function ValidateEmail(inputControl) {
-    var mailformat = /^\w+([\.+-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,24})+$/;
-    if (inputControl.value.match(mailformat)) {
-      return true;
-    }
-    else {
-      alert("Merci de renseigner un courriel de secours svp");
-      inputControl.focus();
-      return false;
-    }
-  }
 
   function changeGivenNameOrSurname() {
     givenname = document.getElementById("givenname");
