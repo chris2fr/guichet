@@ -129,7 +129,8 @@ function changeUsername () {
   displayname = document.getElementById("displayname");
   username = document.getElementById("username");
   mail = document.getElementById("mail");
-  mail.value = username.value + "@{{ .NewUserDefaultDomain }}";
+  defaultdomain = document.getElementById("defaultdomain");
+  mail.value = username.value + "@" + defaultdomain.value;
 }
 document.getElementById("givenname").addEventListener("change",changeGivenNameOrSurname);
 document.getElementById("surname").addEventListener("change",changeGivenNameOrSurname);
