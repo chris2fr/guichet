@@ -110,10 +110,8 @@
 
 <script lang="javascript">
   function ValidateEmail(inputControl) {
-    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    var mailformat = /^\w+([\.+-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,24})+$/;
     if (inputControl.value.match(mailformat)) {
-      alert("Merci de renseigner un courriel de secours svp");
-      inputControl.focus();
       return true;
     }
     else {
