@@ -111,31 +111,29 @@ function changeGivenNameOrSurname () {
   givenname = document.getElementById("givenname");
   surname = document.getElementById("surname");
   displayname = document.getElementById("displayname");
-  username = document.getElementById("username");
   displayname.value = givenname.value + " " + surname.value
   changeDisplayname();
 }
 function changeDisplayname () {
-  givenname = document.getElementById("givenname");
-  surname = document.getElementById("surname");
   displayname = document.getElementById("displayname");
   username = document.getElementById("username");
   username.value = displayname.value.toLowerCase().replace(/[^A-z0-9.-]/g, '').replace(/^[.-]/, '').replace(/[.-]$/, '');
   changeUsername();
 }
 function changeUsername () {
-  givenname = document.getElementById("givenname");
-  surname = document.getElementById("surname");
-  displayname = document.getElementById("displayname");
+  changeDomain();
+}
+function changeDomain () {
   username = document.getElementById("username");
-  mail = document.getElementById("mail");
   defaultdomain = document.getElementById("defaultdomain");
+  mail = document.getElementById("mail");
   mail.value = username.value + "@" + defaultdomain.value;
 }
 document.getElementById("givenname").addEventListener("change",changeGivenNameOrSurname);
 document.getElementById("surname").addEventListener("change",changeGivenNameOrSurname);
 document.getElementById("displayname").addEventListener("change",changeDisplayname);
 document.getElementById("username").addEventListener("change",changeUsername);
+document.getElementById("defaultdomain").addEventListener("change",changeDomain);
 </script>
 {{end}}
 {{end}}
