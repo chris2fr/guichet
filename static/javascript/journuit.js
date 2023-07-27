@@ -1,3 +1,4 @@
+/*
 // let toggle = document.querySelector('.toggle-darkmode');
 let toggle = document.querySelector('#jour-nuit');
 
@@ -23,3 +24,4 @@ function toggleDarkmode() {
     lesgvGoDark(toggle);
   }
 }
+*/
