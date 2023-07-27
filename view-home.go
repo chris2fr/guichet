@@ -35,7 +35,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 			LoggedIn:  true,
 		},
 	}
-	execTemplate(w, templateHome, &data.Common, &data.Login, *config, data)
+	execTemplate(w, templateHome, data.Common, data.Login, *config, data)
 	// templateHome.Execute(w, data)
 
 }
