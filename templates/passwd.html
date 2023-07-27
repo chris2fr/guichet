@@ -18,7 +18,7 @@
        Nouveau mot de passe enregistré.
     </div>
   {{else}}
-    <form method="POST" class="mt-4" onsubmit="javascript:var password = document.getElementById('password'); message = checkPasswordStrength(password.value); if (message) {alert(message);return false}else{return true;}">
+    <form method="POST" class="mt-4" onsubmit="javascript:var password = document.getElementById('password');var password2 = document.getElementById('password2'); if (password.value != password.value) {alert('Les maux de passe ne sont pas identiques entre l\'initial et la confirmation.');return false;}; message = checkPasswordStrength(password.value); if (message) {alert(message);return false}else{return true;}">
       <div class="form-group">
         <label for="password">Nouveau mot de passe :</label>
         <input type="password" id="password" name="password" class="form-control" minlength="8" required />
