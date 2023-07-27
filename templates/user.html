@@ -21,29 +21,34 @@
 
 <div class="form-row">
   <div class="form-group col-md-12">
-   
-          {{range $index, $email := .Data.MailValues }}
-          <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
-    <input type="email" name="email" value="{{$email}}" required>
-    <input type="submit" name="delete" value="Delete">
-    <input type="hidden" name="action" value="Delete">
-    <input type="hidden" name="index" value="{{$index}}">
-  </form>
-    {{end}}
-
-  <br>
+    <label>Identifiant:</label>
+    <pre>{{ .Login.Status.Info.Username }}</pre>
+  </div>
+</div>  
+<div class="form-row">
+  <div class="form-group col-md-6">
+    <label>Courriels existants gérés par Les GV:</label>
+    {{range $index, $email := .Data.MailValues }}
     <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
+      <input type="email" name="email" value="{{$email}}" required>
+      <input type="submit" name="delete" value="Delete">
+      <input type="hidden" name="action" value="Delete">
+      <input type="hidden" name="index" value="{{$index}}">
+    </form>
+    {{end}}
+  </div>
+  <div class="form-group col-md-6">
+    <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
+      <label>Ajouter un courriel sous un domaine géré par Les GV :</label>
       <input type="email" name="email" required>
       <input type="hidden" name="action" value="Add">
-    <input type="submit" name="add" value="Add">
+      <input type="submit" name="add" value="Add">
   </div>
 </div>
 <form method="POST" class="mt-4" enctype="multipart/form-data">
-  <div class="form-row">
-    <div class="form-group col-md-6">
-      <label>Identifiant:</label>
-      <input type="text" disabled="true" class="form-control" value="{{ .Login.Status.Info.Username }}" />
-    </div>
+
+      <input type="hidden" disabled="true" class="form-control" value="{{ .Login.Status.Info.Username }}" />
+
     <div class="form-group col-md-6">
       <label for="mail">Adresse e-mail:</label>
       <input type="text" id="mail" disabled="true" name="mail" class="form-control" value="{{ .Data.Mail }}" />
