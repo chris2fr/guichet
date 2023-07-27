@@ -18,6 +18,20 @@
   Profil enregistré.
 </div>
 {{end}}
+<form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
+<div class="form-row">
+  <div class="form-group col-md-12">
+    {{range $index, $email := .Data.MailValues }}
+    <input type="email" name="email" value="{{$email}}" required>
+    <input type="submit" name="delete" value="Delete">
+    <input type="hidden" name="index" value="{{$index}}">
+    <br>
+    {{end}}
+    <input type="email" name="email" required>
+    <input type="submit" name="add" value="Add">
+  </div>
+</div>
+</form>
 <form method="POST" class="mt-4" enctype="multipart/form-data">
   <div class="form-row">
     <div class="form-group col-md-6">
@@ -29,18 +43,7 @@
       <input type="text" id="mail" disabled="true" name="mail" class="form-control" value="{{ .Data.Mail }}" />
     </div>
   </div>
-  <div class="form-row">
-    <div class="form-group col-md-6">
-      {{range $index, $email := .Data.MailValues }}
-      <input type="email" name="email" value="{{$email}}" required>
-      <input type="submit" name="delete" value="Delete">
-      <input type="hidden" name="index" value="{{$index}}">
-      <br>
-      {{end}}
-      <input type="email" name="email" required>
-      <input type="submit" name="add" value="Add">
-    </div>
-  </div>
+
   <div class="form-group">
     <label for="display_name">Nom complet:</label>
     <input type="text" id="display_name" name="display_name" class="form-control" value="{{ .Data.DisplayName }}" />
