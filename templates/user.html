@@ -18,20 +18,24 @@
   Profil enregistré.
 </div>
 {{end}}
-<form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
+
 <div class="form-row">
   <div class="form-group col-md-12">
-    {{range $index, $email := .Data.MailValues }}
+    <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
+          {{range $index, $email := .Data.MailValues }}
     <input type="email" name="email" value="{{$email}}" required>
     <input type="submit" name="delete" value="Delete">
+    <input type="hidden" name="action" value="delete">
     <input type="hidden" name="index" value="{{$index}}">
-    <br>
     {{end}}
-    <input type="email" name="email" required>
+  </form>
+  <br>
+    <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
+      <input type="email" name="email" required>
+      <input type="hidden" name="action" value="add">
     <input type="submit" name="add" value="Add">
   </div>
 </div>
-</form>
 <form method="POST" class="mt-4" enctype="multipart/form-data">
   <div class="form-row">
     <div class="form-group col-md-6">
