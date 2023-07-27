@@ -21,10 +21,9 @@
 
 <div class="form-row">
   <div class="form-group col-md-12">
-    <label>Identifiant:</label>
-    <pre>{{ .Login.Status.Info.Username }}</pre>
+    <label>Identifiant: {{ .Login.Status.Info.Username }}</label>
   </div>
-</div>  
+</div>
 <div class="form-row">
   <div class="form-group col-md-6">
     <label>Courriels existants gérés par Les GV:</label>
@@ -45,19 +44,14 @@
       <input type="submit" name="add" value="Add">
   </div>
 </div>
+
 <form method="POST" class="mt-4" enctype="multipart/form-data">
-
-      <input type="hidden" disabled="true" class="form-control" value="{{ .Login.Status.Info.Username }}" />
-
-    <div class="form-group col-md-6">
-      <label for="mail">Adresse e-mail:</label>
-      <input type="text" id="mail" disabled="true" name="mail" class="form-control" value="{{ .Data.Mail }}" />
+  <input type="hidden" name="username" value="{{ .Login.Status.Info.Username }}" />
+  <div class="form-row">
+    <div class="form-group col-md-12">
+      <label for="display_name">Nom complet:</label>
+      <input type="text" id="display_name" name="display_name" class="form-control" value="{{ .Data.DisplayName }}" />
     </div>
-  </div>
-
-  <div class="form-group">
-    <label for="display_name">Nom complet:</label>
-    <input type="text" id="display_name" name="display_name" class="form-control" value="{{ .Data.DisplayName }}" />
   </div>
   {{/*
   <!--
@@ -102,10 +96,16 @@
   </div>
 
   <div class="form-group">
-    <label for="description">Description</label>
-    <textarea id="description" name="description" class="form-control">{{ .Data.Description }}</textarea>
+    <div class="form-group col-md-12">
+      <label for="description">Description</label>
+      <textarea id="description" name="description" class="form-control">{{ .Data.Description }}</textarea>
+    </div>
   </div>
-  <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+  <div class="form-group">
+    <div class="form-group col-md-12">
+      <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+    </div>
+  </div>
 </form>
 <script src="/static/javascript/minio.js"></script>
 {{end}}
