@@ -48,6 +48,7 @@ func handleUserMail(w http.ResponseWriter, r *http.Request) {
 		log.Printf("handleUserMail %v", modifyRequest)
 		err = login.conn.Modify(modifyRequest)
 		if err != nil {
+			log.Printf("handleUserMail DeleteMail %v", err)
 			http.Error(w, fmt.Sprintf("Error deleting the email: %s", err), http.StatusInternalServerError)
 			return
 		}
