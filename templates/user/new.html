@@ -28,27 +28,36 @@
   <div class="form-group">
     <label for="givenname" class="required">Prénom :</label>
     <input type="text" id="givenname" name="givenname" class="form-control" value="{{ .GivenName }}" required />
-  </div>
-  <div class="form-group">
+  <small class="form-text text-muted">
+    Votre prénom
+  </small>
+</div>
+<div class="form-group">
     <label for="surname" class="required">Nom de famille :</label>
     <input type="text" id="surname" name="surname" class="form-control" value="{{ .Surname }}" required />
-  </div>
-  <div class="form-group">
-    <label for="othermailbox" class="required">Email de secours:</label>
+  <small class="form-text text-muted">
+    Votre nom de famille
+  </small>
+</div>
+<div class="form-group">
+    <label for="othermailbox" class="required">Courriel en dehors des GV:</label>
     <input type="email" id="othermailbox" name="othermailbox" class="form-control" value="{{ .OtherMailbox }}" required />
     <small class="form-text text-muted">
-      Le courriel de l'utilisateur.
+      Votre courriel en dehors des GV pour la récupération de vos informations personnelles
     </small>
   </div>
   <div class="form-group">
     <label for="displayname" class="required">Nom affiché :</label>
     <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" required />
+    <small class="form-text text-muted">
+      Votre nom d'utilisateur tel que affiché aux autres
+    </small>
   </div>
   <div class="form-group">
     <label for="username" class="required">Identifiant :</label>
     <input type="text" id="username" name="username" class="form-control" required />
     <small class="form-text text-muted">
-      Votre identifiant doit être en minuscule.
+      Votre login et identifiant unique au sein des GV (utillisé pour le login le plupart du temps)
     </small>
   </div>
   <div id="calc-uid"></div>
@@ -69,7 +78,7 @@
     <input type="text" id="defaultdomain" name="defaultdomain" class="form-control"
       value="{{ .NewUserDefaultDomain }}" required />
     <small class="form-text text-muted">
-      Le domaine du courriel des GV pour le nouveau utilisateur
+      Le domaine du courriel des GV pour le nouveau utilisateur (lesgrandsvoisins.com ou lesgv.com ou lesgv.org ou tout domaine dont la gestion de courriel est aux Grands Voisins)
     </small>
   </div>
   <div class="form-group">
@@ -105,8 +114,6 @@
   <button type="submit" class="btn btn-primary">Créer
     le compte</button>
 </form>
-
-
 
 <script lang="javascript">
 
