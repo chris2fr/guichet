@@ -66,7 +66,8 @@
   {{end}}
   <div class="form-group">
     <label for="defaultdomain">Domain au sein des GV:</label>
-    <input type="text" id="defaultdomain" name="defaultdomain" class="form-control" value="{{ .NewUserDefaultDomain }}" />
+    <input type="text" id="defaultdomain" name="defaultdomain" class="form-control"
+      value="{{ .NewUserDefaultDomain }}" />
     <small class="form-text text-muted">
       Le domaine du courriel des GV pour le nouveau utilisateur
     </small>
@@ -101,56 +102,54 @@
     Les deux mots de passe entrés ne correspondent pas.
   </div>
   {{end}}
-  <button type="submit" class="btn btn-primary" onClick="ValidateEmail(document.getElementById('othermailbox'))">Créer le compte</button>
+  <button type="submit" class="btn btn-primary" onClick="ValidateEmail(document.getElementById('othermailbox'))">Créer
+    le compte</button>
 </form>
 
 
 
 <script lang="javascript">
-function ValidateEmail(inputControl)
-{
-var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-if(inputText.value.match(mailformat))
-{
-alert("Merci de renseigner un courriel de secours svp");
-inputControl.focus();
-return true;
-}
-else
-{
-alert("Merci de renseigner un courriel de secours svp");
-inputControl.focus();
-return false;
-}
-}
+  function ValidateEmail(inputControl) {
+    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (inputControl.value.match(mailformat)) {
+      alert("Merci de renseigner un courriel de secours svp");
+      inputControl.focus();
+      return true;
+    }
+    else {
+      alert("Merci de renseigner un courriel de secours svp");
+      inputControl.focus();
+      return false;
+    }
+  }
 
-function changeGivenNameOrSurname () {
-  givenname = document.getElementById("givenname");
-  surname = document.getElementById("surname");
-  displayname = document.getElementById("displayname");
-  displayname.value = givenname.value + " " + surname.value
-  changeDisplayname();
-}
-function changeDisplayname () {
-  displayname = document.getElementById("displayname");
-  username = document.getElementById("username");
-  username.value = displayname.value.toLowerCase().replace(/[^A-z0-9.-]/g, '').replace(/^[.-]/, '').replace(/[.-]$/, '');
-  changeUsername();
-}
-function changeUsername () {
-  changeDomain();
-}
-function changeDomain () {
-  username = document.getElementById("username");
-  defaultdomain = document.getElementById("defaultdomain");
-  mail = document.getElementById("mail");
-  mail.value = username.value + "@" + defaultdomain.value;
-}
-document.getElementById("givenname").addEventListener("change",changeGivenNameOrSurname);
-document.getElementById("surname").addEventListener("change",changeGivenNameOrSurname);
-document.getElementById("displayname").addEventListener("change",changeDisplayname);
-document.getElementById("username").addEventListener("change",changeUsername);
-document.getElementById("defaultdomain").addEventListener("change",changeDomain);
+  function changeGivenNameOrSurname() {
+    givenname = document.getElementById("givenname");
+    surname = document.getElementById("surname");
+    displayname = document.getElementById("displayname");
+    displayname.value = givenname.value + " " + surname.value
+    changeDisplayname();
+  }
+  function changeDisplayname() {
+    displayname = document.getElementById("displayname");
+    username = document.getElementById("username");
+    username.value = displayname.value.toLowerCase().replace(/[^A-z0-9.-]/g, '').replace(/^[.-]/, '').replace(/[.-]$/, '');
+    changeUsername();
+  }
+  function changeUsername() {
+    changeDomain();
+  }
+  function changeDomain() {
+    username = document.getElementById("username");
+    defaultdomain = document.getElementById("defaultdomain");
+    mail = document.getElementById("mail");
+    mail.value = username.value + "@" + defaultdomain.value;
+  }
+  document.getElementById("givenname").addEventListener("change", changeGivenNameOrSurname);
+  document.getElementById("surname").addEventListener("change", changeGivenNameOrSurname);
+  document.getElementById("displayname").addEventListener("change", changeDisplayname);
+  document.getElementById("username").addEventListener("change", changeUsername);
+  document.getElementById("defaultdomain").addEventListener("change", changeDomain);
 </script>
 {{end}}
 {{end}}
