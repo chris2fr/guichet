@@ -18,10 +18,10 @@
        Nouveau mot de passe enregistré.
     </div>
   {{else}}
-    <form method="POST" class="mt-4">
+    <form method="POST" class="mt-4" onsubmit="javascript:var password = document.getElementById('password'); message = checkPasswordStrength(password.value); if (message) {alert(message);return false}else{return true;}">
       <div class="form-group">
         <label for="password">Nouveau mot de passe :</label>
-        <input type="password" id="password" name="password" class="form-control" />
+        <input type="password" id="password" name="password" class="form-control" minlength="8" required />
       </div>
       {{if .TooShortError}}
         <div class="alert alert-warning">
@@ -40,4 +40,51 @@
       <button type="submit" class="btn btn-primary">Changer de mot de passe</button>
     </form>
   {{end}}
+  <script>
+    function checkPasswordStrength(password) {
+  // Initialize variables
+  var strength = 0;
+  var tips = "";
+
+  // Check password length
+  if (password.length < 8) {
+    tips += "Au minimum 8 chars dans votre mot de passe svp. ";
+  } else {
+    strength += 1;
+  }
+
+  // Check for mixed case
+  if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
+    strength += 1;
+  } else {
+    tips += "Merci d'utiliser des minuscules et majuscules. ";
+  }
+
+  // Check for numbers
+  if (password.match(/\d/)) {
+    strength += 1;
+  } else {
+    tips += "Merci d'inclure un chiffre. ";
+  }
+
+  // Check for special characters
+  if (password.match(/[^a-zA-Z\d]/)) {
+    strength += 1;
+  } else {
+    tips += "Inclure au moins un caractère spécial. ";
+  }
+
+  // Return results
+  if (strength < 2) {
+    return "Trop facile à déviner. " + tips;
+  } else if (strength === 2) {
+    return "Difficulté moyenne. " + tips;
+  } else if (strength === 3) {
+    return false; // "Difficile à craquer. " + tips;
+  } else {
+    return false; // "Mot de passe digne de ce nom. " + tips;
+  }
+}
+
+  </script>
 {{end}}
