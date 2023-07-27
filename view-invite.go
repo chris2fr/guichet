@@ -41,16 +41,16 @@ func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
 	l, err := openLdap(config)
 	if err != nil {
-		log.Printf(fmt.Sprintf("openNewUserLdap 1 : %v %v", err, l))
-		log.Printf(fmt.Sprintf("openNewUserLdap 1 : %v", config))
+		log.Printf("openNewUserLdap 1 : %v %v", err, l)
+		log.Printf("openNewUserLdap 1 : %v", config)
 		// data.Common.ErrorMessage = err.Error()
 	}
 	err = l.Bind(config.NewUserDN, config.NewUserPassword)
 	if err != nil {
-		log.Printf(fmt.Sprintf("openNewUserLdap Bind : %v", err))
-		log.Printf(fmt.Sprintf("openNewUserLdap Bind : %v", config.NewUserDN))
-		// log.Printf(fmt.Sprintf("openNewUserLdap Bind : %v", config.NewUserPassword))
-		// log.Printf(fmt.Sprintf("openNewUserLdap Bind : %v", config))
+		log.Printf("openNewUserLdap Bind : %v", err)
+		log.Printf("openNewUserLdap Bind : %v", config.NewUserDN)
+		// log.Printf("openNewUserLdap Bind : %v", config.NewUserPassword)
+		// log.Printf("openNewUserLdap Bind : %v", config)
 		// data.Common.ErrorMessage = err.Error()
 	}
 	return l, err
@@ -59,7 +59,8 @@ func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
 func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	l, err := ldapOpen(w)
 	if err != nil {
-		log.Printf(fmt.Sprintf("58: %v %v", err, l))
+		log.Printf("view-invite.go - handleInviteNewAccount - ldapOpen : %v", err)
+		log.Printf("view-invite.go - handleInviteNewAccount - ldapOpen: %v", l)
 	}
 	// l.Bind(config.NewUserDN, config.NewUserPassword)
 
@@ -73,7 +74,7 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	// loginInfo, err := doLogin(w, r, "testuser", config.NewUserDN, config.NewUserPassword)
 
 	// if err != nil {
-	// 	log.Printf(fmt.Sprintf("58: %v %v", err, l))
+	// 	log.Printf("58: %v %v", err, l)
 	// }
 
 	// l := ldapOpen(w)
@@ -83,7 +84,9 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 
 	err = l.Bind(config.NewUserDN, config.NewUserPassword)
 	if err != nil {
-		log.Printf(fmt.Sprintf("58: %v %v", err, l))
+		log.Printf("view-invite.go - handleInviteNewAccount - l.Bind : %v", err)
+		log.Printf("view-invite.go - handleInviteNewAccount - l.Bind: %v", l)
+		panic(fmt.Sprintf("view-invite.go - handleInviteNewAccount - l.Bind : %v", err))
 	}
 	handleNewAccount(w, r, l, config.NewUserDN)
 }
@@ -304,7 +307,7 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		// // choice := strings.Join(r.Form["choice"], "")
 		// // sendto := strings.Join(r.Form["sendto"], "")
 		code, code_id, code_pw := genCode()
-		log.Printf(fmt.Sprintf("272: %v %v %v", code, code_id, code_pw))
+		log.Printf("272: %v %v %v", code, code_id, code_pw)
 		// // Create invitation object in database
 		// modify_request.Add("carLicense", []string{fmt.Sprintf("%s,%s,%s",code, code_id, code_pw)})
 		// err := login.conn.Modify(modify_request)
@@ -315,14 +318,14 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		// 	data.Common.Success = true
 		// 	data.CodeDisplay = code
 		// }
-		log.Printf(fmt.Sprintf("279: %v %v %v", code, code_id, code_pw))
+		log.Printf("279: %v %v %v", code, code_id, code_pw)
 		addReq := ldap.NewAddRequest("documentIdentifier="+code_id+","+config.InvitationBaseDN, nil)
 		addReq.Attribute("objectClass", []string{"top", "document", "simpleSecurityObject"})
 		addReq.Attribute("cn", []string{code})
 		addReq.Attribute("userPassword", []string{code_pw})
 		addReq.Attribute("documentIdentifier", []string{code_id})
-		log.Printf(fmt.Sprintf("285: %v %v %v", code, code_id, code_pw))
-		log.Printf(fmt.Sprintf("286: %v", addReq))
+		log.Printf("285: %v %v %v", code, code_id, code_pw)
+		log.Printf("286: %v", addReq)
 		err := login.conn.Add(addReq)
 		if err != nil {
 			data.Common.ErrorMessage = err.Error()
@@ -336,7 +339,7 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		templateInviteSendCode.Execute(w, data)
 
 		// if choice == "display" || choice == "send" {
-		// 	log.Printf(fmt.Sprintf("260: %v %v %v %v", login, choice, sendto, data))
+		// 	log.Printf("260: %v %v %v %v", login, choice, sendto, data)
 		// 	trySendCode(login, choice, sendto, data)
 		// }
 	}
@@ -344,10 +347,10 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 }
 
 func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCodeData) {
-	log.Printf(fmt.Sprintf("269: %v %v %v %v", login, choice, sendto, data))
+	log.Printf("269: %v %v %v %v", login, choice, sendto, data)
 	// Generate code
 	code, code_id, code_pw := genCode()
-	log.Printf(fmt.Sprintf("272: %v %v %v", code, code_id, code_pw))
+	log.Printf("272: %v %v %v", code, code_id, code_pw)
 	// Create invitation object in database
 
 	// len_base_dn := len(strings.Split(config.BaseDN, ","))
@@ -411,9 +414,9 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// 			req.Attribute("description", []string{data.Description})
 	// 		}
 	// 		err := login.conn.Add(req)
-	//     // log.Printf(fmt.Sprintf("899: %v",err))
-	//     // log.Printf(fmt.Sprintf("899: %v",req))
-	//     // log.Printf(fmt.Sprintf("899: %v",data))
+	//     // log.Printf("899: %v",err)
+	//     // log.Printf("899: %v",req)
+	//     // log.Printf("899: %v",data)
 	// 		if err != nil {
 	// 			data.Common.Error = err.Error()
 	// 		} else {
@@ -436,7 +439,7 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 
 	// err = login.conn.Add(req)
 	// if err != nil {
-	// 	log.Printf(fmt.Sprintf("286: %v", req))
+	// 	log.Printf("286: %v", req)
 	// 	data.Common.ErrorMessage = err.Error()
 	// 	return
 	// }
@@ -493,7 +496,7 @@ func genCode() (code string, code_id string, code_pw string) {
 
 	code = fmt.Sprintf("%03d-%03d-%03d", a%1000, b%1000, c%1000)
 	code_id, code_pw = readCode(code)
-	log.Printf(fmt.Sprintf("342: %v %v %v", code, code_id, code_pw))
+	log.Printf("342: %v %v %v", code, code_id, code_pw)
 	return code, code_id, code_pw
 }
 
