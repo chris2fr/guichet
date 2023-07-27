@@ -101,12 +101,29 @@
     Les deux mots de passe entrés ne correspondent pas.
   </div>
   {{end}}
-  <button type="submit" class="btn btn-primary">Créer le compte</button>
+  <button type="submit" class="btn btn-primary" onClick="ValidateEmail(document.getElementById('othermailbox'))">Créer le compte</button>
 </form>
 
 
 
 <script lang="javascript">
+function ValidateEmail(inputControl)
+{
+var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+if(inputText.value.match(mailformat))
+{
+alert("Merci de renseigner un courriel de secours svp");
+inputControl.focus();
+return true;
+}
+else
+{
+alert("Merci de renseigner un courriel de secours svp");
+inputControl.focus();
+return false;
+}
+}
+
 function changeGivenNameOrSurname () {
   givenname = document.getElementById("givenname");
   surname = document.getElementById("surname");
