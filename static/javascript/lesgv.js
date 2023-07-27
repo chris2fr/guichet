@@ -14,6 +14,3 @@ let idvalueInput = document.querySelector("#idvalue");
 if (idvalueInput != null) {
   idvalueInput.addEventListener("change",addResDigitaOrgIdValue);
 }
-
-
-

@@ -48,11 +48,12 @@ type ConfigFile struct {
 	S3Region    string `json:"s3_region"`
 	S3Bucket    string `json:"s3_bucket"`
 
-	Org             string `json:"org"`
-	DomainName      string `json:"domain_name"`
-	NewUserDN       string `json:"new_user_dn"`
-	NewUserPassword string `json:"new_user_password"`
-	NewUsersBaseDN  string `json:"new_users_base_dn"`
+	Org                  string `json:"org"`
+	DomainName           string `json:"domain_name"`
+	NewUserDN            string `json:"new_user_dn"`
+	NewUserPassword      string `json:"new_user_password"`
+	NewUsersBaseDN       string `json:"new_users_base_dn"`
+	NewUserDefaultDomain string `json:"new_user_default_domain"`
 }
 
 var staticPath = "./static"

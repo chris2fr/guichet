@@ -164,6 +164,7 @@ type NewAccountData struct {
 	ErrorPasswordTooShort bool
 	ErrorPasswordMismatch bool
 	Common                NestedCommonTplData
+	NewUserDefaultDomain  string
 }
 type SendCodeData struct {
 	Common            NestedCommonTplData

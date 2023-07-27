@@ -62,22 +62,6 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 		log.Printf("view-invite.go - handleInviteNewAccount - ldapOpen : %v", err)
 		log.Printf("view-invite.go - handleInviteNewAccount - ldapOpen: %v", l)
 	}
-	// l.Bind(config.NewUserDN, config.NewUserPassword)
-
-	// login := checkInviterLogin(w, r)
-	// if login == nil {
-	// 	return
-	// }
-	// l, _ := ldap.DialURL(config.LdapServerAddr)
-	// l.Bind(config.NewUserDN, config.NewUserPassword)
-
-	// loginInfo, err := doLogin(w, r, "testuser", config.NewUserDN, config.NewUserPassword)
-
-	// if err != nil {
-	// 	log.Printf("58: %v %v", err, l)
-	// }
-
-	// l := ldapOpen(w)
 	if l == nil {
 		return
 	}
@@ -85,27 +69,17 @@ func handleInviteNewAccount(w http.ResponseWriter, r *http.Request) {
 	err = l.Bind(config.NewUserDN, config.NewUserPassword)
 	if err != nil {
 		log.Printf("view-invite.go - handleInviteNewAccount - l.Bind : %v", err)
-		log.Printf("view-invite.go - handleInviteNewAccount - l.Bind: %v", l)
+		log.Printf("view-invite.go - handleInviteNewAccount - l.Bind: %v", config.NewUserDN)
 		panic(fmt.Sprintf("view-invite.go - handleInviteNewAccount - l.Bind : %v", err))
 	}
 	handleNewAccount(w, r, l, config.NewUserDN)
 }
 
 // New account creation using code
-
 func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["code"]
 	code_id, code_pw := readCode(code)
-
-	// log.Printf(code_pw)
-
 	login := checkLogin(w, r)
-
-	// l := ldapOpen(w)
-	// if l == nil {
-	// 	return
-	// }
-
 	inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
 	err := login.conn.Bind(inviteDn, code_pw)
 	if err != nil {
@@ -113,7 +87,6 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 		templateInviteInvalidCode.Execute(w, nil)
 		return
 	}
-
 	sReq := ldap.NewSearchRequest(
 		inviteDn,
 		ldap.ScopeBaseObject, ldap.NeverDerefAliases, 0, 0, false,
@@ -129,9 +102,7 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Expected 1 entry, got %d", len(sr.Entries)), http.StatusInternalServerError)
 		return
 	}
-
 	invitedBy := sr.Entries[0].GetAttributeValue("creatorsname")
-
 	if handleNewAccount(w, r, login.conn, invitedBy) {
 		del_req := ldap.NewDelRequest(inviteDn, nil)
 		err = login.conn.Del(del_req)
@@ -142,19 +113,14 @@ func handleInvitationCode(w http.ResponseWriter, r *http.Request) {
 }
 
 // Common functions for new account
-
 func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
 	templateInviteNewAccount := getTemplate("user/new.html")
-
-	data := &NewAccountData{}
-
+	data := NewAccountData{
+		NewUserDefaultDomain: config.NewUserDefaultDomain,
+	}
 	if r.Method == "POST" {
 		r.ParseForm()
-
 		newUser := User{}
-		// login := checkLogin(w, r)
-
-		// newUser.Mail = fmt.Sprintf("%s@%s", strings.TrimSpace(strings.Join(r.Form["username"], "")), "lesgv.com")
 		newUser.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
 		newUser.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
@@ -163,10 +129,8 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
 		newUser.CN = strings.TrimSpace(strings.Join(r.Form["username"], ""))
 		newUser.DN = "cn=" + strings.TrimSpace(strings.Join(r.Form["username"], "")) + "," + config.UserBaseDN
-
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
-
 		if password1 != password2 {
 			data.Common.Success = false
 			data.ErrorPasswordMismatch = true
@@ -178,16 +142,9 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 				data.Common.Success = false
 				data.Common.ErrorMessage = err.Error()
 			}
-			// err = passwordLost(newUser, config, l)
-			// if err != nil {
-			// 	data.Common.Success = false
-			// 	data.Common.ErrorMessage = err.Error()
-			// }
 			http.Redirect(w, r, "/user/wait", http.StatusFound)
 		}
-
 		// tryCreateAccount(l, data, password1, password2, invitedBy)
-
 	} else {
 		data.SuggestPW = fmt.Sprintf("%s", suggestPassword())
 	}
@@ -200,13 +157,11 @@ func handleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 
 func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 string, invitedBy string) {
 	checkFailed := false
-
 	// Check if username is correct
 	if match, err := regexp.MatchString("^[a-z0-9._-]+$", data.Username); !(err == nil && match) {
 		data.ErrorInvalidUsername = true
 		checkFailed = true
 	}
-
 	// Check if user exists
 	userDn := config.UserNameAttr + "=" + data.Username + "," + config.UserBaseDN
 	searchRq := ldap.NewSearchRequest(
@@ -215,33 +170,27 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 		"(objectclass=*)",
 		[]string{"dn"},
 		nil)
-
 	sr, err := l.Search(searchRq)
 	if err != nil {
 		data.Common.ErrorMessage = err.Error()
 		checkFailed = true
 	}
-
 	if len(sr.Entries) > 0 {
 		data.ErrorUsernameTaken = true
 		checkFailed = true
 	}
-
 	// Check that password is long enough
 	if len(pass1) < 8 {
 		data.ErrorPasswordTooShort = true
 		checkFailed = true
 	}
-
 	if pass1 != pass2 {
 		data.ErrorPasswordMismatch = true
 		checkFailed = true
 	}
-
 	if checkFailed {
 		return
 	}
-
 	// Actually create user
 	req := ldap.NewAddRequest(userDn, nil)
 	req.Attribute("objectclass", []string{"inetOrgPerson", "organizationalPerson", "person", "top"})
@@ -266,13 +215,11 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 		email := strings.ReplaceAll(config.InvitedMailFormat, "{}", data.Username)
 		req.Attribute("mail", []string{email})
 	}
-
 	err = l.Add(req)
 	if err != nil {
 		data.Common.ErrorMessage = err.Error()
 		return
 	}
-
 	for _, group := range config.InvitedAutoGroups {
 		req := ldap.NewModifyRequest(group, nil)
 		req.Add("member", []string{userDn})
@@ -281,28 +228,21 @@ func tryCreateAccount(l *ldap.Conn, data *NewAccountData, pass1 string, pass2 st
 			data.Common.WarningMessage += fmt.Sprintf("Cannot add to %s: %s\n", group, err.Error())
 		}
 	}
-
 	data.Common.Success = true
 }
 
 // ---- Code generation ----
-
 func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 	templateInviteSendCode := getTemplate("user/code/send.html")
-
 	login := checkInviterLogin(w, r)
 	if login == nil {
 		return
 	}
-
-	// carLicense
-
 	if r.Method == "POST" {
 		r.ParseForm()
 		data := &SendCodeData{
 			WebBaseAddress: config.WebAddress,
 		}
-
 		// modify_request := ldap.NewModifyRequest(login.UserEntry.DN, nil)
 		// // choice := strings.Join(r.Form["choice"], "")
 		// // sendto := strings.Join(r.Form["sendto"], "")
@@ -335,9 +275,7 @@ func handleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 			data.CodeDisplay = code
 		}
 		data.Common.CanAdmin = login.Common.CanAdmin
-
 		templateInviteSendCode.Execute(w, data)
-
 		// if choice == "display" || choice == "send" {
 		// 	log.Printf("260: %v %v %v %v", login, choice, sendto, data)
 		// 	trySendCode(login, choice, sendto, data)
@@ -352,7 +290,6 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	code, code_id, code_pw := genCode()
 	log.Printf("272: %v %v %v", code, code_id, code_pw)
 	// Create invitation object in database
-
 	// len_base_dn := len(strings.Split(config.BaseDN, ","))
 	// dn_split := strings.Split(super_dn, ",")
 	// for i := len_base_dn + 1; i <= len(dn_split); i++ {
@@ -426,7 +363,6 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// 				http.Redirect(w, r, "/admin/ldap/"+dn, http.StatusFound)
 	// 			}
 	// 		}
-
 	// inviteDn := config.InvitationNameAttr + "=" + code_id + "," + config.InvitationBaseDN
 	// req := ldap.NewAddRequest(inviteDn, nil)
 	// pw, err := SSHAEncode(code_pw)
@@ -436,7 +372,6 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// }
 	// req.Attribute("employeeNumber", []string{pw})
 	// req.Attribute("objectclass", []string{"top", "invitationCode"})
-
 	// err = login.conn.Add(req)
 	// if err != nil {
 	// 	log.Printf("286: %v", req)
@@ -450,13 +385,11 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 		data.CodeDisplay = code
 		return
 	}
-
 	// Otherwise, we are sending a mail
 	if !EMAIL_REGEXP.MatchString(sendto) {
 		data.ErrorInvalidEmail = true
 		return
 	}
-
 	templateMail := template.Must(template.ParseFiles(templatePath + "/invite_mail.txt"))
 	buf := bytes.NewBuffer([]byte{})
 	templateMail.Execute(buf, &CodeMailFields{
@@ -466,7 +399,6 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 		Code:           code,
 		WebBaseAddress: config.WebAddress,
 	})
-
 	log.Printf("Sending mail to: %s", sendto)
 	// var auth sasl.Client = nil
 	// if config.SMTPUsername != "" {
@@ -478,7 +410,6 @@ func trySendCode(login *LoginStatus, choice string, sendto string, data *SendCod
 	// 	return
 	// }
 	// log.Printf("Mail sent.")
-
 	data.Common.Success = true
 	data.CodeSentTo = sendto
 }
@@ -489,11 +420,9 @@ func genCode() (code string, code_id string, code_pw string) {
 	if err != nil || n != 32 {
 		log.Fatalf("Could not generate random bytes: %s", err)
 	}
-
 	a := binary.BigEndian.Uint32(random[0:4])
 	b := binary.BigEndian.Uint32(random[4:8])
 	c := binary.BigEndian.Uint32(random[8:12])
-
 	code = fmt.Sprintf("%03d-%03d-%03d", a%1000, b%1000, c%1000)
 	code_id, code_pw = readCode(code)
 	log.Printf("342: %v %v %v", code, code_id, code_pw)
@@ -508,10 +437,8 @@ func readCode(code string) (code_id string, code_pw string) {
 			code_digits = code_digits + string(c)
 		}
 	}
-
 	id_hash := argon2.IDKey([]byte(code_digits), []byte("Guichet ID"), 2, 64*1024, 4, 32)
 	pw_hash := argon2.IDKey([]byte(code_digits), []byte("Guichet PW"), 2, 64*1024, 4, 32)
-
 	code_id = hex.EncodeToString(id_hash[:8])
 	code_pw = hex.EncodeToString(pw_hash[:16])
 	return code_id, code_pw
