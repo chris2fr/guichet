@@ -5,6 +5,9 @@ package main
 
 import (
 	"html/template"
+	"net/http"
+
+	// "net/http"
 	"strings"
 
 	"github.com/go-ldap/ldap/v3"
@@ -18,6 +21,8 @@ type NestedCommonTplData struct {
 	LoggedIn       bool
 	Success        bool
 	WarningMessage string
+	WebsiteName    string
+	WebsiteURL     string
 }
 type NestedLoginTplData struct {
 	Login    *LoginStatus
@@ -240,6 +245,10 @@ type SendMailTplData struct {
 	EmailContentVars EmailContentVarsTplData
 }
 
+type WrapperTemplate struct {
+	Template *template.Template
+}
+
 var templatePath = "./templates"
 
 func getTemplate(name string) *template.Template {
@@ -249,4 +258,20 @@ func getTemplate(name string) *template.Template {
 		templatePath+"/layout.html",
 		templatePath+"/"+name,
 	))
+}
+
+type LayoutTemplateData struct {
+	Common NestedCommonTplData
+	Login  NestedLoginTplData
+	Data   any
+}
+
+func execTemplate(w http.ResponseWriter, t *template.Template, commonData *NestedCommonTplData, loginData *NestedLoginTplData, config ConfigFile, data any) error {
+	commonData.WebsiteURL = config.WebAddress
+	commonData.WebsiteName = config.Org
+	return t.Execute(w, LayoutTemplateData{
+		Common: *commonData,
+		Login:  *loginData,
+		Data:   data,
+	})
 }
