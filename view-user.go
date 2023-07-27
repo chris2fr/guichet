@@ -30,7 +30,6 @@ func handleUserMail(w http.ResponseWriter, r *http.Request) {
 	}
 	email := r.FormValue("email")
 	action := r.FormValue("add")
-	index := r.FormValue("index")
 	var err error
 	if action == "Add" {
 		// Add the new mail value to the entry
@@ -42,17 +41,7 @@ func handleUserMail(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, fmt.Sprintf("Error adding the email: %v", modifyRequest), http.StatusInternalServerError)
 			return
 		}
-	} else if action == "Delete" && index != "" {
-		// Delete the specified mail value from the entry
-		i := strings.Index(index, ":")
-		if i > 0 {
-			index = index[:i]
-		}
-		i = strings.Index(index, "/")
-		if i > 0 {
-			index = index[:i]
-		}
-
+	} else if action == "Delete" {
 		modifyRequest := ldap.NewModifyRequest(login.Info.DN, nil)
 		modifyRequest.Delete("mail", []string{email})
 

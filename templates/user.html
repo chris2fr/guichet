@@ -21,14 +21,16 @@
 
 <div class="form-row">
   <div class="form-group col-md-12">
-    <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
+   
           {{range $index, $email := .Data.MailValues }}
+          <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
     <input type="email" name="email" value="{{$email}}" required>
     <input type="submit" name="delete" value="Delete">
-    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="action" value="Delete">
     <input type="hidden" name="index" value="{{$index}}">
-    {{end}}
   </form>
+    {{end}}
+
   <br>
     <form method="POST" class="mt-4" enctype="multipart/form-data" action="/user/mail">
       <input type="email" name="email" required>
