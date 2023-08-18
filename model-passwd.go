@@ -68,13 +68,12 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	err = ldapConn.Del(delReq)
 
 	user.Password = suggestPassword()
-	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
-
 	user.DN = "uid=" + searchRes.Entries[0].GetAttributeValue("cn") + "," + config.InvitationBaseDN
 	user.UID = searchRes.Entries[0].GetAttributeValue("cn")
 	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
 	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
+	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
 	/* Check for outstanding invitation */
 	searchReq = ldap.NewSearchRequest(config.InvitationBaseDN, ldap.ScopeSingleLevel,
 		ldap.NeverDerefAliases, 0, 0, false, "(uid="+user.UID+")", []string{"seeAlso"}, nil)
