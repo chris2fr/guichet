@@ -49,8 +49,8 @@ func openNewUserLdap(config *ConfigFile) (*ldap.Conn, error) {
 	if err != nil {
 		log.Printf("openNewUserLdap Bind : %v", err)
 		log.Printf("openNewUserLdap Bind : %v", config.NewUserDN)
-		// log.Printf("openNewUserLdap Bind : %v", config.NewUserPassword)
-		// log.Printf("openNewUserLdap Bind : %v", config)
+		log.Printf("openNewUserLdap Bind : %v", config.NewUserPassword)
+		log.Printf("openNewUserLdap Bind : %v", config)
 		// data.Common.ErrorMessage = err.Error()
 	}
 	return l, err
