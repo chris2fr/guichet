@@ -63,6 +63,10 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// log.Printf("passwordLost 62 : %v", searchRes.Entries[0].GetAttributeValue("mail"))
 	// log.Printf("passwordLost 63 : %v", searchRes.Entries[0].GetAttributeValue("carLicense"))
 	// Préparation du courriel à envoyer
+
+	delReq := ldap.NewDelRequest("uid="+searchRes.Entries[0].GetAttributeValue("cn")+","+config.InvitationBaseDN, nil)
+	err = ldapConn.Del(delReq)
+
 	user.Password = suggestPassword()
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
 
@@ -87,8 +91,11 @@ func passwordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		nil)
 	addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
 	addReq.Attribute("uid", []string{user.UID})
-	addReq.Attribute("userPassword", []string{suggestPassword()})
+	addReq.Attribute("userPassword", []string{user.Password})
 	addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN})
+	// Password invitation may already exist
+
+	//
 	err = ldapConn.Add(addReq)
 	if err != nil {
 		log.Printf("passwordLost 83 : %v", err)
