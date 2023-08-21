@@ -137,6 +137,9 @@
     username = document.getElementById("username");
     defaultdomain = document.getElementById("defaultdomain");
     mail = document.getElementById("mail");
+    if (!username.value.includes("@")) {
+      username.value += "@" + defaultdomain.value;
+    }
     mail.value = username.value + "@" + defaultdomain.value;
   }
   document.getElementById("givenname").addEventListener("change", changeGivenNameOrSurname);
