@@ -5,16 +5,16 @@ package views
 
 import (
 	"crypto/tls"
-	"encoding/json"
+	// "encoding/json"
 	"guichet/models"
-	"io/ioutil"
+	// "io/ioutil"
 	"net"
 
-	"flag"
+	// "flag"
 	"html/template"
-	"log"
+	// "log"
 	"net/http"
-	"os"
+	// "os"
 
 	// "net/http"
 	"strings"
@@ -34,45 +34,7 @@ type LoginInfo struct {
 	DN       string
 	Password string
 }
-func ReadConfig() models.ConfigFile {
-	// Default configuration values for certain fields
-	flag.Parse()
-	var configFlag = flag.String("config", "./config.json", "Configuration file path")
 
-	config_file := models.ConfigFile{
-		HttpBindAddr:   ":9992",
-		LdapServerAddr: "ldap://127.0.0.1:389",
-
-		UserNameAttr:  "uid",
-		GroupNameAttr: "gid",
-
-		InvitationNameAttr: "cn",
-		InvitedAutoGroups:  []string{},
-
-		Org: "ResDigita",
-	}
-
-	_, err := os.Stat(*configFlag)
-	if os.IsNotExist(err) {
-		log.Fatalf("Could not find Guichet configuration file at %s. Please create this file, for exemple starting with config.json.exemple and customizing it for your deployment.", *configFlag)
-	}
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	bytes, err := ioutil.ReadFile(*configFlag)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = json.Unmarshal(bytes, &config_file)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return config_file
-}
 type LoginStatus struct {
 	Info      *LoginInfo
 	conn      *ldap.Conn
@@ -99,7 +61,7 @@ type CodeMailFields struct {
 	Common         NestedCommonTplData
 }
 
-var config = ReadConfig()
+var config = models.ReadConfig()
 
 func ldapOpen(w http.ResponseWriter) (*ldap.Conn, error) {
 	if config.LdapTLS {

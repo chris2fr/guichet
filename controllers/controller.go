@@ -13,8 +13,7 @@ import (
 
 
 var staticPath = "./static"
-
-
+var config = models.ReadConfig()
 
 /*
 Create the different routes
@@ -62,10 +61,10 @@ func MakeGVRouter() (*mux.Router, error) {
 
 	staticFiles := http.FileServer(http.Dir(staticPath))
 	r.Handle("/static/{file:.*}", http.StripPrefix("/static/", staticFiles))
-	config_file := models.ReadConfig()
+
 
 	// log.Printf("Starting HTTP server on %s", config.HttpBindAddr)
-	err := http.ListenAndServe(config_file.HttpBindAddr, views.LogRequest(r))
+	err := http.ListenAndServe(config.HttpBindAddr, views.LogRequest(r))
 
 	return r, err
 }
