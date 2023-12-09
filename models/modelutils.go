@@ -28,7 +28,7 @@ func ReadConfig() ConfigFile {
 	var configFlag = flag.String("config", "./config.json", "Configuration file path")
 
 	config_file := ConfigFile{
-		HttpBindAddr:   ":9991",
+		HttpBindAddr:   ":9992",
 		LdapServerAddr: "ldap://127.0.0.1:389",
 
 		UserNameAttr:  "uid",
