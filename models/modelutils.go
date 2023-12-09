@@ -21,11 +21,11 @@ import (
 )
 
 //
+var configFlag = flag.String("config", "./config.json", "Configuration file path")
 
 func ReadConfig() ConfigFile {
 	// Default configuration values for certain fields
 	flag.Parse()
-	var configFlag = flag.String("config", "./config.json", "Configuration file path")
 
 	config_file := ConfigFile{
 		HttpBindAddr:   ":9992",
