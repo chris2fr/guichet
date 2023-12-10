@@ -953,7 +953,7 @@ func handleAdminCreate(w http.ResponseWriter, r *http.Request) {
 			data.Common.Error = "Invalid identifier type"
 		} else if len(data.IdValue) == 0 {
 			data.Common.Error = "No identifier specified"
-		} else {
+		} else {  // There is supposed to be something for groups
 			newUser := User{
 				DN: data.IdType + "=" + data.IdValue + "," + super_dn,
 			}

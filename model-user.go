@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+  "os"
 
 	"github.com/go-ldap/ldap/v3"
 )
