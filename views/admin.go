@@ -61,6 +61,7 @@ func HandleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
@@ -89,8 +90,10 @@ func HandleAdminActivateUser(w http.ResponseWriter, r *http.Request) {
 	modifyRequest := *ldap.NewModifyDNRequest("cn="+cn+","+config.InvitationBaseDN, "cn="+cn, true, config.UserBaseDN)
 	err := login.conn.ModifyDN(&modifyRequest)
 	if err != nil {
+		login.conn.Close()
 		return
 	}
+	login.conn.Close()
 	http.Redirect(w, r, "/admin/activate", http.StatusFound)
 }
 
@@ -98,13 +101,16 @@ func HandleAdminUnactivateUser(w http.ResponseWriter, r *http.Request) {
 	cn := mux.Vars(r)["cn"]
 	login := checkAdminLogin(w, r)
 	if login == nil {
+		login.conn.Close()
 		return
 	}
 	modifyRequest := *ldap.NewModifyDNRequest("cn="+cn+","+config.UserBaseDN, "cn="+cn, true, config.InvitationBaseDN)
 	err := login.conn.ModifyDN(&modifyRequest)
 	if err != nil {
+		login.conn.Close()
 		return
 	}
+	login.conn.Close()
 	http.Redirect(w, r, "/admin/users", http.StatusFound)
 }
 
@@ -113,6 +119,7 @@ func HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 
 	login := checkAdminLogin(w, r)
 	if login == nil {
+		login.conn.Close()
 		return
 	}
 
@@ -126,6 +133,7 @@ func HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
@@ -150,6 +158,7 @@ func HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	// }, config, login)
 
 	templateAdminUsers.Execute(w, data)
+	login.conn.Close()
 }
 
 func HandleAdminGroups(w http.ResponseWriter, r *http.Request) {
@@ -157,6 +166,7 @@ func HandleAdminGroups(w http.ResponseWriter, r *http.Request) {
 
 	login := checkAdminLogin(w, r)
 	if login == nil {
+		login.conn.Close()
 		return
 	}
 
@@ -170,6 +180,7 @@ func HandleAdminGroups(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
@@ -186,6 +197,7 @@ func HandleAdminGroups(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(data.Groups)
 
 	templateAdminGroups.Execute(w, data)
+	login.conn.Close()
 }
 
 func HandleAdminMailing(w http.ResponseWriter, r *http.Request) {
@@ -206,6 +218,7 @@ func HandleAdminMailing(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
@@ -222,6 +235,7 @@ func HandleAdminMailing(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(data.MailingLists)
 
 	templateAdminMailing.Execute(w, data)
+	login.conn.Close()
 }
 
 func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
@@ -350,11 +364,13 @@ func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
 	if len(sr.Entries) != 1 {
 		http.Error(w, fmt.Sprintf("Object not found: %s", dn), http.StatusNotFound)
+		login.conn.Close()
 		return
 	}
 
@@ -382,6 +398,7 @@ func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
@@ -414,6 +431,7 @@ func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(data.PossibleNewMembers)
 
 	templateAdminMailingList.Execute(w, data)
+	login.conn.Close()
 }
 
 // ===================================================
@@ -561,6 +579,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 				dError = err.Error()
 			} else {
 				http.Redirect(w, r, "/admin/ldap/"+strings.Join(dn_split[1:], ","), http.StatusFound)
+				login.conn.Close()
 				return
 			}
 		}
@@ -579,11 +598,13 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
 	if len(sr.Entries) != 1 {
 		http.Error(w, fmt.Sprintf("Object not found: %s", dn), http.StatusNotFound)
+		login.conn.Close()
 		return
 	}
 
@@ -663,6 +684,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		sr, err = login.conn.Search(searchRequest)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			login.conn.Close()
 			return
 		}
 
@@ -715,6 +737,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 	// log.Printf(fmt.Sprintf("714: %v",sr.Entries))
@@ -804,6 +827,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
@@ -853,6 +877,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			Success:  dSuccess,
 		},
 	})
+	login.conn.Close()
 }
 
 func HandleAdminCreate(w http.ResponseWriter, r *http.Request) {
@@ -877,11 +902,13 @@ func HandleAdminCreate(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
 	if len(sr.Entries) != 1 {
 		http.Error(w, fmt.Sprintf("Parent object %s does not exist", super_dn), http.StatusNotFound)
+		login.conn.Close()
 		return
 	}
 
@@ -1026,4 +1053,5 @@ func HandleAdminCreate(w http.ResponseWriter, r *http.Request) {
 	data.Common.CanAdmin = true
 
 	templateAdminCreate.Execute(w, data)
+	login.conn.Close()
 }

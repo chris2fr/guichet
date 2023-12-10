@@ -52,6 +52,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		if err != nil {
 			log.Printf("DoLogin : %v", err)
 			log.Printf("DoLogin : %v", user_dn)
+			l.Close()
 			return nil, err
 		}
 	
@@ -106,6 +107,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		if err != nil {
 			log.Printf("DoLogin Session Save: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			l.Close()
 			return nil, err
 		}
 

@@ -137,6 +137,7 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	data.Common.LoggedIn = false
 
 	templateInviteNewAccount.Execute(w, data)
+	l.Close()
 	return data.Common.Success
 }
 
@@ -266,6 +267,7 @@ func HandleInviteSendCode(w http.ResponseWriter, r *http.Request) {
 		// 	trySendCode(login, choice, sendto, data)
 		// }
 	}
+	login.conn.Close()
 
 }
 

@@ -40,6 +40,7 @@ func HandleUserMail(w http.ResponseWriter, r *http.Request) {
 		err = login.conn.Modify(modifyRequest)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error adding the email: %v", modifyRequest), http.StatusInternalServerError)
+			login.conn.Close()
 			return
 		}
 	} else if action == "Delete" {
@@ -51,12 +52,14 @@ func HandleUserMail(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("HandleUserMail DeleteMail %v", err)
 			http.Error(w, fmt.Sprintf("Error deleting the email: %s", err), http.StatusInternalServerError)
+			login.conn.Close()
 			return
 		}
 	}
 
 	message := fmt.Sprintf("Mail value updated successfully to: %s", email)
 	http.Redirect(w, r, "/user?message="+message, http.StatusSeeOther)
+	login.conn.Close()
 
 }
 
@@ -166,10 +169,12 @@ func HandleUser(w http.ResponseWriter, r *http.Request) {
 		// 	data.Common.Success = true
 		// }
 
+
 	}
 
 	log.Printf("HandleUser : %v", data)
 
 	// templateUser.Execute(w, data)
 	execTemplate(w, templateUser, data.Common, data.Login, data)
+	login.conn.Close()
 }

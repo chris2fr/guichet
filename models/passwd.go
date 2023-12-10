@@ -186,6 +186,7 @@ func PasswordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 	if err != nil {
 		log.Printf("PasswordFound openLdap %v", err)
 		// log.Printf("PasswordFound openLdap Config : %v", config)
+		l.Close()
 		return "", err
 	}
 	if user.DN == "" && user.UID != "" {
@@ -196,6 +197,7 @@ func PasswordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 		log.Printf("PasswordFound l.Bind %v", err)
 		log.Printf("PasswordFound l.Bind %v", user.DN)
 		log.Printf("PasswordFound l.Bind %v", user.UID)
+		l.Close()
 		return "", err
 	}
 	searchReq := ldap.NewSearchRequest(user.DN, ldap.ScopeBaseObject,
@@ -207,6 +209,8 @@ func PasswordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 		log.Printf("PasswordFound %v", searchReq)
 		log.Printf("PasswordFound %v", ldapConn)
 		log.Printf("PasswordFound %v", searchRes)
+		l.Close()
+		ldapConn.Close()
 		return "", err
 	}
 	if len(searchRes.Entries) == 0 {
@@ -214,9 +218,13 @@ func PasswordFound(user User, config *ConfigFile, ldapConn *ldap.Conn) (string, 
 		log.Printf("PasswordFound %v", searchReq)
 		log.Printf("PasswordFound %v", ldapConn)
 		log.Printf("PasswordFound %v", searchRes)
+		l.Close()
+		ldapConn.Close()
 		return "", err
 	}
 	delReq := ldap.NewDelRequest("uid="+user.CN+","+config.InvitationBaseDN, nil)
 	ldapConn.Del(delReq)
+	l.Close()
+	ldapConn.Close()
 	return searchRes.Entries[0].GetAttributeValue("seeAlso"), err
 }

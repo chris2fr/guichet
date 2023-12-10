@@ -39,5 +39,6 @@ func HandleHome(w http.ResponseWriter, r *http.Request) {
 	}
 	execTemplate(w, templateHome, data.Common, data.Login, data)
 	// templateHome.Execute(w, data)
+		login.conn.Close()
 
 }

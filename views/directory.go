@@ -24,6 +24,8 @@ func HandleDirectory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	templateDirectory.Execute(w, nil)
+	
+	login.conn.Close()
 }
 
 func HandleDirectorySearch(w http.ResponseWriter, r *http.Request) error {
@@ -49,10 +51,12 @@ func HandleDirectorySearch(w http.ResponseWriter, r *http.Request) error {
 	search_results, err := models.DoDirectorySearch(login.conn, input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return err
 	}
 
 	templateDirectoryResults.Execute(w, search_results)
+	login.conn.Close()
 	return nil
 
 }

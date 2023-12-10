@@ -154,12 +154,14 @@ func HandleDownloadPicture(w http.ResponseWriter, r *http.Request) {
 	mc, err := newMinioClient()
 	if err != nil {
 		http.Error(w, "MinioClient: "+err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
 	obj, err := mc.GetObject(context.Background(), "bottin-pictures", name, minio.GetObjectOptions{})
 	if err != nil {
 		http.Error(w, "MinioClient: GetObject: "+err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 	defer obj.Close()
@@ -167,6 +169,7 @@ func HandleDownloadPicture(w http.ResponseWriter, r *http.Request) {
 	objStat, err := obj.Stat()
 	if err != nil {
 		http.Error(w, "MiniObjet: "+err.Error(), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
@@ -178,6 +181,7 @@ func HandleDownloadPicture(w http.ResponseWriter, r *http.Request) {
 
 	if writting != objStat.Size || err != nil {
 		http.Error(w, fmt.Sprintf("WriteBody: %s, bytes wrote %d on %d", err.Error(), writting, objStat.Size), http.StatusInternalServerError)
+		login.conn.Close()
 		return
 	}
 
