@@ -45,16 +45,9 @@
         but hey, it's pure CSS magic.
         -->
         <ul id="menu">
-          <li><a href="https://www.lesgrandsvoisins.com">Les Grands Voisins (.com)</a>&nbsp;&gt;&nbsp;</li>
+          <li><a href="https://guichet.lesgrandsvoisins.com">Guichet des GV</a>&nbsp;&gt;&nbsp;</li>
           {{template "admenu" .}}
-            <li><a href="#">Les Outils</a><ul class="submenu">
-            <li><a href="https://www.lesgrandsvoisins.com/les-outils/">Les Outils</a></li>
-            <li><a href="https://www.avmeet.com">AVMeet.com</a></li>
-            <li><a href="https://mail.lesgrandsvoisins.com/SOGo/">Mail, Cal., Contacts</a></li>
-            <li><a href="https://wiki.lesgrandsvoisins.com">Wiki</a></li>
-            <li><a href="https://www.lesgrandsvoisins.com/admin">Editer le site web</a></li>
-            <li><a href="https://www.lesgrandsvoisins.com/admin">Editer le blog</a></li>
-          </ul></li>
+        </li>
           {{if .Common.CanAdmin}}
             <li>&lt;&nbsp;<a href="#">Administration</a>
             <ul class="submenu">
@@ -65,19 +58,15 @@
             </ul>
             </li>
           {{end}}
-          <li>&lt;&nbsp;<a href="#">Compte</a>
-            <ul class="submenu">
               {{if .Common.LoggedIn}}
                   <li><a href="/session/logout">Se déconnecter</a></li>
-                  <li><a href="/">Tableau de bord</a></li>
-                  <li><a href="/user">Modifier mon profil</a></li>
-                  <li><a href="/passwd">Modifier mon mot de passe</a></li>
+                  <li><a href="/user">Profil</a></li>
+                  <li><a href="/passwd">Mot de passe</a></li>
               {{else}}
                 <li><a href="/">Se connecter</a></li>
-                <li><a href="/passwd/lost">Mal de passe oublié</a></li>
+                <li><a href="/passwd/lost">Passe oubliée</a></li>
                 <li><a href="/user/new">S'enregistrer</a></li>
               {{end}}
-            </ul></li>
           <li> &nbsp;&lt;&nbsp;<a href="#" class="jour-nuit" id="jour-nuit">Jour et nuit</a></li>
         </ul>
         
