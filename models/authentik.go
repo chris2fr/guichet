@@ -10,6 +10,7 @@ import (
 	api "goauthentik.io/api/v3"
 )
 
+
 func GetTLSTransport(insecure bool) http.RoundTripper {
 	tlsTransport, err := httptransport.TLSTransport(httptransport.TLSClientOptions{
 		// InsecureSkipVerify: insecure,
@@ -22,6 +23,7 @@ func GetTLSTransport(insecure bool) http.RoundTripper {
 
 
 func SyncAuthentikLDAP () error {
+	os.Setenv("HTTP_PROXY", "https://auth.lesgrandsvoisins.com")
 
 	authConfig := api.NewConfiguration()
 	authConfig.Debug = true
