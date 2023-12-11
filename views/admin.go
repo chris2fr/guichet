@@ -101,7 +101,6 @@ func HandleAdminUnactivateUser(w http.ResponseWriter, r *http.Request) {
 	cn := mux.Vars(r)["cn"]
 	login := checkAdminLogin(w, r)
 	if login == nil {
-		login.conn.Close()
 		return
 	}
 	modifyRequest := *ldap.NewModifyDNRequest("cn="+cn+","+config.UserBaseDN, "cn="+cn, true, config.InvitationBaseDN)
@@ -119,7 +118,6 @@ func HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 
 	login := checkAdminLogin(w, r)
 	if login == nil {
-		login.conn.Close()
 		return
 	}
 
