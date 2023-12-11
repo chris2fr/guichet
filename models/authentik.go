@@ -8,7 +8,7 @@ import (
 
 	// httptransport "github.com/go-openapi/runtime/client"
 	// api "goauthentik.io/api/v3"
-	"guichet/openapi"
+	openapi"guichet/openapi"
 
 )
 
