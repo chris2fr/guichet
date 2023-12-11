@@ -43,6 +43,7 @@ func SyncAuthentikLDAP () error {
 		BaseDn: "dc=resdigita,dc=org",
 		ServerUri: "ldap://mail.lesgrandsvoisins.com",
 	}
+	ldapsrcreq.SetSyncUsers(true)
 	ldapsrcsupreq := api.ApiSourcesLdapUpdateRequest{
 		ApiService: apiClient.SourcesApi,
 	}
