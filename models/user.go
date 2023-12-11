@@ -155,6 +155,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// 	log.Printf("add(user) sendMail: %v", user)
 	// 	log.Printf("add(user) sendMail: %v", sendMailTplData)
 	// }
+	err = SyncAuthentikLDAP()
 	return err
 }
 
@@ -180,7 +181,9 @@ func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("73: %v", user))
 		return err
 	}
-	return nil
+	err = SyncAuthentikLDAP()
+
+	return err
 }
 
 func PassWD(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
@@ -190,6 +193,8 @@ func PassWD(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("model-user PassWD : %v %v", err, ldapConn))
 		log.Printf(fmt.Sprintf("model-user PassWD : %v", user))
 	}
+	err = SyncAuthentikLDAP()
+
 	return err
 }
 

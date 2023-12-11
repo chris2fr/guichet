@@ -1,18 +1,14 @@
-package utils
+package models
 
 import (
 	"context"
 	"fmt"
-	"guichet/models"
 	"net/http"
 	"os"
 
 	httptransport "github.com/go-openapi/runtime/client"
 	api "goauthentik.io/api/v3"
 )
-
-var config = models.ReadConfig()
-
 
 func GetTLSTransport(insecure bool) http.RoundTripper {
 	tlsTransport, err := httptransport.TLSTransport(httptransport.TLSClientOptions{
