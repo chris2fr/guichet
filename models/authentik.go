@@ -68,7 +68,7 @@ func SyncAuthentikLDAP () error {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `AdminApi.AdminAppsList``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return err
+		// return err
 	}
 	// response from `AdminAppsList`: []App
 	fmt.Fprintf(os.Stdout, "Response from `AdminApi.AdminAppsList`: %v\n", resp)
