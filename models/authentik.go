@@ -34,11 +34,14 @@ func SyncAuthentikLDAP () error {
 	authConfig.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", config.AuthentikAPIBearerToken)) // <- how to obtain it
         apiClient := api.NewAPIClient(authConfig)
 
-	return nil
+	// return nil
 	// resp, r, err := apiClient.AdminApi.AdminAppsList(context.Background()).Execute()
 	// ctx := context.Background()
 	ldapsrcreq := api.LDAPSourceRequest{
 		Slug: "des-grands-voisins",
+		Name: "Des Grands Voisins",
+		BaseDn: "dc=resdigita,dc=org",
+		ServerUri: "ldap://mail.lesgrandsvoisins.com",
 	}
 	ldapsrcsupreq := api.ApiSourcesLdapUpdateRequest{
 		ApiService: apiClient.SourcesApi,
