@@ -34,6 +34,7 @@ func SyncAuthentikLDAP () error {
 	authConfig.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", config.AuthentikAPIBearerToken)) // <- how to obtain it
         apiClient := api.NewAPIClient(authConfig)
 
+	return nil
 	// resp, r, err := apiClient.AdminApi.AdminAppsList(context.Background()).Execute()
 	// ctx := context.Background()
 	ldapsrcreq := api.LDAPSourceRequest{
