@@ -21,7 +21,7 @@ import (
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/sessions"
-	"goauthentik.io/api/v3"
+	// "goauthentik.io/api/v3"
 )
 
 const SESSION_NAME = "guichet_session"
