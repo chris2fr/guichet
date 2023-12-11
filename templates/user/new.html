@@ -54,10 +54,10 @@
     </small>
   </div>
   <div class="form-group">
-    <label for="username" class="required">Identifiant :</label>
+    <label for="username" class="required">Nom d'utilisateur avant le @ :</label>
     <input type="text" id="username" name="username" class="form-control" required />
     <small class="form-text text-muted">
-      Votre login et identifiant unique au sein des GV (utillisé pour le login le plupart du temps)
+      Ceci est la partie avant le @ qui sera combiné avec le nom de domain principal. 
     </small>
   </div>
   <div id="calc-uid"></div>
@@ -78,12 +78,12 @@
     <input type="text" id="defaultdomain" name="defaultdomain" class="form-control"
       value="{{ .NewUserDefaultDomain }}" required />
     <small class="form-text text-muted">
-      Le domaine du courriel des GV pour le nouveau utilisateur (lesgrandsvoisins.com ou lesgv.com ou lesgv.org ou tout domaine dont la gestion de courriel est aux Grands Voisins)
+      Le domaine du courriel des GV pour le nouveau utilisateur (lesgrandsvoisins.com ou tout domaine dont la gestion de courriel est aux Grands Voisins)
     </small>
   </div>
   <div class="form-group">
-    <label for="mail" class="required">Email des GV:</label>
-    <input type="email" id="mail" name="mail" class="form-control" value="{{ .Mail }}" required />
+    <label for="mail" class="required">Email complet utilisé pour l'identifiant de l'utilisateur :</label>
+    <input type="email" id="mail" name="mail" class="form-control" value="{{ .Mail }}" readonly required />
     <small class="form-text text-muted">
       Le courriel et login interne.
     </small>
