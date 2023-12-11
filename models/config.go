@@ -48,5 +48,7 @@ type ConfigFile struct {
 	NewUserPassword      string `json:"new_user_password"`
 	NewUsersBaseDN       string `json:"new_users_base_dn"`
 	NewUserDefaultDomain string `json:"new_user_default_domain"`
+
+	AuthentikAPIBearerToken string `json:"authentik_api_bearer_tokern"`
 }
 
