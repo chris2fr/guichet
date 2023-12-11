@@ -166,7 +166,6 @@ func HandleAdminGroups(w http.ResponseWriter, r *http.Request) {
 
 	login := checkAdminLogin(w, r)
 	if login == nil {
-		login.conn.Close()
 		return
 	}
 
