@@ -47,7 +47,6 @@
         <ul id="menu">
           <li><a href="https://guichet.lesgrandsvoisins.com">Guichet des GV</a>&nbsp;&gt;&nbsp;</li>
           <li><a href="https://www.lesgrandsvoisins.com">LesGrandsVoisins.com</a>&nbsp;&gt;&nbsp;</li>
-          <li><a href="https://auth.lesgrandsvoisins.com">Tableau de bord Auth</a>&nbsp;&gt;&nbsp;</li>
           {{template "admenu" .}}
         </li>
           {{if .Common.CanAdmin}}
@@ -61,6 +60,7 @@
             </li>
           {{end}}
               {{if .Common.LoggedIn}}
+                  <li><a href="https://auth.lesgrandsvoisins.com">Tableau de bord Auth</a>&nbsp;&gt;&nbsp;</li>
                   <li><a href="/session/logout">Se déconnecter</a></li>
                   <li><a href="/user">Profil</a></li>
                   <li><a href="/passwd">Mot de passe</a></li>
