@@ -23,18 +23,20 @@ func GetTLSTransport(insecure bool) http.RoundTripper {
 
 
 func SyncAuthentikLDAP () error {
-	os.Setenv("HTTP_PROXY", "https://auth.lesgrandsvoisins.com")
+	// os.Setenv("HTTP_PROXY", "https://auth.lesgrandsvoisins.com")
 
 	authConfig := api.NewConfiguration()
 	authConfig.Debug = true
 	authConfig.Scheme = "https"
-	authConfig.Host = "auth.lesgrandsvoisins.com"
+	// authConfig.Host = "auth.lesgrandsvoisins.com"
+	authConfig.Host = "10.245.101.35:9443"
 	authConfig.HTTPClient = &http.Client{
 		Transport: GetTLSTransport(true),
 	}
 
-	authConfig.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", config.AuthentikAPIBearerToken)) // <- how to obtain it
-        apiClient := api.NewAPIClient(authConfig)
+	authConfig.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", config.AuthentikAPIBearerToken)) 
+	
+  apiClient := api.NewAPIClient(authConfig)
 
 	// return nil
 	// resp, r, err := apiClient.AdminApi.AdminAppsList(context.Background()).Execute()
