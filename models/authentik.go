@@ -35,8 +35,14 @@ func SyncAuthentikLDAP () error {
         apiClient := api.NewAPIClient(authConfig)
 
 	// resp, r, err := apiClient.AdminApi.AdminAppsList(context.Background()).Execute()
-	// req := api.ApiSourcesLdapUpdateRequest(cont,)
-	resp, r, err := apiClient.SourcesApi.SourcesLdapUpdate(context.Background(),"des-grands-voisins").Execute()
+	ctx := context.Background()
+	req := apiClient.SourcesApi.SourcesLdapUpdate(ctx,"des-grands-voisins")
+	resp, r, err := req.Execute()
+
+
+	// resp, r, err := apiClient.SourcesApi.SourcesLdapUpdate(context.WithValue(context.Background(),))
+	
+	apiClient.SourcesApi.SourcesLdapUpdate(context.Background(),"des-grands-voisins").Execute()
 	// .AdminApi.AdminAppsList(context.Background()).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `AdminApi.AdminAppsList``: %v\n", err)
