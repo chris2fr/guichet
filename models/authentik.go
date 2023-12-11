@@ -27,12 +27,13 @@ func SyncAuthentikLDAP () error {
 
 	authConfig := api.NewConfiguration()
 	authConfig.Debug = true
-	authConfig.Scheme = "https"
+	authConfig.Scheme = "http"
 	// authConfig.Host = "auth.lesgrandsvoisins.com"
-	authConfig.Host = "10.245.101.35:9443"
-	authConfig.HTTPClient = &http.Client{
-		Transport: GetTLSTransport(false),
-	}
+	authConfig.Host = "10.245.101.35:9000"
+	authConfig.HTTPClient = &http.Client{}
+	// authConfig.HTTPClient = &http.Client{
+	// 	Transport: GetTLSTransport(true),
+	// }
 
 	authConfig.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", config.AuthentikAPIBearerToken)) 
 	
