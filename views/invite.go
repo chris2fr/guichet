@@ -111,8 +111,10 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
 		newUser.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
-		newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
-		newUser.CN = strings.TrimSpace(strings.Join(r.Form["username"], ""))
+		// newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
+		// newUser.CN = strings.TrimSpace(strings.Join(r.Form["username"], ""))
+		newUser.UID = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
+		newUser.CN = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		newUser.DN = "cn=" + strings.TrimSpace(strings.Join(r.Form["username"], "")) + "," + config.UserBaseDN
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
