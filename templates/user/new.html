@@ -112,7 +112,7 @@
   </div>
   {{end}}
   <input type="hidden" name="username" id="username"/>
-  <!--
+  
   <p>Copier les chiffres ci-dessous:</p>
 <p><img id=image src="/captcha/{{.CaptchaId}}.png" alt="Captcha image"></p>
 <a href="#" onclick="reload()">Reload</a> | <a href="#" onclick="playAudio()">Audio</a>
@@ -122,7 +122,7 @@
 </audio>
 <input type=hidden name=captchaId value="{{.CaptchaId}}"><br>
 <input name=captchaSolution>
--->
+
   <button type="submit" class="btn btn-primary">Créer
     le compte</button>
 </form>
@@ -164,7 +164,6 @@
 </script>
 
 <script>
-/*
   function setSrcQuery(e, q) {
     var src  = e.src;
     var p = src.indexOf('?');
@@ -196,7 +195,6 @@
     setSrcQuery(document.getElementById('audio'), (new Date()).getTime());
     return false;
   }
-  */
   </script>
 {{end}}
 {{end}}
