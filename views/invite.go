@@ -21,17 +21,39 @@ import (
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/argon2"
 
-	// "github.com/dchest/captcha"
+	"github.com/dchest/captcha"
 	// "flag"
 
 	// "github.com/mojocn/base64Captcha"
 	// "math/rand"
-	// "time"
+	"time"
+	"errors"
 	// "encoding/json"
+
 
 )
 
 var EMAIL_REGEXP = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+
+const (
+	// Default number of digits in captcha solution.
+	DefaultLen = 6
+	// The number of captchas created that triggers garbage collection used
+	// by default store.
+	CollectNum = 100
+	// Expiration time of captchas used by default store.
+	Expiration = 10 * time.Minute
+)
+
+const (
+	// Standard width and height of a captcha image.
+	StdWidth  = 240
+	StdHeight = 80
+)
+
+var (
+	ErrNotFound = errors.New("captcha: id not found")
+)
 
 // func init() {
 // 	//init rand seed
@@ -297,6 +319,9 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		NewUserDefaultDomain: config.NewUserDefaultDomain,
 		// CaptchaId: captcha.New(),
 	}
+	if r.Method != "POST" {
+		data.CaptchaId = captcha.New()
+	}
 		
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -337,6 +362,9 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	}
 	data.Common.CanAdmin = false
 	data.Common.LoggedIn = false
+
+	data.Common.Success = captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution"))
+	data.Common.ErrorMessage = r.FormValue("captchaSolution")
 
 	templateInviteNewAccount.Execute(w, data)
 	l.Close()

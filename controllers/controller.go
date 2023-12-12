@@ -9,8 +9,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	// "github.com/dchest/captcha"
+	"github.com/dchest/captcha"
 	// "log"
+
+	
 
 )
 
@@ -50,7 +52,7 @@ func MakeGVRouter() (*mux.Router, error) {
 	r.HandleFunc("/admin/ldap/{dn}", views.HandleAdminLDAP)
 	r.HandleFunc("/admin/create/{template}/{super_dn}", views.HandleAdminCreate)
 
-	// // r.Handle("/captcha/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
+	r.Handle("/captcha/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
 	// 	//api for create captcha
 	// 	r.HandleFunc("/api/getCaptcha", views.GenerateCaptchaHandler)
 
