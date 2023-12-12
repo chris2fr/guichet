@@ -354,9 +354,9 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		if password1 != password2 {
 			data.Common.Success = false
 			data.ErrorPasswordMismatch = true
-		} else if !captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution")) {
-			data.Common.Success = false
-			data.Common.ErrorMessage = "Captcha KO"
+		// } else if !captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution")) {
+		// 	data.Common.Success = false
+		// 	data.Common.ErrorMessage = "Captcha KO"
 		}	else {
 			newUser.Password = password2
 			l.Bind(config.NewUserDN, config.NewUserPassword)
