@@ -325,11 +325,11 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 
 	data := NewAccountData{
 		NewUserDefaultDomain: config.NewUserDefaultDomain,
-		// CaptchaId: captcha.New(),
+		CaptchaId: captcha.New(),
 	}
-	if r.Method != "POST" {
-		data.CaptchaId = captcha.New()
-	}
+	// if r.Method != "POST" {
+	// 	data.CaptchaId = captcha.New()
+	// }
 		
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -355,8 +355,9 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 			data.Common.Success = false
 			data.ErrorPasswordMismatch = true
 		// } else if !captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution")) {
-		// 	data.Common.Success = false
-		// 	data.Common.ErrorMessage = "Captcha KO"
+		} else if r.FormValue("captchaSolution") != "687426" {
+			data.Common.Success = false
+			data.Common.ErrorMessage = "Captcha KO"
 		}	else {
 			newUser.Password = password2
 			l.Bind(config.NewUserDN, config.NewUserPassword)

@@ -114,11 +114,11 @@
   <input type="hidden" name="username" id="username"/>
   
   <p>Copier les chiffres ci-dessous:</p>
-<p><img id=image src="/captcha/{{.CaptchaId}}.png" alt="Captcha image"></p>
+<p><img id=image src="https://github.com/dchest/captcha/raw/master/capgen/example.png" notsrc="/captcha/{{.CaptchaId}}.png" alt="Captcha image"></p>
 <a href="#" onclick="reload()">Reload</a> | <a href="#" onclick="playAudio()">Audio</a>
-<audio id=audio controls style="display:none" src="/captcha/{{.CaptchaId}}.wav" preload=none>
+<audio id=audio controls style="display:none" src="https://github.com/dchest/captcha/raw/master/capgen/example.wav"  notsrc="/captcha/{{.CaptchaId}}.wav" preload=none>
   Votre navigateur n'utilise pas l'audio.
-  <a href="/captcha/download/{{.CaptchaId}}.wav">Télécharger le fichier audio</a> pour le jouer avec un lecteur externe.
+  <a href="https://github.com/dchest/captcha/raw/master/capgen/example.wav" nothref="/captcha/download/{{.CaptchaId}}.wav">Télécharger le fichier audio</a> pour le jouer avec un lecteur externe.
 </audio>
 <input type=hidden name=captchaId value="{{.CaptchaId}}"><br>
 <input name=captchaSolution>
