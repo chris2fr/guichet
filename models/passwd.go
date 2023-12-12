@@ -1,5 +1,5 @@
 /*
-gpas is GVoisin password reset
+gpas is LesGrandsVoisins password reset
 */
 
 package models

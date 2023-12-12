@@ -148,7 +148,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// 	RelTemplatePath: "user/new.email.txt",
 	// 	EmailContentVars: EmailContentVarsTplData{
 	// 		InviteFrom:  "alice@resdigita.org",
-	// 		SendAddress: "https://www.gvoisins.org",
+	// 		SendAddress: "https://www.lesgrandsvoisinss.org",
 	// 		Code:        "...",
 	// 	},
 	// }

@@ -5,6 +5,7 @@ go 1.21
 toolchain go1.21.4
 
 require (
+	github.com/dchest/captcha v1.0.0
 	github.com/go-ldap/ldap/v3 v3.4.5
 	github.com/go-openapi/runtime v0.26.2
 	github.com/google/uuid v1.3.1

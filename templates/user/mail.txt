@@ -1,13 +1,13 @@
 From: {{.From}}
 To: {{.To}}
-Subject: Code d'invitation GVoisin.com
+Subject: Code d'invitation LesGrandsVoisins.com
 Content-type: text/plain; charset=utf-8
 
-Vous avez été invité à créer un compte sur GVoisin.com par {{.InviteFrom}} :)
+Vous avez été invité à créer un compte sur LesGrandsVoisins.com par {{.InviteFrom}} :)
 
 Pour créer votre compte, rendez-vous à l'adresse suivante:
 
 {{.WebBaseAddress}}/invitation/{{.Code}}
 
-À bientôt sur GVoisin.com !
+À bientôt sur LesGrandsVoisins.com !
 

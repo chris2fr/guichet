@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-ldap/ldap/v3"
 	// "github.com/gorilla/mux"
+  "github.com/dchest/captcha"
 )
 
 func HandleUserWait(w http.ResponseWriter, r *http.Request) {
@@ -70,6 +71,8 @@ func toInteger(index string) {
 func HandleUser(w http.ResponseWriter, r *http.Request) {
 	templateUser := getTemplate("user.html")
 
+
+
 	login := checkLogin(w, r)
 	if login == nil {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -99,7 +102,9 @@ func HandleUser(w http.ResponseWriter, r *http.Request) {
 	data.Description = login.UserEntry.GetAttributeValue("description")
 	//data.ProfilePicture = login.UserEntry.GetAttributeValue(FIELD_NAME_PROFILE_PICTURE)
 
+
 	if r.Method == "POST" {
+		captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution")) 
 		//5MB maximum size files
 		r.ParseMultipartForm(5 << 20)
 		user := models.User{
