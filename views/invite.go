@@ -20,11 +20,31 @@ import (
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/argon2"
-	"github.com/dchest/captcha"
+
+	// "github.com/dchest/captcha"
+	// "flag"
+
+	"github.com/mojocn/base64Captcha"
+	// "math/rand"
+	// "time"
+	"encoding/json"
 
 )
 
 var EMAIL_REGEXP = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+
+// func init() {
+// 	//init rand seed
+// 	rand.Seed(time.Now().UnixNano())
+// }
+// var (
+// 	flagImage = flag.Bool("i", true, "output image captcha")
+// 	flagAudio = flag.Bool("a", false, "output audio captcha")
+// 	flagLang  = flag.String("lang", "en", "language for audio captcha")
+// 	flagLen   = flag.Int("len", captcha.DefaultLen, "length of captcha")
+// 	flagImgW  = flag.Int("width", captcha.StdWidth, "image captcha width")
+// 	flagImgH  = flag.Int("height", captcha.StdHeight, "image captcha height")
+// )
 
 func checkInviterLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 
@@ -99,12 +119,160 @@ func HandleInvitationCode(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// type Store interface {
+// 	// Set sets the digits for the captcha id.
+// 	Set(id string, value string)
+
+// 	// Get returns stored digits for the captcha id. Clear indicates
+// 	// whether the captcha must be deleted from the store.
+// 	Get(id string, clear bool) string
+	
+//     //Verify captcha's answer directly
+// 	Verify(id, answer string, clear bool) bool
+// }
+
+// // Driver captcha interface for captcha engine to to write staff
+// type Driver interface {
+// 	//DrawCaptcha draws binary item
+// 	DrawCaptcha(content string) (item Item, err error)
+// 	//GenerateIdQuestionAnswer creates rand id, content and answer
+// 	GenerateIdQuestionAnswer() (id, q, a string)
+// }
+
+
+// // Captcha captcha basic information.
+// type Captcha struct {
+// 	Driver Driver
+// 	Store  Store
+// }
+
+
+// //NewCaptcha creates a captcha instance from driver and store
+// func NewCaptcha(driver Driver, store Store) *Captcha {
+// 	return &Captcha{Driver: driver, Store: store}
+// }
+
+// //Generate generates a random id, base64 image string or an error if any
+// func (c *Captcha) Generate() (id, b64s string, err error) {
+// 	id,content, answer := c.Driver.GenerateIdQuestionAnswer()
+// 	item, err := c.Driver.DrawCaptcha(content)
+// 	if err != nil {
+// 		return "", "", err
+// 	}
+// 	c.Store.Set(id, answer)
+// 	b64s = item.EncodeB64string()
+// 	return
+// }
+
+
+// //Verify by a given id key and remove the captcha value in store,
+// //return boolean value.
+// //if you has multiple captcha instances which share a same store.
+// //You may want to call `store.Verify` method instead.
+// func (c *Captcha) Verify(id, answer string, clear bool) (match bool) {
+// 	match = c.Store.Get(id, clear) == answer
+// 	return
+// }
+
+// func (c *Captcha) Generate() (id, b64s string, err error) {
+// 	id,content, answer := c.Driver.GenerateIdQuestionAnswer()
+// 	item, err := c.Driver.DrawCaptcha(content)
+// 	if err != nil {
+// 		return "", "", err
+// 	}
+// 	c.Store.Set(id, answer)
+// 	b64s = item.EncodeB64string()
+// 	return
+// }
+
+// //if you has multiple captcha instances which shares a same store. You may want to use `store.Verify` method instead.
+// //Verify by given id key and remove the captcha value in store, return boolean value.
+// func (c *Captcha) Verify(id, answer string, clear bool) (match bool) {
+// 	match = c.Store.Get(id, clear) == answer
+// 	return
+// }
+
+type configJsonBody struct {
+	Id            string
+	CaptchaType   string
+	VerifyValue   string
+	DriverAudio   *base64Captcha.DriverAudio
+	DriverString  *base64Captcha.DriverString
+	DriverChinese *base64Captcha.DriverChinese
+	DriverMath    *base64Captcha.DriverMath
+	DriverDigit   *base64Captcha.DriverDigit
+}
+
+var store = base64Captcha.DefaultMemStore
+
+// base64Captcha create http handler
+func GenerateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
+	//parse request parameters
+	decoder := json.NewDecoder(r.Body)
+	var param configJsonBody
+	err := decoder.Decode(&param)
+	if err != nil {
+		log.Println(err)
+	}
+	defer r.Body.Close()
+	var driver base64Captcha.Driver
+
+	//create base64 encoding captcha
+	switch param.CaptchaType {
+	case "audio":
+		driver = param.DriverAudio
+	case "string":
+		driver = param.DriverString.ConvertFonts()
+	case "math":
+		driver = param.DriverMath.ConvertFonts()
+	case "chinese":
+		driver = param.DriverChinese.ConvertFonts()
+	default:
+		driver = param.DriverDigit
+	}
+	c := base64Captcha.NewCaptcha(driver, store)
+	id, b64s, msg, err := c.Generate()
+	body := map[string]interface{}{"code": 1, "data": b64s, "captchaId": id, "msg": msg}
+	if err != nil {
+		body = map[string]interface{}{"code": 0, "msg": err.Error()}
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	json.NewEncoder(w).Encode(body)
+}
+
+// base64Captcha verify http handler
+func CaptchaVerifyHandle(w http.ResponseWriter, r *http.Request) {
+
+	//parse request json body
+	decoder := json.NewDecoder(r.Body)
+	var param configJsonBody
+	err := decoder.Decode(&param)
+	if err != nil {
+		log.Println(err)
+	}
+	defer r.Body.Close()
+	//verify the captcha
+	body := map[string]interface{}{"code": 0, "msg": "failed"}
+	if store.Verify(param.Id, param.VerifyValue, true) {
+		body = map[string]interface{}{"code": 1, "msg": "ok"}
+	}
+
+	//set json response
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	json.NewEncoder(w).Encode(body)
+}
+
+
+
+
 // Common functions for new account
 func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
 	templateInviteNewAccount := getTemplate("user/new.html")
+
 	data := NewAccountData{
 		NewUserDefaultDomain: config.NewUserDefaultDomain,
-		CaptchaId: captcha.New(),
+		// CaptchaId: captcha.New(),
 	}
 		
 	if r.Method == "POST" {

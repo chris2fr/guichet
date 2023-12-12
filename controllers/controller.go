@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/dchest/captcha"
+	// "github.com/dchest/captcha"
 	// "log"
 
 )
@@ -22,6 +22,8 @@ var config = models.ReadConfig()
 Create the different routes
 */
 func MakeGVRouter() (*mux.Router, error) {
+
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", views.HandleHome)
 
@@ -48,7 +50,12 @@ func MakeGVRouter() (*mux.Router, error) {
 	r.HandleFunc("/admin/ldap/{dn}", views.HandleAdminLDAP)
 	r.HandleFunc("/admin/create/{template}/{super_dn}", views.HandleAdminCreate)
 
-	r.Handle("/captcha/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
+	// r.Handle("/captcha/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
+		//api for create captcha
+		r.HandleFunc("/api/getCaptcha", views.GenerateCaptchaHandler)
+
+		//api for verify captcha
+		r.HandleFunc("/api/verifyCaptcha", views.CaptchaVerifyHandle)
 	// if err := http.ListenAndServe("localhost:8666", nil); err != nil {
 	// 	log.Fatal(err)
 	// }
