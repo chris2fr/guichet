@@ -104,10 +104,9 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	templateInviteNewAccount := getTemplate("user/new.html")
 	data := NewAccountData{
 		NewUserDefaultDomain: config.NewUserDefaultDomain,
+		CaptchaId: captcha.New(),
 	}
-	if r.Method != "POST" {
-		data.CaptchaId = captcha.New()
-	}
+		
 	if r.Method == "POST" {
 		r.ParseForm()
 		// if !captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution")) {
