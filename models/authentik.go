@@ -3,58 +3,66 @@ package models
 import (
 	"context"
 	"fmt"
-	// "net/http"
+	"net/http"
 	"os"
 
-	// httptransport "github.com/go-openapi/runtime/client"
-	// api "goauthentik.io/api/v3"
-	openapi"guichet/openapi"
+	httptransport "github.com/go-openapi/runtime/client"
+	api "goauthentik.io/api/v3"
+	// openapi"github.com/chris2fr/go-authentik-oapi-desgv"
 
 )
 
 
-// func GetTLSTransport(insecure bool) http.RoundTripper {
-// 	tlsTransport, err := httptransport.TLSTransport(httptransport.TLSClientOptions{
-// 		// InsecureSkipVerify: insecure,
-// 	})
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return tlsTransport
-// }
+func GetTLSTransport(insecure bool) http.RoundTripper {
+	tlsTransport, err := httptransport.TLSTransport(httptransport.TLSClientOptions{
+		// InsecureSkipVerify: insecure,
+	})
+	if err != nil {
+		panic(err)
+	}
+	return tlsTransport
+}
 
 
 func SyncAuthentikLDAP () error {
 
-	slug := "des-grands-voisins"
-	patchedLDAPSourceRequest := *openapi.NewPatchedLDAPSourceRequest() // PatchedLDAPSourceRequest |  (optional)
-	configuration := openapi.NewConfiguration()
-  apiClient := openapi.NewAPIClient(configuration)
-  resp, r, err := apiClient.SourcesApi.SourcesLdapPartialUpdate(context.Background(), slug).PatchedLDAPSourceRequest(patchedLDAPSourceRequest).Execute()
-  if err != nil {
-      fmt.Fprintf(os.Stderr, "Error when calling `SourcesApi.SourcesLdapPartialUpdate``: %v\n", err)
-      fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-  }
-  // response from `SourcesLdapPartialUpdate`: LDAPSource
-  fmt.Fprintf(os.Stdout, "Response from `SourcesApi.SourcesLdapPartialUpdate`: %v\n", resp)
+	// slug := "des-grands-voisins"
+	// patchedLDAPSourceRequest := *openapi.NewPatchedLDAPSourceRequest() // PatchedLDAPSourceRequest |  (optional)
+	// configuration := openapi.NewConfiguration()
+  // apiClient := openapi.NewAPIClient(configuration)
+  // resp, r, err := apiClient.SourcesApi.SourcesLdapPartialUpdate(context.Background(), slug).PatchedLDAPSourceRequest(patchedLDAPSourceRequest).Execute()
+  // if err != nil {
+  //     fmt.Fprintf(os.Stderr, "Error when calling `SourcesApi.SourcesLdapPartialUpdate``: %v\n", err)
+  //     fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+  // }
+  // // response from `SourcesLdapPartialUpdate`: LDAPSource
+  // fmt.Fprintf(os.Stdout, "Response from `SourcesApi.SourcesLdapPartialUpdate`: %v\n", resp)
 
 
 
 // 	// os.Setenv("HTTP_PROXY", "https://auth.lesgrandsvoisins.com")
 
-// 	authConfig := api.NewConfiguration()
-// 	authConfig.Debug = true
-// 	authConfig.Scheme = "http"
-// 	// authConfig.Host = "auth.lesgrandsvoisins.com"
-// 	authConfig.Host = "10.245.101.35:9000"
-// 	authConfig.HTTPClient = &http.Client{}
-// 	// authConfig.HTTPClient = &http.Client{
-// 	// 	Transport: GetTLSTransport(true),
-// 	// }
+	authConfig := api.NewConfiguration()
+	authConfig.Debug = true
+	authConfig.Scheme = "http"
+	// authConfig.Host = "auth.lesgrandsvoisins.com"
+	authConfig.Host = "10.245.101.35:9000"
+	authConfig.HTTPClient = &http.Client{}
+	// authConfig.HTTPClient = &http.Client{
+	// 	Transport: GetTLSTransport(true),
+	// }
 
-// 	authConfig.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", config.AuthentikAPIBearerToken)) 
+	authConfig.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", config.AuthentikAPIBearerToken)) 
 	
-//   apiClient := api.NewAPIClient(authConfig)
+  apiClient := api.NewAPIClient(authConfig)
+	patchedLDAPSourceRequest := api.NewPatchedLDAPSourceRequest()
+	patchedLDAPSourceRequest.SetName("Des Grands Voisins")
+	patchedLDAPSourceRequest.SetSlug("des-grands-voisins")
+	patchedLDAPSourceRequest.SetEnabled(true)
+	patchedLDAPSourceRequest.SetPolicyEngineMode("all")
+	patchedLDAPSourceRequest.SetSyncUsers(true)
+
+	resp, r, err := apiClient.SourcesApi.SourcesLdapPartialUpdate(context.Background(),"des-grands-voisins").PatchedLDAPSourceRequest(*patchedLDAPSourceRequest).Execute()
 
 // 	// return nil
 // 	// resp, r, err := apiClient.AdminApi.AdminAppsList(context.Background()).Execute()
@@ -92,13 +100,13 @@ func SyncAuthentikLDAP () error {
 	
 // 	apiClient.SourcesApi.SourcesLdapUpdate(context.Background(),"des-grands-voisins").Execute()
 // 	// .AdminApi.AdminAppsList(context.Background()).Execute()
-// 	if err != nil {
-// 		fmt.Fprintf(os.Stderr, "Error when calling `AdminApi.AdminAppsList``: %v\n", err)
-// 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-// 		// return err
-// 	}
-// 	// response from `AdminAppsList`: []App
-// 	fmt.Fprintf(os.Stdout, "Response from `AdminApi.AdminAppsList`: %v\n", resp)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `SourcesLdapPartialUpdate``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		// return err
+	}
+	// response from `AdminAppsList`: []App
+	fmt.Fprintf(os.Stdout, "Response from `SourcesLdapPartialUpdate`: %v\n", resp)
 
 // 	// PATCH /sources/ldap/des-grands-voisins
 // // 	curl -X PATCH "https://auth.lesgrandsvoisins.com/api/v3/sources/ldap/des-grands-voisins/" \
@@ -131,5 +139,5 @@ func SyncAuthentikLDAP () error {
 // 	// }
 
 // 	// fmt.Println("Synchronization triggered successfully for slug:", slug)
-	// return nil
+	return nil
 }
