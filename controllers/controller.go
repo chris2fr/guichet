@@ -49,9 +49,9 @@ func MakeGVRouter() (*mux.Router, error) {
 	r.HandleFunc("/admin/create/{template}/{super_dn}", views.HandleAdminCreate)
 
 	r.Handle("/captcha/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
-	if err := http.ListenAndServe("localhost:8666", nil); err != nil {
-		log.Fatal(err)
-	}
+	// if err := http.ListenAndServe("localhost:8666", nil); err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	// r.HandleFunc("/directory/search", views.HandleDirectorySearch)
 	// r.HandleFunc("/directory", views.HandleDirectory)
