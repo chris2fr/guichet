@@ -354,7 +354,10 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		if password1 != password2 {
 			data.Common.Success = false
 			data.ErrorPasswordMismatch = true
-		} else {
+		} else if !captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution")) {
+			data.Common.Success = false
+			data.Common.ErrorMessage = "Captcha KO"
+		}	else {
 			newUser.Password = password2
 			l.Bind(config.NewUserDN, config.NewUserPassword)
 			err := models.AddUser(newUser, &config, l)
@@ -371,7 +374,6 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	data.Common.CanAdmin = false
 	data.Common.LoggedIn = false
 
-	data.Common.Success = captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution"))
 	data.Common.ErrorMessage = r.FormValue("captchaSolution")
 
 	err := templateInviteNewAccount.Execute(w, &data)
