@@ -173,7 +173,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	domainPath := basePath + "/" + domain
 	userPath := domainPath + "/" + username
 
-	err = os.MkdirAll(userPath, 0755)
+	err = os.MkdirAll(userPath, 2775)
 	if err != nil {
 			fmt.Println("Error creating folders:", err)
 			// return nil
@@ -183,7 +183,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	domainPath = basePath + "/" + domain
 	userPath = domainPath + "/" + username
 
-	err = os.MkdirAll(userPath, 0755)
+	err = os.MkdirAll(userPath, 2775)
 	if err != nil {
 			fmt.Println("Error creating folders:", err)
 			// return nil
