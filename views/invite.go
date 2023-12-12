@@ -20,7 +20,7 @@ import (
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/argon2"
-	"github.com/dchest/captcha"
+	// "github.com/dchest/captcha"
 
 )
 
@@ -105,16 +105,16 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	data := NewAccountData{
 		NewUserDefaultDomain: config.NewUserDefaultDomain,
 	}
-	if r.Method != "POST" {
-		data.CaptchaId = captcha.New()
-	}
+	// if r.Method != "POST" {
+	// 	data.CaptchaId = captcha.New()
+	// }
 	if r.Method == "POST" {
 		r.ParseForm()
-		if !captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution")) {
-			data.Common.Success = false
-			data.Common.ErrorMessage = "Captcha KO"
-			return false
-		}
+		// if !captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution")) {
+		// 	data.Common.Success = false
+		// 	data.Common.ErrorMessage = "Captcha KO"
+		// 	return false
+		// }
 		newUser := models.User{}
 		newUser.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
 		newUser.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
