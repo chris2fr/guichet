@@ -5,6 +5,7 @@ go 1.21
 toolchain go1.21.4
 
 require (
+	clevergo.tech/captchas/stores/memstore v0.1.0
 	github.com/dchest/captcha v1.0.0
 	github.com/go-ldap/ldap/v3 v3.4.5
 	github.com/go-openapi/runtime v0.26.2
@@ -20,6 +21,7 @@ require (
 )
 
 require (
+	clevergo.tech/captchas v0.1.0 // indirect
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
