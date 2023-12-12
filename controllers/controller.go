@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	// "github.com/dchest/captcha"
-	"log"
+	// "log"
 
 )
 
