@@ -374,7 +374,10 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 	data.Common.Success = captcha.VerifyString(r.FormValue("captchaId"), r.FormValue("captchaSolution"))
 	data.Common.ErrorMessage = r.FormValue("captchaSolution")
 
-	templateInviteNewAccount.Execute(w, data)
+	err := templateInviteNewAccount.Execute(w, &data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 	l.Close()
 	return data.Common.Success
 }
