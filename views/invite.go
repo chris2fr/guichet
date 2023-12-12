@@ -36,7 +36,7 @@ import (
 
 var EMAIL_REGEXP = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
-var captchaStore = captcha.NewMemoryStore(101, 10 * time.Minute)
+// var captchaStore = captcha.NewMemoryStore(101, 10 * time.Minute)
 
 
 
@@ -320,7 +320,7 @@ func HandleInvitationCode(w http.ResponseWriter, r *http.Request) {
 // Common functions for new account
 func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
 	templateInviteNewAccount := getTemplate("user/new.html")
-	captcha.SetCustomStore(captchaStore)
+	// captcha.SetCustomStore(captchaStore)
 
 
 	data := NewAccountData{
