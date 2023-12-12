@@ -7,8 +7,11 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"os"
 
 	"github.com/go-ldap/ldap/v3"
+
+	"guichet/utils"
 )
 
 func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string, previousValue string) error {
@@ -156,6 +159,44 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// 	log.Printf("add(user) sendMail: %v", sendMailTplData)
 	// }
 	err = SyncAuthentikLDAP()
+	parts := strings.Split(user.UID,"@")
+	
+	if len(parts) != 2 {
+		fmt.Println("Invalid email format")
+		// return nil
+	}
+
+	domain := parts[1]
+	username := parts[0]
+
+	basePath := "/var/www/dav/data"
+	domainPath := basePath + "/" + domain
+	userPath := domainPath + "/" + username
+
+	err = os.MkdirAll(userPath, 0755)
+	if err != nil {
+			fmt.Println("Error creating folders:", err)
+			// return nil
+	}
+
+	basePath = "/var/www/secret/dav"
+	domainPath = basePath + "/" + domain
+	userPath = domainPath + "/" + username
+
+	err = os.MkdirAll(userPath, 0755)
+	if err != nil {
+			fmt.Println("Error creating folders:", err)
+			// return nil
+	}
+
+	fmt.Println("Folders created successfully:", userPath)
+
+	err = utils.CopyFiles(basePath + "/example.com/templateuser", userPath )
+	if err != nil {
+		fmt.Println("Error copying files:", err)
+	}
+
+	fmt.Println("Files copied successfully!")
 	return err
 }
 
