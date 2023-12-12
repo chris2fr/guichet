@@ -54,8 +54,8 @@
     </small>
   </div>
   <div class="form-group">
-    <label for="username" class="required">Nom d'utilisateur avant le @ :</label>
-    <input type="text" id="username" name="username" class="form-control" required />
+    <label for="usernameHandle" class="required">Nom d'utilisateur avant le @ :</label>
+    <input type="text" id="usernameHandle" name="usernameHandle" class="form-control" required />
     <small class="form-text text-muted">
       Ceci est la partie avant le @ qui sera combiné avec le nom de domain principal. 
     </small>
@@ -111,6 +111,7 @@
     Les deux mots de passe entrés ne correspondent pas.
   </div>
   {{end}}
+  <input type="hidden" name="username" id="username"/>
   <button type="submit" class="btn btn-primary">Créer
     le compte</button>
 </form>
@@ -126,26 +127,28 @@
   }
   function changeDisplayname() {
     displayname = document.getElementById("displayname");
-    username = document.getElementById("username");
-    username.value = displayname.value.toLowerCase().replace(/[^A-z0-9.-]/g, '').replace(/^[.-]/, '').replace(/[.-]$/, '');
-    changeUsername();
+    usernameHandle = document.getElementById("usernameHandle");
+    usernameHandle.value = displayname.value.toLowerCase().replace(/[^A-z0-9.-]/g, '').replace(/^[.-]/, '').replace(/[.-]$/, '');
+    changeUsernameHandle();
   }
-  function changeUsername() {
+  function changeUsernameHandle() {
     changeDomain();
   }
   function changeDomain() {
-    username = document.getElementById("username");
+    usernameHandle = document.getElementById("usernameHandle");
     defaultdomain = document.getElementById("defaultdomain");
+    username = document.getElementById("username");
     mail = document.getElementById("mail");
-    if (username.value.includes("@")) {
-      username.value = username.value.split("@")[0];
+    if (usernameHandle.value.includes("@")) {
+      usernameHandle.value = usernameHandle.value.split("@")[0];
     }
-    mail.value = username.value + "@" + defaultdomain.value;
+    mail.value = usernameHandle.value + "@" + defaultdomain.value;
+    username.value = mail.value;
   }
   document.getElementById("givenname").addEventListener("change", changeGivenNameOrSurname);
   document.getElementById("surname").addEventListener("change", changeGivenNameOrSurname);
   document.getElementById("displayname").addEventListener("change", changeDisplayname);
-  document.getElementById("username").addEventListener("change", changeUsername);
+  document.getElementById("usernameHandle").addEventListener("change", changeUsernameHandle);
   document.getElementById("defaultdomain").addEventListener("change", changeDomain);
 </script>
 {{end}}
