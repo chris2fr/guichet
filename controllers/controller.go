@@ -50,15 +50,15 @@ func MakeGVRouter() (*mux.Router, error) {
 	r.HandleFunc("/admin/ldap/{dn}", views.HandleAdminLDAP)
 	r.HandleFunc("/admin/create/{template}/{super_dn}", views.HandleAdminCreate)
 
-	// r.Handle("/captcha/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
-		//api for create captcha
-		r.HandleFunc("/api/getCaptcha", views.GenerateCaptchaHandler)
+	// // r.Handle("/captcha/", captcha.Server(captcha.StdWidth, captcha.StdHeight))
+	// 	//api for create captcha
+	// 	r.HandleFunc("/api/getCaptcha", views.GenerateCaptchaHandler)
 
-		//api for verify captcha
-		r.HandleFunc("/api/verifyCaptcha", views.CaptchaVerifyHandle)
-	// if err := http.ListenAndServe("localhost:8666", nil); err != nil {
-	// 	log.Fatal(err)
-	// }
+	// 	//api for verify captcha
+	// 	r.HandleFunc("/api/verifyCaptcha", views.CaptchaVerifyHandle)
+	// // if err := http.ListenAndServe("localhost:8666", nil); err != nil {
+	// // 	log.Fatal(err)
+	// // }
 
 	// r.HandleFunc("/directory/search", views.HandleDirectorySearch)
 	// r.HandleFunc("/directory", views.HandleDirectory)
