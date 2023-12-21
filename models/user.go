@@ -129,7 +129,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", user))
 		//return err
 	} else {
-		log.Printf(fmt.Sprintf("added(User) ldapconn.Add: %v", user.dn))
+		log.Printf(fmt.Sprintf("added(User) ldapconn.Add: %v", user.DN))
 	}
 	// passwordModifyRequest := ldap.NewPasswordModifyRequest(user.DN, "", user.Password)
 	// _, err = ldapConn.PasswordModify(passwordModifyRequest)
