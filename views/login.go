@@ -38,6 +38,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		password := strings.Join(r.Form["password"], "")
 		l, _ := ldapOpen(w)
 
+		newUserLdapConn, _ := OpenNewUserLdap(config)
+
 
 		searchRequest := ldap.NewSearchRequest(
 			config.UserBaseDN,
@@ -48,9 +50,9 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			},
 			nil)
 		//Transform the researh's result in a correct struct to send JSON
-		searchRes, err := l.Search(searchRequest)
+		searchRes, err := newUserLdapConn.Search(searchRequest)
 		if err != nil {
-			log.Printf("doLogin search : %v %v", err, l)
+			log.Printf("doLogin search : %v %v", err, newUserLdapConn)
 			log.Printf("doLogin search : %v", searchRequest)
 			log.Printf("doLogin search : %v", searchRes)
 			// log.Printf("PasswordLost search: %v", user)
