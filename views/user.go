@@ -45,7 +45,7 @@ func HandleUserMail(w http.ResponseWriter, r *http.Request) {
 		newUserLdapConn, err := models.OpenNewUserLdap(&config)
 		if err != nil {
 			log.Printf("User Add Email search : %v %v", err, newUserLdapConn)
-			return nil
+			return
 		}
 		//Transform the researh's result in a correct struct to send JSON
 		searchRes, err := newUserLdapConn.Search(searchRequest)
@@ -55,7 +55,7 @@ func HandleUserMail(w http.ResponseWriter, r *http.Request) {
 			log.Printf("add email search : %v", searchRes)
 			// log.Printf("PasswordLost search: %v", user)
 			newUserLdapConn.Close()
-			return nil
+			return
 		}
 		if len(searchRes.Entries) != 0 {
 			log.Printf(fmt.Sprintf("Il y a déjà un email assigné : %v", email))
@@ -71,7 +71,7 @@ func HandleUserMail(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Error adding the email: %v", modifyRequest), http.StatusInternalServerError)
 				login.conn.Close()
-				return nil
+				return
 			}
 		}
 	} else if action == "Delete" {
@@ -84,7 +84,7 @@ func HandleUserMail(w http.ResponseWriter, r *http.Request) {
 			log.Printf("HandleUserMail DeleteMail %v", err)
 			http.Error(w, fmt.Sprintf("Error deleting the email: %s", err), http.StatusInternalServerError)
 			login.conn.Close()
-			return nil
+			return
 		}
 	}
 
