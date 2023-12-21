@@ -93,6 +93,7 @@ func HandleUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data.Mail = login.UserEntry.GetAttributeValue("mail")
+	data.CN = login.UserEntry.GetAttributeValue("cn")
 	data.DisplayName = login.UserEntry.GetAttributeValue("displayName")
 	data.GivenName = login.UserEntry.GetAttributeValue("givenName")
 	data.Surname = login.UserEntry.GetAttributeValue("sn")
@@ -137,6 +138,7 @@ func HandleUser(w http.ResponseWriter, r *http.Request) {
 		data.Surname = findUser.SN
 		data.Description = findUser.Description
 		data.Mail = findUser.Mail
+		data.CN = findUser.CN
 		data.Common.LoggedIn = false
 
 		/*

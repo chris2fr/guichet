@@ -25,6 +25,11 @@
   </div>
 </div>
 <div class="form-row">
+  <div class="form-group col-md-12">
+    <label>Email principal: {{ .Login.Status.Info.CN }}</label>
+  </div>
+</div>
+<div class="form-row">
   <div class="form-group col-md-6">
     <label>Courriels existants gérés par Les GV:</label>
     {{range $index, $email := .Data.MailValues }}

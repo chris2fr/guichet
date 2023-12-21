@@ -32,6 +32,7 @@ var GuichetSessionStore sessions.Store = nil
 type EntryList []*ldap.Entry
 type LoginInfo struct {
 	Username string
+	Email    string
 	DN       string
 	Password string
 }
@@ -286,6 +287,7 @@ type ProfileTplData struct {
 	MailValues   []string
 	DisplayName  string
 	GivenName    string
+	CN    			 string
 	Surname      string
 	Description  string
 	OtherMailbox string
