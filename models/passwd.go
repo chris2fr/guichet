@@ -104,7 +104,7 @@ func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// log.Printf("PasswordLost 63 : %v", searchRes.Entries[0].GetAttributeValue("carLicense"))
 	// Préparation du courriel à envoyer
 
-	delReq := ldap.NewDelRequest("uid="+searchRes.Entries[0].GetAttributeValue("cn")+","+config.InvitationBaseDN, nil)
+	delReq := ldap.NewDelRequest("uid="+searchRes.Entries[0].GetAttributeValue("uid")+","+config.InvitationBaseDN, nil)
 	err = ldapConn.Del(delReq)
 
 	user.Password = SuggestPassword()
@@ -113,6 +113,7 @@ func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
 	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
+	user.SeeAlso = searchRes.Entries[0].DN
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
 	/* Check for outstanding invitation */
 	searchReq = ldap.NewSearchRequest(config.InvitationBaseDN, ldap.ScopeSingleLevel,
@@ -131,7 +132,8 @@ func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
 	addReq.Attribute("uid", []string{user.UID})
 	addReq.Attribute("userPassword", []string{user.Password})
-	addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.CN + "," + config.UserBaseDN})
+	addReq.Attribute("seeAlso", []string{user.SeeAlso})
+	//addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.CN + "," + config.UserBaseDN})
 	// Password invitation may already exist
 	//
 	err = ldapConn.Add(addReq)
