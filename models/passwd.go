@@ -70,8 +70,11 @@ func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		return errors.New("Il n'y a pas de quoi identifier l'utilisateur")
 	}
 	searchFilter := "(|"
-	if user.CN != "" {
+	if user.UID != "" {
 		searchFilter += "(uid=" + user.UID + ")"
+	}
+	if user.CN != "" {
+		searchFilter += "(cn=" + user.CN + ")"
 	}
 	if user.Mail != "" {
 		searchFilter += "(mail=" + user.Mail + ")"
@@ -105,7 +108,7 @@ func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	err = ldapConn.Del(delReq)
 
 	user.Password = SuggestPassword()
-	user.DN = "uid=" + searchRes.Entries[0].GetAttributeValue("cn") + "," + config.InvitationBaseDN
+	user.DN = "uid=" + searchRes.Entries[0].GetAttributeValue("uid") + "," + config.InvitationBaseDN
 	user.UID = searchRes.Entries[0].GetAttributeValue("uid")
 	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
@@ -157,7 +160,7 @@ func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	templateMail := template.Must(template.ParseFiles(templatePath + "/passwd/lost_password_email.txt"))
 	buf := bytes.NewBuffer([]byte{})
 	templateMail.Execute(buf, &CodeMailFields{
-		To:             user.CN,
+		To:             user.OtherMailbox,
 		From:           config.MailFrom,
 		InviteFrom:     user.UID,
 		Code:           code,
