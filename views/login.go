@@ -49,7 +49,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
 			fmt.Sprintf("(|(cn=%s)(uid=%s)(mail=%s))",username,username,username),
 			[]string{
-				"dn",
+				"objectClass",
 			},
 			nil)
 		//Transform the researh's result in a correct struct to send JSON
@@ -65,7 +65,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchRequest)
 			// return errors.New("Il n'y a pas d'utilisateur qui correspond")
 		}
-		user_dn := searchRes.Entries[0].GetAttributeValue("dn")
+		user_dn := searchRes.Entries[0].DN
 		// user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
 		// log.Printf("%v", user_dn)
 		// log.Printf("%v", username)
@@ -82,7 +82,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			log.Printf("DoLogin : %v", err)
 			log.Printf("DoLogin : %v", user_dn)
 			l.Close()
-			// return nil, err
+			return nil, err
 		}
 	// func encodePassword(inPassword string) (string, error) {
 	// 	utf16 := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
