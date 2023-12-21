@@ -240,7 +240,7 @@ func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 func PassWD(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	passwordModifyRequest := ldap.NewPasswordModifyRequest(user.DN, "", user.Password)
-	log.Printf(fmt.Sprintf("model-user PassWD : %v : %v", user.DN, user.Password))
+	// log.Printf(fmt.Sprintf("model-user PassWD : %v : %v", user.DN, user.Password))
 	_, err := ldapConn.PasswordModify(passwordModifyRequest)
 	if err != nil {
 		log.Printf(fmt.Sprintf("model-user PassWD : %v %v", err, ldapConn))

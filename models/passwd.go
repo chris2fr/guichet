@@ -131,9 +131,8 @@ func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	addReq.Attribute("objectClass", []string{"top", "account", "simpleSecurityObject"})
 	addReq.Attribute("uid", []string{user.UID})
 	addReq.Attribute("userPassword", []string{user.Password})
-	addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.UID + "," + config.UserBaseDN})
+	addReq.Attribute("seeAlso", []string{config.UserNameAttr + "=" + user.CN + "," + config.UserBaseDN})
 	// Password invitation may already exist
-
 	//
 	err = ldapConn.Add(addReq)
 	if err != nil {
