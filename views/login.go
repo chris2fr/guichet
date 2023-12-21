@@ -48,8 +48,14 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			},
 			nil)
 		//Transform the researh's result in a correct struct to send JSON
-		results := []SearchResult{}
-		sr, err := l.Search(searchRequest)
+		searchRes, err := l.Search(searchRequest)
+		if err != nil {
+			log.Printf("PasswordLost search : %v %v", err, ldapConn)
+			log.Printf("PasswordLost search : %v", searchReq)
+			log.Printf("PasswordLost search : %v", searchRes)
+			log.Printf("PasswordLost search: %v", user)
+			return err
+		}
 		if err != nil {
 			return SearchResults{}, err
 		}
@@ -61,9 +67,12 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		// user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
 		// log.Printf("%v", user_dn)
 		// log.Printf("%v", username)
-		if strings.EqualFold(username, config.AdminAccount) {
-			user_dn = username
-		}
+		// if strings.EqualFold(username, config.AdminAccount) {
+		////////////////////////////// TODO
+		// if strings.EqualFold(username, config.AdminAccount) {
+		// 	user_dn = username
+		// }
+		////////////////////////////// /TODO
 		err := l.Bind(user_dn, password)
 		if err != nil {
 			log.Printf("DoLogin : %v", err)
