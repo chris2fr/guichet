@@ -34,15 +34,45 @@ func HandleUserMail(w http.ResponseWriter, r *http.Request) {
 	action := r.FormValue("action")
 	var err error
 	if action == "Add" {
-		// Add the new mail value to the entry
-		modifyRequest := ldap.NewModifyRequest(login.Info.DN, nil)
-		modifyRequest.Add("mail", []string{email})
-
-		err = login.conn.Modify(modifyRequest)
+		searchRequest := ldap.NewSearchRequest(
+			config.UserBaseDN,
+			ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
+			fmt.Sprintf("(mail=%s)",email),
+			[]string{
+				"objectClass",
+			},
+			nil)
+		newUserLdapConn, err := models.OpenNewUserLdap(&config)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Error adding the email: %v", modifyRequest), http.StatusInternalServerError)
-			login.conn.Close()
-			return
+			log.Printf("User Add Email search : %v %v", err, newUserLdapConn)
+			return nil, err
+		}
+		//Transform the researh's result in a correct struct to send JSON
+		searchRes, err := newUserLdapConn.Search(searchRequest)
+		if err != nil {
+			log.Printf("add email search : %v %v", err, newUserLdapConn)
+			log.Printf("add email search : %v", searchRequest)
+			log.Printf("add email search : %v", searchRes)
+			// log.Printf("PasswordLost search: %v", user)
+			newUserLdapConn.Close()
+			return nil, err
+		}
+		if len(searchRes.Entries) != 0 {
+			log.Printf(fmt.Sprintf("Il y a déjà un email assigné : %v", email))
+			message := fmt.Sprintf("Il y a déjà un email assigné : %v", email)
+			// return errors.New("Il n'y a pas d'utilisateur qui correspond")
+			newUserLdapConn.Close()
+		} else {
+			// Add the new mail value to the entry
+			newUserLdapConn.Close()
+			modifyRequest := ldap.NewModifyRequest(login.Info.DN, nil)
+			modifyRequest.Add("mail", []string{email})
+			err = login.conn.Modify(modifyRequest)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Error adding the email: %v", modifyRequest), http.StatusInternalServerError)
+				login.conn.Close()
+				return
+			}
 		}
 	} else if action == "Delete" {
 		modifyRequest := ldap.NewModifyRequest(login.Info.DN, nil)

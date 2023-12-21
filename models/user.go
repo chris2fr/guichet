@@ -224,7 +224,7 @@ func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	replaceIfContent(modify_request, "displayName", user.DisplayName, previousUser.DisplayName)
 	replaceIfContent(modify_request, "givenName", user.GivenName, previousUser.GivenName)
 	replaceIfContent(modify_request, "sn", user.SN, previousUser.SN)
-	replaceIfContent(modify_request, "carLicense", user.OtherMailbox, user.OtherMailbox)
+	// replaceIfContent(modify_request, "carLicense", user.OtherMailbox, user.OtherMailbox)
 	replaceIfContent(modify_request, "description", user.Description, previousUser.Description)
 	err = ldapConn.Modify(modify_request)
 	if err != nil {
