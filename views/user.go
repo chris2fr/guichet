@@ -62,6 +62,7 @@ func HandleUserMail(w http.ResponseWriter, r *http.Request) {
 			message := fmt.Sprintf("Il y a déjà un email assigné : %v", email)
 			// return errors.New("Il n'y a pas d'utilisateur qui correspond")
 			newUserLdapConn.Close()
+			http.Redirect(w, r, "/user?message="+message, http.StatusSeeOther)
 		} else {
 			// Add the new mail value to the entry
 			newUserLdapConn.Close()
