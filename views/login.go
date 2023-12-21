@@ -54,7 +54,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			log.Printf("doLogin search : %v", searchRequest)
 			log.Printf("doLogin search : %v", searchRes)
 			// log.Printf("PasswordLost search: %v", user)
-			return err
+			return nil err
 		}
 		if err != nil {
 			return searchResults{}, err
