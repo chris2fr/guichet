@@ -96,7 +96,7 @@ func PasswordLost(searchQuery string, config *ConfigFile, ldapConn *ldap.Conn) e
 		UID: searchRes.Entries[0].GetAttributeValue("uid"),
 		CN: searchRes.Entries[0].GetAttributeValue("cn"),
 		Mail: searchRes.Entries[0].GetAttributeValue("mail"),
-		OtherMailbox: searchRes.Entries[0].GetAttributeValue("carLicense"),
+		// OtherMailbox: searchRes.Entries[0].GetAttributeValue("carLicense"),
 		SeeAlso: searchRes.Entries[0].DN,
 	}
 
@@ -154,7 +154,7 @@ func PasswordLost(searchQuery string, config *ConfigFile, ldapConn *ldap.Conn) e
 		WebBaseAddress: config.WebAddress,
 	})
 	// message := []byte("Hi " + user.OtherMailbox)
-	log.Printf("Sending mail to: %s", user.OtherMailbox)
+	log.Printf("Sending mail to: %s", user.CN)
 	// var auth sasl.Client = nil
 	// if config.SMTPUsername != "" {
 	// 	auth = sasl.NewPlainClient("", config.SMTPUsername, config.SMTPPassword)
@@ -162,7 +162,7 @@ func PasswordLost(searchQuery string, config *ConfigFile, ldapConn *ldap.Conn) e
 	message := buf.Bytes()
 	auth := smtp.PlainAuth("", config.SMTPUsername, config.SMTPPassword, config.SMTPServer)
 	log.Printf("auth: %v", auth)
-	err = smtp.SendMail(config.SMTPServer+":587", auth, config.SMTPUsername, []string{user.OtherMailbox}, message)
+	err = smtp.SendMail(config.SMTPServer+":587", auth, config.SMTPUsername, []string{user.CN}, message)
 	if err != nil {
 		log.Printf("email send error %v", err)
 		return err
