@@ -39,9 +39,9 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		l, _ := ldapOpen(w)
 
 
-		searchRequest := ldap.NewSearchRequest(
+		searchRequest := l.NewSearchRequest(
 			config.UserBaseDN,
-			ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
+			l.ScopeSingleLevel, l.NeverDerefAliases, 0, 0, false,
 			fmt.Sprintf("(|(cn=%s)(uid=%s)(mail=%s))",username,username,username),
 			[]string{
 				"dn",
@@ -49,7 +49,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			nil)
 		//Transform the researh's result in a correct struct to send JSON
 		results := []SearchResult{}
-		sr, err := ldapConn.Search(searchRequest)
+		sr, err := l.Search(searchRequest)
 		if err != nil {
 			return SearchResults{}, err
 		}
