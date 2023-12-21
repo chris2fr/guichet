@@ -91,13 +91,13 @@ func PasswordLost(searchQuery string, config *ConfigFile, ldapConn *ldap.Conn) e
 	delReq := ldap.NewDelRequest("uid="+searchRes.Entries[0].GetAttributeValue("uid")+","+config.InvitationBaseDN, nil)
 	err = ldapConn.Del(delReq)
   user := User{
-		Password: SuggestPassword()
-		DN: "uid=" + searchRes.Entries[0].GetAttributeValue("uid") + "," + config.InvitationBaseDN
-		UID: searchRes.Entries[0].GetAttributeValue("uid")
-		CN: searchRes.Entries[0].GetAttributeValue("cn")
-		Mail: searchRes.Entries[0].GetAttributeValue("mail")
-		OtherMailbox: searchRes.Entries[0].GetAttributeValue("carLicense")
-		SeeAlso: searchRes.Entries[0].DN
+		Password: SuggestPassword(),
+		DN: "uid=" + searchRes.Entries[0].GetAttributeValue("uid") + "," + config.InvitationBaseDN,
+		UID: searchRes.Entries[0].GetAttributeValue("uid"),
+		CN: searchRes.Entries[0].GetAttributeValue("cn"),
+		Mail: searchRes.Entries[0].GetAttributeValue("mail"),
+		OtherMailbox: searchRes.Entries[0].GetAttributeValue("carLicense"),
+		SeeAlso: searchRes.Entries[0].DN,
 	}
 
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
