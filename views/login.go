@@ -56,9 +56,6 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			// log.Printf("PasswordLost search: %v", user)
 			return nil, err
 		}
-		if err != nil {
-			return searchResults{}, err
-		}
 		if len(searchRes.Entries) == 0 {
 			log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchRequest)
 			// return errors.New("Il n'y a pas d'utilisateur qui correspond")
