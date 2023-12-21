@@ -73,14 +73,14 @@ func PasswordLost(searchQuery string, config *ConfigFile, ldapConn *ldap.Conn) e
 		log.Printf("PasswordLost search : %v %v", err, ldapConn)
 		log.Printf("PasswordLost search : %v", searchReq)
 		log.Printf("PasswordLost search : %v", searchRes)
-		log.Printf("PasswordLost search: %v", user)
+		log.Printf("PasswordLost search: %v", searchQuery)
 		return err
 	}
 	if len(searchRes.Entries) == 0 {
 		log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
 		return errors.New("Il n'y a pas d'utilisateur qui correspond")
 	}
-	// log.Printf("PasswordLost 58 : %v", user)
+	// log.Printf("PasswordLost 58 : %v", searchQuery)
 	// log.Printf("PasswordLost 59 : %v", searchRes.Entries[0])
 	// log.Printf("PasswordLost 60 : %v", searchRes.Entries[0].GetAttributeValue("cn"))
 	// log.Printf("PasswordLost 61 : %v", searchRes.Entries[0].GetAttributeValue("uid"))
@@ -90,14 +90,16 @@ func PasswordLost(searchQuery string, config *ConfigFile, ldapConn *ldap.Conn) e
 
 	delReq := ldap.NewDelRequest("uid="+searchRes.Entries[0].GetAttributeValue("uid")+","+config.InvitationBaseDN, nil)
 	err = ldapConn.Del(delReq)
+  user := User{
+		Password: SuggestPassword()
+		DN: "uid=" + searchRes.Entries[0].GetAttributeValue("uid") + "," + config.InvitationBaseDN
+		UID: searchRes.Entries[0].GetAttributeValue("uid")
+		CN: searchRes.Entries[0].GetAttributeValue("cn")
+		Mail: searchRes.Entries[0].GetAttributeValue("mail")
+		OtherMailbox: searchRes.Entries[0].GetAttributeValue("carLicense")
+		SeeAlso: searchRes.Entries[0].DN
+	}
 
-	user.Password = SuggestPassword()
-	user.DN = "uid=" + searchRes.Entries[0].GetAttributeValue("uid") + "," + config.InvitationBaseDN
-	user.UID = searchRes.Entries[0].GetAttributeValue("uid")
-	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
-	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
-	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
-	user.SeeAlso = searchRes.Entries[0].DN
 	code := b64.URLEncoding.EncodeToString([]byte(user.UID + ";" + user.Password))
 	/* Check for outstanding invitation */
 	searchReq = ldap.NewSearchRequest(config.InvitationBaseDN, ldap.ScopeSingleLevel,
