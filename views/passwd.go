@@ -107,8 +107,10 @@ func HandleFoundPassword(w http.ResponseWriter, r *http.Request) {
 			}, &config, ldapNewConn)
 			if err != nil {
 				data.Common.ErrorMessage = err.Error()
+				log.Printf("PasswordFound KO %v", user.SeeAlso)
 			} else {
 				data.Common.Success = true
+				log.Printf("PasswordFound OK %v", user.SeeAlso)
 			}
 		}
 	}
@@ -154,8 +156,10 @@ func HandlePasswd(w http.ResponseWriter, r *http.Request) {
 			}, &config, login.conn)
 			if err != nil {
 				data.Common.ErrorMessage = err.Error()
+				log.Printf("PasswordFound KO %v", login.Info.DN)
 			} else {
 				data.Common.Success = true
+				log.Printf("PasswordFound OK %v", login.Info.DN)
 			}
 		}
 	}
