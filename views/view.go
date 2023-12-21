@@ -251,9 +251,7 @@ type PasswordLostData struct {
 	Common       NestedCommonTplData
 	ErrorMessage string
 	Success      bool
-	Username     string
-	Mail         string
-	OtherMailbox string
+	SearchQuery  string
 }
 type NewAccountData struct {
 	Username     string

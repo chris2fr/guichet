@@ -65,24 +65,8 @@ func getInvitationBaseDN(config *ConfigFile) string {
 	return config.InvitationBaseDN
 }
 
-func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
-	if user.CN == "" && user.Mail == "" && user.OtherMailbox == "" {
-		return errors.New("Il n'y a pas de quoi identifier l'utilisateur")
-	}
-	searchFilter := "(|"
-	if user.UID != "" {
-		searchFilter += "(uid=" + user.UID + ")"
-	}
-	if user.CN != "" {
-		searchFilter += "(cn=" + user.CN + ")"
-	}
-	if user.Mail != "" {
-		searchFilter += "(mail=" + user.Mail + ")"
-	}
-	if user.OtherMailbox != "" {
-		searchFilter += "(carLicense=" + user.OtherMailbox + ")"
-	}
-	searchFilter += ")"
+func PasswordLost(searchQuery string, config *ConfigFile, ldapConn *ldap.Conn) error {
+	searchFilter := fmt.Sprintf("(|(uid='%v')(cn='%v')(mail='%v'))",searchQuery,searchQuery,searchQuery)
 	searchReq := ldap.NewSearchRequest(config.UserBaseDN, ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false, searchFilter, []string{"cn", "uid", "mail", "carLicense", "sn", "displayName", "givenName"}, nil)
 	searchRes, err := ldapConn.Search(searchReq)
 	if err != nil {

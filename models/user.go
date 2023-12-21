@@ -140,8 +140,8 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// Send the email
 
 	newUserLdapConn, _ := OpenNewUserLdap(config)
-	user.OtherMailbox = ""
-	err = PasswordLost(user, config, newUserLdapConn)
+	// user.OtherMailbox = ""
+	err = PasswordLost(user.CN, config, newUserLdapConn)
 	if err != nil {
 		log.Printf("add User PasswordLost %v", err)
 		log.Printf("add User PasswordLost %v", newUserLdapConn)

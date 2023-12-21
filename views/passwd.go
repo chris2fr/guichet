@@ -26,15 +26,7 @@ func HandleLostPassword(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 		r.ParseForm()
-		data.Username = strings.TrimSpace(strings.Join(r.Form["username"], ""))
-		data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
-		data.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
-		user := models.User{
-			CN:           strings.TrimSpace(strings.Join(r.Form["othermailbox"], "")),
-			UID:          strings.TrimSpace(strings.Join(r.Form["username"], "")),
-			Mail:         strings.TrimSpace(strings.Join(r.Form["mail"], "")),
-			OtherMailbox: strings.TrimSpace(strings.Join(r.Form["othermailbox"], "")),
-		}
+		data.SearchQuery = strings.TrimSpace(strings.Join(r.Form["searchquery"], ""))
 		ldapNewConn, err := models.OpenNewUserLdap(&config)
 		if err != nil {
 			log.Printf(fmt.Sprintf("HandleLostPassword 99 : %v %v", err, ldapNewConn))
@@ -52,7 +44,7 @@ func HandleLostPassword(w http.ResponseWriter, r *http.Request) {
 				data.Common.Success = true
 			}
 		}
-		err = models.PasswordLost(user, &config, ldapNewConn)
+		err = models.PasswordLost(data.SearchQuery, &config, ldapNewConn)
 		ldapNewConn.Close()
 	}
 	data.Common.CanAdmin = false
