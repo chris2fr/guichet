@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"guichet/models"
 
 	"github.com/go-ldap/ldap/v3"
 )
@@ -38,7 +39,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		password := strings.Join(r.Form["password"], "")
 		l, _ := ldapOpen(w)
 
-		newUserLdapConn, _ := OpenNewUserLdap(config)
+		newUserLdapConn, _ := models.OpenNewUserLdap(config)
 
 
 		searchRequest := ldap.NewSearchRequest(
