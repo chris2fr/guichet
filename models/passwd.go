@@ -66,7 +66,7 @@ func getInvitationBaseDN(config *ConfigFile) string {
 }
 
 func PasswordLost(searchQuery string, config *ConfigFile, ldapConn *ldap.Conn) error {
-	searchFilter := fmt.Sprintf("(|(uid='%v')(cn='%v')(mail='%v'))",searchQuery,searchQuery,searchQuery)
+	searchFilter := fmt.Sprintf("(|(uid=%v)(cn=%v)(mail=%v))",searchQuery,searchQuery,searchQuery)
 	searchReq := ldap.NewSearchRequest(config.UserBaseDN, ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false, searchFilter, []string{"cn", "uid", "mail", "carLicense", "sn", "displayName", "givenName"}, nil)
 	searchRes, err := ldapConn.Search(searchReq)
 	if err != nil {
