@@ -87,6 +87,8 @@ func HandleFoundPassword(w http.ResponseWriter, r *http.Request) {
 		log.Printf("PasswordFound(models.User, config, ldapConn) %v", user)
 		log.Printf("PasswordFound(models.User, config, ldapConn) %v", ldapNewConn)
 		data.Common.ErrorMessage = err.Error()
+	} else {
+		log.Printf("PasswordFound OK %v", user)
 	}
 	if r.Method == "POST" {
 		r.ParseForm()
