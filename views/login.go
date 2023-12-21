@@ -38,16 +38,32 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		password := strings.Join(r.Form["password"], "")
 		l, _ := ldapOpen(w)
 
-		user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
 
+		searchRequest := ldap.NewSearchRequest(
+			config.UserBaseDN,
+			ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
+			fmt.Sprintf("(|(cn=%s)(uid=%s)(mail=%s))",username,username,username)
+			[]string{
+				"dn",
+			},
+			nil)
+		//Transform the researh's result in a correct struct to send JSON
+		results := []SearchResult{}
+		sr, err := ldapConn.Search(searchRequest)
+		if err != nil {
+			return SearchResults{}, err
+		}
+		if len(searchRes.Entries) == 0 {
+			log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
+			return errors.New("Il n'y a pas d'utilisateur qui correspond")
+		}
+		user_dn = searchRes.Entries[0].GetAttributeValue("dn")
+		// user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
 		// log.Printf("%v", user_dn)
 		// log.Printf("%v", username)
-	
 		if strings.EqualFold(username, config.AdminAccount) {
 			user_dn = username
 		}
-		
-	
 		err := l.Bind(user_dn, password)
 		if err != nil {
 			log.Printf("DoLogin : %v", err)
@@ -55,13 +71,6 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			l.Close()
 			return nil, err
 		}
-	
-
-	
-	
-	
-	
-	
 	// func encodePassword(inPassword string) (string, error) {
 	// 	utf16 := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
 	// 	return utf16.NewEncoder().String("\"" + inPassword + "\"")
