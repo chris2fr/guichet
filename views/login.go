@@ -39,9 +39,9 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		l, _ := ldapOpen(w)
 
 
-		searchRequest := l.NewSearchRequest(
+		searchRequest := ldap.NewSearchRequest(
 			config.UserBaseDN,
-			l.ScopeSingleLevel, l.NeverDerefAliases, 0, 0, false,
+			ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
 			fmt.Sprintf("(|(cn=%s)(uid=%s)(mail=%s))",username,username,username),
 			[]string{
 				"dn",
