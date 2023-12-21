@@ -109,6 +109,9 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	if user.SN != "" {
 		req.Attribute("sn", []string{user.SN})
 	}
+	if user.CN != "" {
+		req.Attribute("sn", []string{user.SN})
+	}
 	if user.OtherMailbox != "" {
 		req.Attribute("carLicense", []string{user.OtherMailbox})
 	}
@@ -125,6 +128,8 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", req))
 		log.Printf(fmt.Sprintf("add(User) ldapconn.Add: %v", user))
 		//return err
+	} else {
+		log.Printf(fmt.Sprintf("added(User) ldapconn.Add: %v", user.dn))
 	}
 	// passwordModifyRequest := ldap.NewPasswordModifyRequest(user.DN, "", user.Password)
 	// _, err = ldapConn.PasswordModify(passwordModifyRequest)
