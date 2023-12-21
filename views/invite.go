@@ -303,9 +303,6 @@ func HandleInvitationCode(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(body)
 // }
 
-
-
-
 // Common functions for new account
 func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
 	templateInviteNewAccount := getTemplate("user/new.html")
@@ -329,13 +326,13 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.DisplayName = strings.TrimSpace(strings.Join(r.Form["displayname"], ""))
 		newUser.GivenName = strings.TrimSpace(strings.Join(r.Form["givenname"], ""))
 		newUser.SN = strings.TrimSpace(strings.Join(r.Form["surname"], ""))
-		newUser.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
+		newUser.CN = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		// newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
 		// newUser.CN = strings.TrimSpace(strings.Join(r.Form["username"], ""))
 		newUser.UID = strings.TrimSpace(strings.Join(r.Form["usernameHandle"], ""))
-		newUser.CN = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
-		newUser.DN = "cn=" + strings.TrimSpace(strings.Join(r.Form["username"], "")) + "," + config.UserBaseDN
+		// newUser.CN = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
+		newUser.DN = "cn=" + newUser.CN + "," + config.UserBaseDN
 		password1 := strings.Join(r.Form["password"], "")
 		password2 := strings.Join(r.Form["password2"], "")
 		if password1 != password2 {

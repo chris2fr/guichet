@@ -40,21 +40,21 @@
   </small>
 </div>
 <div class="form-group">
-    <label for="othermailbox" class="required">Courriel en dehors des GV:</label>
+    <label for="othermailbox" class="required">Courriel :</label>
     <input type="email" id="othermailbox" name="othermailbox" class="form-control" value="{{ .OtherMailbox }}" required />
     <small class="form-text text-muted">
       Votre courriel en dehors des GV pour la récupération de vos informations personnelles
     </small>
   </div>
   <div class="form-group">
-    <label for="displayname" class="required">Nom affiché :</label>
+    <label for="displayname" class="required">Nom tel qu'affiché aux autres :</label>
     <input type="text" id="displayname" name="displayname" class="form-control" value="{{ .DisplayName }}" required />
     <small class="form-text text-muted">
       Votre nom d'utilisateur tel que affiché aux autres
     </small>
   </div>
   <div class="form-group">
-    <label for="usernameHandle" class="required">Nom d'utilisateur avant le @ :</label>
+    <label for="usernameHandle" class="required">Nom d'utilistateur :</label>
     <input type="text" id="usernameHandle" name="usernameHandle" class="form-control" required />
     <small class="form-text text-muted">
       Ceci est la partie avant le @ qui sera combiné avec le nom de domain principal. 
@@ -74,7 +74,7 @@
   </div>
   {{end}}
   <div class="form-group">
-    <label for="defaultdomain" class="required">Domain au sein des GV:</label>
+    <label for="defaultdomain" class="required">Domain de compte courriel de l'utilisateur:</label>
     <input type="text" id="defaultdomain" name="defaultdomain" class="form-control"
       value="{{ .NewUserDefaultDomain }}" readonly required />
     <small class="form-text text-muted">
@@ -114,7 +114,7 @@
   <input type="hidden" name="username" id="username"/>
   
   <p>Copier les chiffres ci-dessous:</p>
-<p><img id=image src="https://github.com/dchest/captcha/raw/master/capgen/example.png" notsrc="/captcha/{{.CaptchaId}}.png" alt="Captcha image"></p>
+<p><img id=image src="https://github.com/dchest/captcha/raw/master/capgen/example.png" notsrc="/captcha/{{.CaptchaId}}.png" alt="Captcha image" style="background-color: white;"></p>
 <a href="#" onclick="reload()">Reload</a> | <a href="#" onclick="playAudio()">Audio</a>
 <audio id=audio controls style="display:none" src="https://github.com/dchest/captcha/raw/master/capgen/example.wav"  notsrc="/captcha/{{.CaptchaId}}.wav" preload=none>
   Votre navigateur n'utilise pas l'audio.
