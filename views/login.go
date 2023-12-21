@@ -57,13 +57,13 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 			return err
 		}
 		if err != nil {
-			return SearchResults{}, err
+			return searchResults{}, err
 		}
 		if len(searchRes.Entries) == 0 {
-			log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchReq)
-			return errors.New("Il n'y a pas d'utilisateur qui correspond")
+			log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchRequest)
+			// return errors.New("Il n'y a pas d'utilisateur qui correspond")
 		}
-		user_dn = searchRes.Entries[0].GetAttributeValue("dn")
+		user_dn := searchRes.Entries[0].GetAttributeValue("dn")
 		// user_dn := fmt.Sprintf("%s=%s,%s", config.UserNameAttr, username, config.UserBaseDN)
 		// log.Printf("%v", user_dn)
 		// log.Printf("%v", username)
@@ -73,7 +73,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		// 	user_dn = username
 		// }
 		////////////////////////////// /TODO
-		err := l.Bind(user_dn, password)
+		err = l.Bind(user_dn, password)
 		if err != nil {
 			log.Printf("DoLogin : %v", err)
 			log.Printf("DoLogin : %v", user_dn)
