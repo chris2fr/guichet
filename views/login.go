@@ -39,8 +39,11 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		password := strings.Join(r.Form["password"], "")
 		l, _ := ldapOpen(w)
 
-		newUserLdapConn, _ := models.OpenNewUserLdap(&config)
-
+		newUserLdapConn, err := models.OpenNewUserLdap(&config)
+		if err != nil {
+			log.Printf("doLogin search : %v %v", err, newUserLdapConn)
+			return nil, err
+		}
 
 		searchRequest := ldap.NewSearchRequest(
 			config.UserBaseDN,
