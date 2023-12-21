@@ -86,7 +86,7 @@ func AddUser(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 // Adds a new user
 func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
-	log.Printf(fmt.Sprint("Adding New User"))
+	log.Printf(fmt.Sprint("Adding New User %v", user.DN))
 	// LDAP Add Object
 	dn := user.DN
 	req := ldap.NewAddRequest(dn, nil)
