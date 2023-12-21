@@ -110,7 +110,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		req.Attribute("sn", []string{user.SN})
 	}
 	if user.CN != "" {
-		req.Attribute("sn", []string{user.SN})
+		req.Attribute("cn", []string{user.CN})
 	}
 	if user.OtherMailbox != "" {
 		req.Attribute("carLicense", []string{user.OtherMailbox})
