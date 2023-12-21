@@ -147,7 +147,7 @@ func PasswordLost(searchQuery string, config *ConfigFile, ldapConn *ldap.Conn) e
 	templateMail := template.Must(template.ParseFiles(templatePath + "/passwd/lost_password_email.txt"))
 	buf := bytes.NewBuffer([]byte{})
 	templateMail.Execute(buf, &CodeMailFields{
-		To:             user.OtherMailbox,
+		To:             user.CN,
 		From:           config.MailFrom,
 		InviteFrom:     user.UID,
 		Code:           code,
