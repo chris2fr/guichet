@@ -36,8 +36,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		r.ParseForm()
 
 		username := strings.Join(r.Form["username"], "")
-		password := strings.Join(r.Form["password"], "")
-		l, _ := ldapOpen(w)
+
 
 		newUserLdapConn, err := models.OpenNewUserLdap(&config)
 		if err != nil {
@@ -76,12 +75,14 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		// 	user_dn = username
 		// }
 		////////////////////////////// /TODO
+		password := strings.Join(r.Form["password"], "")
+		l, _ := ldapOpen(w)
 		err = l.Bind(user_dn, password)
 		if err != nil {
 			log.Printf("DoLogin : %v", err)
 			log.Printf("DoLogin : %v", user_dn)
 			l.Close()
-			return nil, err
+			// return nil, err
 		}
 	// func encodePassword(inPassword string) (string, error) {
 	// 	utf16 := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
