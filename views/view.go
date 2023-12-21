@@ -269,7 +269,6 @@ type NewAccountData struct {
 	ErrorPasswordMismatch bool
 	Common                NestedCommonTplData
 	NewUserDefaultDomain  string
-
 	CaptchaId string
 }
 type SendCodeData struct {

@@ -159,7 +159,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// 	log.Printf("add(user) sendMail: %v", sendMailTplData)
 	// }
 	err = SyncAuthentikLDAP()
-	parts := strings.Split(user.UID,"@")
+	parts := strings.Split(user.CN,"@")
 	
 	if len(parts) != 2 {
 		fmt.Println("Invalid email format")

@@ -13,9 +13,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
-
 	// "crypto/rand"
-
 	// "github.com/emersion/go-smtp"
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/mux"
@@ -23,24 +21,15 @@ import (
 
 	"github.com/dchest/captcha"
 	// "flag"
-
 	// "github.com/mojocn/base64Captcha"
 	// "math/rand"
 	"time"
 	"errors"
 	// "encoding/json"
 	// "clevergo.tech/captchas/stores/memstore"
-
-
 )
-
 var EMAIL_REGEXP = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-
 // var captchaStore = captcha.NewMemoryStore(101, 10 * time.Minute)
-
-
-
-
 const (
 	// Default number of digits in captcha solution.
 	DefaultLen = 6
@@ -321,8 +310,6 @@ func HandleInvitationCode(w http.ResponseWriter, r *http.Request) {
 func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invitedBy string) bool {
 	templateInviteNewAccount := getTemplate("user/new.html")
 	// captcha.SetCustomStore(captchaStore)
-
-
 	data := NewAccountData{
 		NewUserDefaultDomain: config.NewUserDefaultDomain,
 		CaptchaId: captcha.New(),
@@ -346,7 +333,7 @@ func HandleNewAccount(w http.ResponseWriter, r *http.Request, l *ldap.Conn, invi
 		newUser.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		// newUser.UID = strings.TrimSpace(strings.Join(r.Form["username"], ""))
 		// newUser.CN = strings.TrimSpace(strings.Join(r.Form["username"], ""))
-		newUser.UID = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
+		newUser.UID = strings.TrimSpace(strings.Join(r.Form["usernameHandle"], ""))
 		newUser.CN = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		newUser.DN = "cn=" + strings.TrimSpace(strings.Join(r.Form["username"], "")) + "," + config.UserBaseDN
 		password1 := strings.Join(r.Form["password"], "")

@@ -30,7 +30,7 @@ func HandleLostPassword(w http.ResponseWriter, r *http.Request) {
 		data.Mail = strings.TrimSpace(strings.Join(r.Form["mail"], ""))
 		data.OtherMailbox = strings.TrimSpace(strings.Join(r.Form["othermailbox"], ""))
 		user := models.User{
-			CN:           strings.TrimSpace(strings.Join(r.Form["username"], "")),
+			CN:           strings.TrimSpace(strings.Join(r.Form["mail"], "")),
 			UID:          strings.TrimSpace(strings.Join(r.Form["username"], "")),
 			Mail:         strings.TrimSpace(strings.Join(r.Form["mail"], "")),
 			OtherMailbox: strings.TrimSpace(strings.Join(r.Form["othermailbox"], "")),

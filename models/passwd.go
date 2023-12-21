@@ -71,7 +71,7 @@ func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	}
 	searchFilter := "(|"
 	if user.CN != "" {
-		searchFilter += "(cn=" + user.UID + ")"
+		searchFilter += "(uid=" + user.UID + ")"
 	}
 	if user.Mail != "" {
 		searchFilter += "(mail=" + user.Mail + ")"
@@ -106,7 +106,7 @@ func PasswordLost(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 	user.Password = SuggestPassword()
 	user.DN = "uid=" + searchRes.Entries[0].GetAttributeValue("cn") + "," + config.InvitationBaseDN
-	user.UID = searchRes.Entries[0].GetAttributeValue("cn")
+	user.UID = searchRes.Entries[0].GetAttributeValue("uid")
 	user.CN = searchRes.Entries[0].GetAttributeValue("cn")
 	user.Mail = searchRes.Entries[0].GetAttributeValue("mail")
 	user.OtherMailbox = searchRes.Entries[0].GetAttributeValue("carLicense")
