@@ -50,10 +50,10 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {
 		//Transform the researh's result in a correct struct to send JSON
 		searchRes, err := l.Search(searchRequest)
 		if err != nil {
-			log.Printf("PasswordLost search : %v %v", err, ldapConn)
-			log.Printf("PasswordLost search : %v", searchReq)
-			log.Printf("PasswordLost search : %v", searchRes)
-			log.Printf("PasswordLost search: %v", user)
+			log.Printf("doLogin search : %v %v", err, l)
+			log.Printf("doLogin search : %v", searchRequest)
+			log.Printf("doLogin search : %v", searchRes)
+			// log.Printf("PasswordLost search: %v", user)
 			return err
 		}
 		if err != nil {
