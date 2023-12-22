@@ -7,7 +7,7 @@ import (
 	// "os"
 
 	httptransport "github.com/go-openapi/runtime/client"
-	api "goauthentik.io/api/v3"
+	// api "goauthentik.io/api/v3"
 	// openapi"github.com/chris2fr/go-authentik-oapi-desgv"
 
 )
