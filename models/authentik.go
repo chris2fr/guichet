@@ -1,10 +1,10 @@
 package models
 
 import (
-	"context"
-	"fmt"
-	"net/http"
-	"os"
+	// "context"
+	// "fmt"
+	// "net/http"
+	// "os"
 
 	httptransport "github.com/go-openapi/runtime/client"
 	api "goauthentik.io/api/v3"
