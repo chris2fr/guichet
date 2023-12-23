@@ -22,28 +22,28 @@
     <h1><a href="/">{{ .Common.WebsiteName }} > {{ template "title" .}}</a></h1>
     <div class="wrapper">
       <ul class=" nav__list__less">
-        <li class="breadcrumb nav__item nav_top"><a href="https://www.lesgrandsvoisins.com/" class="breadcrumb nav__list">Les Grands Voisins  &gt; </a></li>
-        <li class="breadcrumb nav__item nav_top"><a href="https://www.lesgrandsvoisins.com/numerique/" class="breadcrumb nav__list">Numérique &gt; </a></li>
+        <li class="nav__item nav_top"><a href="https://www.lesgrandsvoisins.com/" class="nav__list">Les Grands Voisins  &gt; </a></li>
+        <li class="nav__item nav_top"><a href="https://www.lesgrandsvoisins.com/numerique/" class="nav__list">Numérique &gt; </a></li>
     
-    <li class="active breadcrumb nav__item nav_self"><a href="https://guichet.resdigita.com" class="active breadcrumb nav__list">Guichet</a></li>
+    <li class="active nav__item nav_self"><a href="https://guichet.resdigita.com" class="active nav__list">Guichet</a></li>
     </ul>
       <nav role="navigation" class="navigation --jsfied">
       <ul id="menu" class="nav__list">
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="https://keycloak.resdigita.com/mission/"> &gt; Keycloak</a></li>
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="https://guichet.resdigita.com/mission/"> &gt; Guichet</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://keycloak.resdigita.com/mission/"> &gt; Keycloak</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://guichet.resdigita.com/mission/"> &gt; Guichet</a></li>
           {{template "admenu" .}}
           {{if .Common.CanAdmin}}
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="/admin/users"> &gt; Utilisateurs</a></li>
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="/admin/activate"> &gt; Activer utilisateurs</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/users"> &gt; Utilisateurs</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/activate"> &gt; Activer utilisateurs</a></li>
           {{end}}
           {{if .Common.LoggedIn}}
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="/user"> &gt; Profil</a></li>
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="/passwd"> &gt; Mot de passe</a></li>
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="/session/logout"> &gt; Se déconnecter</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user"> &gt; Profil</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd"> &gt; Mot de passe</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/session/logout"> &gt; Se déconnecter</a></li>
           {{else}}
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="/"> &gt; Se connecter</a></li>
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
-          <li class="breadcrumb subitem nav__item nav_bottom"><a class="breadcrumb subitem nav__list" href="/user/new"> &gt; s'enregistrer</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/"> &gt; Se connecter</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user/new"> &gt; s'enregistrer</a></li>
           {{end}}
         
         <li class="nav__item__more">
@@ -51,21 +51,21 @@
             <svg id="fi_3018442" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="2"></circle><circle cx="4" cy="12" r="2"></circle><circle cx="20" cy="12" r="2"></circle></svg>
           </button>
           <ul class="nav__list__more">
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="https://keycloak.resdigita.com/mission/"> &gt; Keycloak</a></li>
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="https://guichet.resdigita.com/mission/"> &gt; Guichet</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="https://keycloak.resdigita.com/mission/"> &gt; Keycloak</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="https://guichet.resdigita.com/mission/"> &gt; Guichet</a></li>
             {{template "admenu" .}}
             {{if .Common.CanAdmin}}
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="/admin/users"> &gt; Utilisateurs</a></li>
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="/admin/activate"> &gt; Activer utilisateurs</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/admin/users"> &gt; Utilisateurs</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/admin/activate"> &gt; Activer utilisateurs</a></li>
             {{end}}
             {{if .Common.LoggedIn}}
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="/user"> &gt; Profil</a></li>
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="/passwd"> &gt; Mot de passe</a></li>
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="/session/logout"> &gt; Se déconnecter</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/user"> &gt; Profil</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/passwd"> &gt; Mot de passe</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/session/logout"> &gt; Se déconnecter</a></li>
             {{else}}
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="/"> &gt; Se connecter</a></li>
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
-            <li class="breadcrumb subitem nav__item nav_bottom nav__hidden"><a class="breadcrumb subitem nav__list" href="/user/new"> &gt; s'enregistrer</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/"> &gt; Se connecter</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/user/new"> &gt; s'enregistrer</a></li>
             {{end}}
           </ul>
         </li>
