@@ -1,235 +1,277 @@
-#menuToggle
-{
-  display: block;
-  position: absolute;
-  /* top: 50px;
-  left: 50px; */
-  float: left;
-  top: 1rem;
-  left: 1rem;
-  
-  z-index: 600;
-  
-  -webkit-user-select: none;
-  user-select: none;
-  width: 100%;
+nav.navigation *,
+nav.navigation *::before,
+nav.navigation *::after {
+  box-sizing: border-box;
 }
 
-#menuToggle a
-{
+nav.navigation {
+  z-index: 99;
+}
+
+nav.navigation ul {
+  border-top: 2px var(--color-text) solid;
+  border-left: 2px var(--color-text) solid;
+  /* border-radius: 1rem 0 0 0; */
+  background-color: var(--color-text);
+
+}
+
+nav.navigation  {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  min-width: 350px;
+  /* min-height: 80vh; */
+  /* max-width: 1140px; */
+  margin: 0 auto;
+  padding: 30 px;
+  overflow-x: hidden;
+  border: none;
+  min-width: 100%;
+}
+
+nav.navigation a {
   text-decoration: none;
-  color: var(--color-link);
-  
-  transition: color 0.3s ease;
 }
 
-#menuToggle a:hover
-{
+.navigation {
+  position: relative;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+.navigation:not(.--jsfied) {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.nav__hidden {
+  display: none;
+}
+.nav__list {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+li.nav_bottom {
+  background-color: var(--color-background);
+}
+.nav__list li {
+  transition: 0.25s;
+}
+.nav__list > li {
+  flex-grow: 0;
+}
+.nav__list > li > a {
+  padding: 15px;
+  white-space: nowrap;
+}
+.nav__list > li a {
+  color: var(--color-link);
+  /* font-weight: 500; */
+  /* text-transform: uppercase; */
+  transition: 0.25s;
+}
+.nav__list > li a:hover {
   color: var(--color-link-hover);
 }
-
-#menu ul.submenu {
-  display: none;
-  position: absolute;
-  z-index: 50;
-  float: left;
-  background: var(--color-background);
-  list-style-type: none;
-  padding-right: 1rem;
-  padding-left: 1rem;
-  padding-top: 1rem;
-  border-radius: 0 0 1rem 1rem;
-}
-
-
-#menu ul.submenu li {
-  text-align: left;
-}
-
-#menu li:hover ul.submenu {
-  display: block;
-}
-
-
-#menuToggle input
-{
-  display: block;
-  width: 40px;
-  height: 32px;
-  position: absolute;
-  /* top: -7px;
-  left: -5px; */
-  right: 3rem;
-  top: 1.25rem;
+.nav__list .nav__item__more button {
+  padding: 15px;
+  white-space: nowrap;
+  border: 0;
+  background: transparent;
   cursor: pointer;
-  
-  opacity: 0; /* hide this */
-  z-index: 800; /* and place it over the hamburger */
-  
-  -webkit-touch-callout: none;
 }
-
-#menuToggle div.burger {
-  float: right;
-  margin-right: 3rem;
+.nav__list .nav__item__more svg {
+  width: 20px;
+  height: 20px;
+  transition: 0.25s;
 }
-
-/*
- * Just a quick hamburger
- */
-#menuToggle div.burger span
-{
-  display: block;
-  width: 2rem;
-  height: 0.25rem;
-  margin-bottom: 0.25rem;
-  position: relative;
-  background: var(--color-text);
-  border-radius: 0.2rem;
-  z-index: 1;
-  /* transform-origin: -4px 0px; */
-  transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0), background 0.5s cubic-bezier(0.77,0.2,0.05,1.0), opacity 0.55s ease;
-  right: 1rem;
-  top: 1rem;
-  /* display: block;
-  width: 33px;
-  height: 4px;
-  margin-bottom: 5px;
-  position: relative;
-  
-  background: var(--color-text);
-  border-radius: 3px;
-  
-  z-index: 1;
-  
-  transform-origin: 4px 0px;
-  
-  transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-              background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-              opacity 0.55s ease; */
+.navigation.nav__active .nav__list .nav__item__more svg {
+  transform: rotate(90deg);
 }
-
-#menuToggle div.burger span:first-child
-{
-  transform-origin: 0% 0%;
-}
-
-#menuToggle div.burger span:nth-last-child(2)
-{
-  transform-origin: 0% 100%;
-}
-
-/* 
- * Transform all the slices of hamburger
- * into a crossmark.
- */
-#menuToggle input:checked ~ div.burger span
-{
-  opacity: 1;
-  transform: rotate(-45deg) translate(-0.05rem, -0.1rem);
-  background: var(--color-secondary);
-}
-
-/* body.darkmode #menuToggle input:checked ~ span {
-  background: var(--color-secondary-dark);
-} */
-
-/*
- * But let's hide the middle one.
- */
-#menuToggle input:checked ~ div.burger span:nth-last-child(3)
-{
-  opacity: 0;
-  transform: rotate(0deg) scale(0.2, 0.2);
-}
-
-/*
- * Ohyeah and the last one should go the other direction
- */
-#menuToggle input:checked ~ div.burger span:nth-last-child(2)
-{
-  transform: rotate(45deg) translate(-0.1rem, -0.2rem);
-}
-
-/*
- * Make this absolute positioned
- * at the top left of the screen
- */
-#menu
-{
+.nav__list__more {
+  list-style: none;
   /* position: absolute; */
-  justify-content: space-between;
-  visibility: hidden;
-  /* width: 300px;
-  margin: -100px 0 0 -50px;
-  padding: 50px;
-  padding-top: 125px; */
-
-  margin: 0.5rem 1rem 0 1rem;
-  background: var(--color-background);
-  opacity: 0.9;
-  border: 1px solid;
-  border-radius: 1em;
-  list-style-type: none;
-  -webkit-font-smoothing: antialiased;
-  /* to stop flickering of text in safari */
-  
-
-  /* transform-origin: 0% 0%;
-  transform: translate(-120%, 0); */
-  transform: visibility 1s linear;
-  transition-property: visibility;
-
-  
-  /* transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0); */
-  padding-left: 0;
-  padding: 1rem;
-  /* left: 3rem; */
-  visibility: hidden;
-  opacity: 0;
-
-
-  top: -1rem;
-  display: flex;
-  /* grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; */
-  column-gap: 1rem;
-  flex-wrap: wrap;
+  position: relative;
+  /* top: calc(100% + 5px); */
+  /* right: 0; */
+  display: none;
+  /* max-width: 100%; */
+  min-width: 100%;
+  /* margin: 0; */
+  margin-left: -15rem;
+  padding: 5px 0;
+  border-radius: 5px;
+  box-shadow: 0 0.3em 0.5em rgba(0, 0, 0, 0.15);
+  -webkit-animation: nav-dropdown-animation 0.2s;
+          animation: nav-dropdown-animation 0.2s;
+}
+.nav__list__more li {
+  padding: 10px 15px;
+}
+.navigation.nav__active .nav__list__more {
+  display: block;
 }
 
-#menu li
-{
-  padding: 0 0 0.5rem 0;
-  font-size-adjust: 130%;
+
+
+a.nav__list,
+a.nav__list__more{
+  color: var(--color-link);
+}
+a.nav__list:hover,
+a.nav__list__more:hover {
+  color: var(---color-link-hover);
+}
+
+
+ul.nav__list {
+  min-width: 100%;
+}
+
+li.nav__item,
+li.nav__item__more {
+  background-color: var(--color-background);
+}
+
+li.nav_top {
+  border-top: 2px var(--color-text) solid;
+  border-radius: 1rem 1rem 0 0;
+
+} 
+li.nav_top:first-of-type {
+  border: none;
+}
+
+li.nav__list a {
+  justify-content: center;
+}
+
+li.nav_bottom {
+  border: 2px var(--color-text) solid;
+  border-radius: 1rem 1rem 0 0;
+  /* margin-top: 1rem; */
+}
+li.nav_end {
+  border-top: 0px var(--color-text) none;
+  border-left: 2px var(--color-text) solid;
+  border-bottom: 2px var(--color-text) solid;
+  border-radius: 0 0 0 1rem;
+}
+li.nav_extra {
+  border: 1px var(--color-text) solid;
+  border-right: 1px var(--color-background) solid;
+  border-top:none;
+  border-radius: 1rem;
+  width: fit-content;
+  /* margin-left: 1rem; */
+  margin: 0 0 0 auto;
+  flex-grow: 0;
+  padding: inherit 1rem;
+}
+/* .nav_extra:last-of-type {
+  border-radius: 1rem 0 0 1rem;
+} */
+li.nav_before {
+  border-bottom: 2px var(--color-text) solid;
+  border-right: 2px var(--color-text) solid;
+  border-radius: 0 0 1rem 0;
+}
+li.nav_after {
+  border: none;
+  border-bottom: 2px var(--color-text) solid;
+  border-right: 1px var(--color-text) dotted;
+}
+a.nav__list {
+  justify-content: center;
+}
+li.nav__item__more {
+  background-color: var(--color-whiteish);
+  border-radius: 1rem 1rem 0 0 ;
   text-align: center;
 }
-
-/*
- * And let's slide it in from the left
- */
-#menuToggle input:checked ~ ul
-{
-  visibility: visible;
-  opacity: 0.9;
-  transition: visibility 0s linear 0s, opacity 300ms;
+ul.nav__list__more {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
-@media (max-width: 1200px) {
-  #menu
-  {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+/* .nav__list > li.nav_self a */
+
+ul.nav__list__less {
+  list-style: none;
+  position: block;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background);
+  text-align: center;
+  border-radius: 1rem 1rem 0 0;
+  border: 2px var(--color-text) solid;
+}
+/* ul.nav__list__less li {
+  transition: 0.25s;
+}
+ul.nav__list__less > li {
+  flex-grow: 1;
+  border-left: 1px var(--color-background) solid;
+  border-top: 1px var(--color-background) solid;
+  border-radius: 1rem 1rem 0 0;
+}
+ul.nav__list__less > li > a {
+  padding: 15px;
+  white-space: nowrap;
+}
+ul.nav__list__less > li a {
+  color: var(--color-link);
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: 0.25s;
+}
+ul.nav__list__less > li a {
+  color: var(--color-link);
+}
+ul.nav__list__less > li a:hover {
+  color: var(--color-link-hover);
+} */
+
+
+li.nav_self {
+  background-color: var(--color-text);
+  color: var(--color-text-inverted);
+  border-radius: 1rem 1rem 0 0;
+  /* margin-top: 0.5rem; */
+}
+li.nav_self a,
+li.nav_self a:hover {
+  color: var(--color-text-inverted);
+}
+
+li.breadcrumb.extramenu.nav__item.nav_extra {
+  border-radius: 1rem 0 0 1rem;
+}
+
+
+@-webkit-keyframes nav-dropdown-animation {
+  0% {
+    opacity: 0;
+    transform: translateY(-1em);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (max-width: 800px) {
-  #menu
-  {
-    grid-template-columns: 1fr 1fr 1fr;
+@keyframes nav-dropdown-animation {
+  0% {
+    opacity: 0;
+    transform: translateY(-1em);
   }
-}
-
-@media (max-width: 600px) {
-  #menu
-  {
-    grid-template-columns: 1fr;
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
