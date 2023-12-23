@@ -24,66 +24,29 @@
       <ul class=" nav__list__less">
         <li class="nav__item nav_top"><a href="https://www.lesgrandsvoisins.com/" class="nav__list">Les Grands Voisins  &gt; </a></li>
         <li class="nav__item nav_top"><a href="https://www.lesgrandsvoisins.com/numerique/" class="nav__list">Numérique &gt; </a></li>
-    
-    <li class="active nav__item nav_self"><a href="https://guichet.resdigita.com" class="active nav__list">Guichet</a></li>
-    </ul>
-      <nav role="navigation" class="navigation --jsfied">
-      <ul id="menu" class="nav__list">
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://keycloak.resdigita.com/mission/"> &gt; Keycloak</a></li>
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://guichet.resdigita.com/mission/"> &gt; Guichet</a></li>
-          {{template "admenu" .}}
-          {{if .Common.CanAdmin}}
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/users"> &gt; Utilisateurs</a></li>
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/activate"> &gt; Activer utilisateurs</a></li>
-          {{end}}
-          {{if .Common.LoggedIn}}
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user"> &gt; Profil</a></li>
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd"> &gt; Mot de passe</a></li>
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/session/logout"> &gt; Se déconnecter</a></li>
-          {{else}}
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/"> &gt; Se connecter</a></li>
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
-          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user/new"> &gt; s'enregistrer</a></li>
-          {{end}}
+        <li class="active nav__item nav_self"><a href="https://guichet.resdigita.com" class="active nav__list">Guichet</a></li>
       </ul>
-      </nav>
-      </div>
-
-        <!--
-        Too bad the menu has to be inside of the button
-        but hey, it's pure CSS magic.
-        -->
-        <ul id="menu">
-          <li><a href="https://keycloak.resdigita.com">Keycloak des GV</a>&nbsp;&gt;&nbsp;</li>
-          <li><a href="https://guichet.resdigita.com">Guichet des GV</a>&nbsp;&gt;&nbsp;</li>
-          <li><a href="https://www.lesgrandsvoisins.com">LesGrandsVoisins.com</a>&nbsp;&gt;&nbsp;</li>
-          
-        </li>
-          {{if .Common.CanAdmin}}
-            <li>&lt;&nbsp;<a href="#">Administration</a>
-            <ul class="submenu">
-              <!-- <li><a href="/admin/activate">Administrer LDAP</a> -->
-              <li><a href="/admin/activate">Activer des Utilisateur·ices</a></li>
-              <li><a href="/admin/users">Utilisateur·ices</a></li>
-              <!-- <li><a href="/admin/groups">Groupes</a></li> -->
-            </ul>
-            </li>
-          {{end}}
-              {{if .Common.LoggedIn}}
-                  <li><a href="https://auth.lesgrandsvoisins.com">Tableau de bord Auth</a>&nbsp;&gt;&nbsp;</li>
-                  <li><a href="/session/logout">Se déconnecter</a></li>
-                  <li><a href="/user">Profil</a></li>
-                  <li><a href="/passwd">Mot de passe</a></li>
-              {{else}}
-                <li><a href="/">Se connecter</a></li>
-                <li><a href="/passwd/lost">Passe oubliée</a></li>
-                <li><a href="/user/new">S'enregistrer</a></li>
-              {{end}}
-          <li> &nbsp;&lt;&nbsp;<a href="#" class="jour-nuit" id="jour-nuit">Jour et nuit</a></li>
+      <nav role="navigation" class="navigation --jsfied">
+        <ul id="menu" class="nav__list">
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://keycloak.resdigita.com/mission/"> &gt; Keycloak</a></li>
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://guichet.resdigita.com/mission/"> &gt; Guichet</a></li>
+            {{template "admenu" .}}
+            {{if .Common.CanAdmin}}
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/users"> &gt; Utilisateurs</a></li>
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/activate"> &gt; Activer utilisateurs</a></li>
+            {{end}}
+            {{if .Common.LoggedIn}}
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user"> &gt; Profil</a></li>
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd"> &gt; Mot de passe</a></li>
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/session/logout"> &gt; Se déconnecter</a></li>
+            {{else}}
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/"> &gt; Se connecter</a></li>
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
+            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user/new"> &gt; s'enregistrer</a></li>
+            {{end}}
         </ul>
-
-
-    <hr />
+      </nav>
+    </div>
     {{template "body" .}}
   </div>
   <script src="/static/javascript/jquery.slim.min.js"></script>
