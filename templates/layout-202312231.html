@@ -45,7 +45,31 @@
           <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
           <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user/new"> &gt; s'enregistrer</a></li>
           {{end}}
-
+        
+        <li class="nav__item__more">
+          <button type="button" aria-haspopup="true" aria-expanded="false">
+            <svg id="fi_3018442" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="2"></circle><circle cx="4" cy="12" r="2"></circle><circle cx="20" cy="12" r="2"></circle></svg>
+          </button>
+          <ul class="nav__list__more">
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="https://keycloak.resdigita.com/mission/"> &gt; Keycloak</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="https://guichet.resdigita.com/mission/"> &gt; Guichet</a></li>
+            {{template "admenu" .}}
+            {{if .Common.CanAdmin}}
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/admin/users"> &gt; Utilisateurs</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/admin/activate"> &gt; Activer utilisateurs</a></li>
+            {{end}}
+            {{if .Common.LoggedIn}}
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/user"> &gt; Profil</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/passwd"> &gt; Mot de passe</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/session/logout"> &gt; Se déconnecter</a></li>
+            {{else}}
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/"> &gt; Se connecter</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
+            <li class="subitem nav__item nav_bottom nav__hidden"><a class="subitem nav__list" href="/user/new"> &gt; s'enregistrer</a></li>
+            {{end}}
+          </ul>
+        </li>
+      </ul>
       </nav>
       </div>
 
