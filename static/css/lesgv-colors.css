@@ -45,6 +45,7 @@
   --gv-background-opacity: 0.9;
   --color-link-hover: var(--rose-bonbon);
   --color-link-hover-inverted: var(--maximum-yellow-red);
+  --color-active-menuitem: var(--color-blackish);
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -67,6 +68,8 @@
     --color-link: var(--color-link-inverted);
     --color-link-inverted: var(--color-primary-light);
     --color-link-hover: var(--maximum-yellow-red);
+    --color-active-menuitem: var(--color-whiteish);
+    --color-secondary: var(--mountain-meadow);
 }
 
 
