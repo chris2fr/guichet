@@ -227,7 +227,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	return err
 }
 
-fund RandPW () string {
+func RandPW () string {
 	// Define the characters that can be used in the random string
 	characters := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
