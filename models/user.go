@@ -13,8 +13,9 @@ import (
 	"github.com/go-ldap/ldap/v3"
 
 	"guichet/utils"
-	"math/rand"
-	"time"
+
+	"crypto/rand"
+	"math/big"
 )
 
 func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string, previousValue string) error {
@@ -217,7 +218,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 	// Create user for file browser
 
-	cmd := exec.Command(fmt.Sprintf("filebrowser","user","add", user.UID, RandPW()))
+	cmd := exec.Command(fmt.Sprintf("filebrowser","user","add", user.UID, RandPW(16)))
   err = cmd.Run()
 
   if err != nil {
@@ -227,20 +228,18 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	return err
 }
 
-func RandPW () string {
-	// Define the characters that can be used in the random string
-	characters := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+func RandPW (length int) string {
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
-	// Seed the random number generator
-	rand.Seed(time.Now().UnixNano())
+	randomString := make([]byte, length)
+	charsetLen := big.NewInt(int64(len(charset)))
 
-	// Generate a 12-character random string
-	randomString := make([]byte, 12)
 	for i := range randomString {
-		randomString[i] = characters[rand.Intn(len(characters))]
+		randomByte, _ := rand.Int(rand.Reader, charsetLen)
+		randomString[i] = charset[randomByte.Int64()]
 	}
 
-	return randomString
+	return string(randomString)
 }
 
 func ModifyUser(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
