@@ -8,10 +8,13 @@ import (
 	"log"
 	"strings"
 	"os"
+	"os/exec"
 
 	"github.com/go-ldap/ldap/v3"
 
 	"guichet/utils"
+	"math/rand"
+	"time"
 )
 
 func replaceIfContent(modifReq *ldap.ModifyRequest, key string, value string, previousValue string) error {
@@ -163,7 +166,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// 	log.Printf("add(user) sendMail: %v", user)
 	// 	log.Printf("add(user) sendMail: %v", sendMailTplData)
 	// }
-	err = SyncAuthentikLDAP()
+	// err = SyncAuthentikLDAP()
 	parts := strings.Split(user.CN,"@")
 	
 	if len(parts) != 2 {
@@ -175,8 +178,9 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	username := parts[0]
 
 	basePath := "/var/www/dav/data"
-	domainPath := basePath + "/" + domain
-	userPath := domainPath + "/" + username
+	// domainPath := basePath + "/" + domain
+	//  := domainPath + "/" + username
+	userPath := basePath + "/" + user.UID
 
 	err = os.MkdirAll(basePath, 0775)
 	err = os.MkdirAll(domainPath, 0775)
@@ -188,8 +192,9 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	}
 
 	basePath = "/var/www/secret/dav"
-	domainPath = basePath + "/" + domain
-	userPath = domainPath + "/" + username
+	// domainPath = basePath + "/" + domain
+	// userPath = domainPath + "/" + username
+	userPath = basePath + "/" + user.UID
 
 	err = os.MkdirAll(basePath, 0775)
 	err = os.MkdirAll(domainPath, 0775)
@@ -202,13 +207,40 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 
 	fmt.Println("Folders created successfully:", userPath)
 
+
 	err = utils.CopyFiles(basePath + "/example.com/templateuser", userPath )
 	if err != nil {
 		fmt.Println("Error copying files:", err)
 	}
 
-	fmt.Println("Files copied successfully!")
+	fmt.Println("Files /example.com/templateuser copied successfully")
+
+	// Create user for file browser
+
+	cmd := exec.Command(fmt.Sprintf("filebrowser","user","add", user.UID, RandPW()))
+  err = cmd.Run()
+
+  if err != nil {
+		fmt.Println("Error creating user %v :", err)
+  } 
+
 	return err
+}
+
+fund RandPW () string {
+	// Define the characters that can be used in the random string
+	characters := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+	// Seed the random number generator
+	rand.Seed(time.Now().UnixNano())
+
+	// Generate a 12-character random string
+	randomString := make([]byte, 12)
+	for i := range randomString {
+		randomString[i] = characters[rand.Intn(len(characters))]
+	}
+
+	return randomString
 }
 
 func ModifyUser(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
@@ -233,7 +265,7 @@ func modify(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("73: %v", user))
 		return err
 	}
-	err = SyncAuthentikLDAP()
+	// err = SyncAuthentikLDAP()
 
 	return err
 }
@@ -246,7 +278,7 @@ func PassWD(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 		log.Printf(fmt.Sprintf("model-user PassWD : %v %v", err, ldapConn))
 		log.Printf(fmt.Sprintf("model-user PassWD : %v", user))
 	}
-	err = SyncAuthentikLDAP()
+	// err = SyncAuthentikLDAP()
 	return err
 }
 
