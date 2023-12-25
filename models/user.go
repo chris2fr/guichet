@@ -168,15 +168,15 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// 	log.Printf("add(user) sendMail: %v", sendMailTplData)
 	// }
 	// err = SyncAuthentikLDAP()
-	parts := strings.Split(user.CN,"@")
+	// parts := strings.Split(user.CN,"@")
 	
-	if len(parts) != 2 {
-		fmt.Println("Invalid email format")
-		// return nil
-	}
+	// if len(parts) != 2 {
+	// 	fmt.Println("Invalid email format")
+	// 	// return nil
+	// }
 
-	domain := parts[1]
-	username := parts[0]
+	// domain := parts[1]
+	// username := parts[0]
 
 	basePath := "/var/www/dav/data"
 	// domainPath := basePath + "/" + domain
@@ -184,9 +184,10 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	userPath := basePath + "/" + user.UID
 
 	err = os.MkdirAll(basePath, 0775)
-	err = os.MkdirAll(domainPath, 0775)
+	// err = os.MkdirAll(domainPath, 0775)
 	err = os.MkdirAll(userPath, 0775)
-	err = os.Chmod(domainPath, 0775)
+	// err = os.Chmod(domainPath, 0775)
+	err = os.Chmod(userPath, 0775)
 	if err != nil {
 			fmt.Println("Error creating folders:", err)
 			// return nil
@@ -198,9 +199,10 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	userPath = basePath + "/" + user.UID
 
 	err = os.MkdirAll(basePath, 0775)
-	err = os.MkdirAll(domainPath, 0775)
+	// err = os.MkdirAll(domainPath, 0775)
 	err = os.MkdirAll(userPath, 0775)
-	err = os.Chmod(domainPath, 0775)
+	// err = os.Chmod(domainPath, 0775)
+	err = os.Chmod(userPath, 0775)
 	if err != nil {
 			fmt.Println("Error creating folders:", err)
 			// return nil
