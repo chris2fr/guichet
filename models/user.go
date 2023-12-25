@@ -221,6 +221,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// Create user for file browser
 
 	cmd := exec.Command(fmt.Sprintf("filebrowser","user","add", user.UID, RandPW(16)))
+	cmd.Dir = "/home/filebrowser/"
   err = cmd.Run()
 
   if err != nil {
