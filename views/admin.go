@@ -608,6 +608,9 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 	object := sr.Entries[0]
 
+	log.Printf(fmt.Sprintf("595: %v",object))
+
+
 	// Read object properties and prepare appropriate form fields
 	props := make(map[string]*PropValues)
 	for _, attr := range object.Attributes {
