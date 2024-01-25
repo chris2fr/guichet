@@ -456,7 +456,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			Active:     dn == config.BaseDN,
 		},
 	}
-	// log.Printf(fmt.Sprintf("434: %v",path))
+	log.Printf(fmt.Sprintf("459: %v",path))
 
 	len_base_dn := len(strings.Split(config.BaseDN, ","))
 	dn_split := strings.Split(dn, ",")
@@ -468,7 +468,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			Active:     i == len(dn_split),
 		})
 	}
-	// log.Printf(fmt.Sprintf("446: %v",path))
+	log.Printf(fmt.Sprintf("471: %v",path))
 
 	// Handle modification operation
 	if r.Method == "POST" {
