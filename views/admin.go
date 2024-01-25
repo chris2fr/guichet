@@ -592,7 +592,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)
-	// log.Printf(fmt.Sprintf("569: %v",searchRequest))
+	log.Printf(fmt.Sprintf("595: %v",searchRequest))
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
