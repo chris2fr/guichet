@@ -746,7 +746,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		login.conn.Close()
 		return
 	}
-	// log.Printf(fmt.Sprintf("714: %v",sr.Entries))
+	log.Printf(fmt.Sprintf("749: %v",sr.Entries))
 	for _, ent := range sr.Entries {
 		groups = append(groups, EntryName{
 			DN:   ent.DN,
@@ -759,13 +759,13 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		fmt.Sprintf("(&(objectClass=groupOfNames)(!(member=%s)))", dn),
 		[]string{"dn", "displayName", "cn", "description"},
 		nil)
-	// log.Printf(fmt.Sprintf("724: %v",searchRequest))
+	log.Printf(fmt.Sprintf("762: %v",searchRequest))
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// log.Printf(fmt.Sprintf("714: %v",sr.Entries))
+	log.Printf(fmt.Sprintf("768: %v",sr.Entries))
 	for _, ent := range sr.Entries {
 		possibleNewGroups = append(possibleNewGroups, EntryName{
 			DN:   ent.DN,
@@ -829,7 +829,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		fmt.Sprintf("(objectclass=*)"),
 		[]string{"dn", "displayname", "description"},
 		nil)
-
+  log.Printf(fmt.Sprintf("832: %v",sr))
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
