@@ -672,7 +672,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		members_dn = mp.Values
 		delete(props, "member")
 	}
-
+	log.Printf(fmt.Sprintf("675: %v",members_dn))
 	members := []EntryName{}
 	possibleNewMembers := []EntryName{}
 	if len(members_dn) > 0 || hasMembers {
@@ -684,8 +684,8 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			fmt.Sprintf("(objectClass=organizationalPerson)"),
 			[]string{"dn", "displayname", "description"},
 			nil)
-			log.Printf(fmt.Sprintf("687: %v",sr))
-			sr, err = login.conn.Search(searchRequest)
+		log.Printf(fmt.Sprintf("687: %v",sr))
+		sr, err = login.conn.Search(searchRequest)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			login.conn.Close()
