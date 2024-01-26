@@ -28,22 +28,22 @@
       </ul>
       <nav role="navigation" class="navigation --jsfied">
         <ul id="menu" class="nav__list">
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://keycloak.resdigita.com:10443/realms/master/account/"> &gt; Keycloak</a></li>
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://guichet.resdigita.com/"> &gt; Guichet</a></li>
-            {{template "admenu" .}}
-            {{if .Common.CanAdmin}}
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/users"> &gt; Utilisateurs</a></li>
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/activate"> &gt; Activer utilisateurs</a></li>
-            {{end}}
-            {{if .Common.LoggedIn}}
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user"> &gt; Profil</a></li>
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd"> &gt; Mot de passe</a></li>
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/session/logout"> &gt; Se déconnecter</a></li>
-            {{else}}
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/"> &gt; Se connecter</a></li>
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
-            <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user/new"> &gt; S'enregistrer</a></li>
-            {{end}}
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://guichet.resdigita.com/"> &gt; Guichet</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="https://keycloak.resdigita.com:10443/realms/master/account/"> &gt; Keycloak</a></li>
+          {{template "admenu" .}}
+          {{if .Common.CanAdmin}}
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/users"> &gt; Utilisateurs</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/admin/activate"> &gt; Activer utilisateurs</a></li>
+          {{end}}
+          {{if .Common.LoggedIn}}
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user"> &gt; Profil</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd"> &gt; Mot de passe</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/session/logout"> &gt; Se déconnecter</a></li>
+          {{else}}
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/"> &gt; Se connecter</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/passwd/lost"> &gt; Mot de passe oublié</a></li>
+          <li class="subitem nav__item nav_bottom"><a class="subitem nav__list" href="/user/new"> &gt; S'enregistrer</a></li>
+          {{end}}
         </ul>
       </nav>
     </div>
