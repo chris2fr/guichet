@@ -742,7 +742,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	log.Printf(fmt.Sprintf("742: %v",config.GroupBaseDN))
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
-		log.Printf(fmt.Sprintf("745: %v",sr))
+		log.Printf(fmt.Sprintf("745: %v",err))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		login.conn.Close()
 		return
