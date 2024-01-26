@@ -685,11 +685,13 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			[]string{"dn", "displayname", "description"},
 			nil)
 		sr, err = login.conn.Search(searchRequest)
+		log.Printf(fmt.Sprintf("688: %v",sr))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			login.conn.Close()
 			return
 		}
+		
 
 		userMap := make(map[string]string)
 		for _, ent := range sr.Entries {
@@ -698,6 +700,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 				userMap[ent.DN] = ent.GetAttributeValue("description")
 			}
 		}
+		log.Printf(fmt.Sprintf("703: %v",userMap))
 
 		// Select members with their name and remove them from map
 		for _, memdn := range members_dn {
