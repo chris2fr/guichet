@@ -684,8 +684,8 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			fmt.Sprintf("(objectClass=organizationalPerson)"),
 			[]string{"dn", "displayname", "description"},
 			nil)
-		sr, err = login.conn.Search(searchRequest)
-		log.Printf(fmt.Sprintf("688: %v",sr))
+			log.Printf(fmt.Sprintf("687: %v",sr))
+			sr, err = login.conn.Search(searchRequest)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			login.conn.Close()
