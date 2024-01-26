@@ -723,7 +723,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			possibleNewMembers = append(possibleNewMembers, entry)
 		}
 	}
-
+  
 	// // Parse group list and prepare form section
 	// groups_dn := []string{}
 	// if gp, ok := props["memberof"]; ok {
@@ -739,7 +739,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		fmt.Sprintf("(&(objectClass=groupOfNames)(member=%s))", dn),
 		[]string{"dn", "displayName", "cn", "description"},
 		nil)
-	// log.Printf(fmt.Sprintf("708: %v",searchRequest))
+	log.Printf(fmt.Sprintf("742: %v",searchRequest))
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
