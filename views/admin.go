@@ -592,7 +592,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		nil)
 
 	sr, err := login.conn.Search(searchRequest)
-	log.Printf(fmt.Sprintf("595: %v",err))
+	log.Printf(fmt.Sprintf("595: %v",sr))
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -663,6 +663,8 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 			isOrganization = true
 		}
 	}
+
+	log.Printf(fmt.Sprintf("667: %v",objectClass))
 
 	// Parse member list and prepare form section
 	members_dn := []string{}
