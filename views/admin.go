@@ -739,7 +739,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		fmt.Sprintf("(&(objectClass=groupOfNames)(member=%s))", dn),
 		[]string{"dn", "displayName", "cn", "description"},
 		nil)
-	log.Printf(fmt.Sprintf("742: %v",login.conn))
+	log.Printf(fmt.Sprintf("742: %v",config.GroupBaseDN))
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
 		log.Printf(fmt.Sprintf("745: %v",sr))
