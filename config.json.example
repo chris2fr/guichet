@@ -37,6 +37,8 @@
   "s3_access_key": "",
   "s3_secret_key": "",
   "s3_region": "garage",
-  "s3_bucket": "bottin-pictures"
+  "s3_bucket": "bottin-pictures",
+  "pocketbase": "http://127.0..0.1:8090"
+  
 }
 
