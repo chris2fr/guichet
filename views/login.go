@@ -6,12 +6,13 @@ package views
 
 import (
 	"fmt"
+	"guichet/models"
 	"log"
 	"net/http"
 	"strings"
-	"guichet/models"
 
 	"github.com/go-ldap/ldap/v3"
+	"github.com/labstack/echo/v5"
 )
 
 
@@ -26,6 +27,42 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func EchoLoginGet(c echo.Context) error {
+	var data LoginFormData
+	// var err error
+	data = PrepareLogin()
+	// if (err != nil) {
+	// 	return c.String(http.StatusNoContent, "NO DATA BETA")
+	// }
+	return doEchoRender(c, "login.html", data)
+}
+
+func EchoLoginPost(c echo.Context) error {
+	var data LoginFormData
+	data = PrepareLogin()
+
+
+
+	// if (err != nil) {
+	// 	return c.String(http.StatusNoContent, "NO DATA BETA")
+	// }
+	return doEchoRender(c, "login.html", data)
+}
+
+func PrepareLogin() (LoginFormData) {
+	data := LoginFormData{
+		Username: "anon",
+		WrongUser: false,
+		Common: NestedCommonTplData{
+			CanAdmin:  false,
+			CanInvite: true,
+			LoggedIn:  false,
+			ErrorMessage: "",
+		},
+	}
+	return data
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) (*LoginInfo, error) {

@@ -10,10 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/dchest/captcha"
-	// "log"
-
-
-
 )
 
 // const (
@@ -40,8 +36,6 @@ var config = models.ReadConfig()
 Create the different routes
 */
 func MakeGVRouter() (*mux.Router, error) {
-
-
 	r := mux.NewRouter()
 	r.HandleFunc("/", views.HandleHome)
 

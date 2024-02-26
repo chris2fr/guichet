@@ -13,6 +13,20 @@
   <link rel="stylesheet" type="text/css" href="/static/css/lesgv-colors.css" />
   <link rel="stylesheet" type="text/css" href="/static/css/lesgv.css" />
 
+  <script src="/static/javascript/pocketbase.umd.js"></script>
+  <script type="text/javascript">
+      const pb = new PocketBase("http://127.0.0.1:8090")
+      async function login () {
+        const authData = await pb.collection('users').authWithPassword(document.getElementById("identity").value, document.getElementById("password").value);
+        console.log(pb.authStore.isValid);
+        console.log(pb.authStore.token);
+        console.log(pb.authStore.model.id);
+      }
+      async function logout () {
+        pb.authStore.clear()
+        console.log(pb.authStore.isValid);
+      }
+  </script>
 
   <title>{{ .Common.WebsiteName }} > {{template "title" .}}</title>
 </head>
@@ -47,7 +61,22 @@
         </ul>
       </nav>
     </div>
+    {{if .Common.LoggedIn}}
     {{template "body" .}}
+    {{else}}
+    <form id="loginForm" action="/login" method="post">
+      <div class="form-group">
+        <label for="identity">Identifiant :</label>
+        <input type="text" name="identity" id="identity" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label for="password">Mot de passe :</label>
+        <input type="password" name="password" id="password" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-primary">Se connecter</button>
+    </form>
+    {{end}}
+    
   </div>
   <script src="/static/javascript/jquery.slim.min.js"></script>
   <script src="/static/javascript/bootstrap.bundle.min.js"></script>

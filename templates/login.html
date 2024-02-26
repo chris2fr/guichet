@@ -3,6 +3,10 @@
 {{define "admenu"}}
 {{end}}
 
+{{define "addhead"}}
+
+{{end}}
+
 {{define "body"}}
 <center>
 <img src="/static/image/outilsinformatiques.svg" class="lesgv hero">
@@ -11,10 +15,10 @@
 <h2>S'identifier</h2>
 
 <form method="POST">
-  {{if .Data.WrongUser}}
+  {{if .WrongUser}}
     <div class="alert alert-danger">Identifiant invalide.</div>
   {{end}}
-  {{if .Data.WrongPass}}
+  {{if .WrongPass}}
     <div class="alert alert-danger">Mot de passe invalide.</div>
   {{end}}
   {{if .Common.ErrorMessage}}
@@ -32,6 +36,8 @@
   </div>
   <button type="submit" class="btn btn-primary">Se connecter</button>
 </form>
+
+<button onclick="javascript:login()" id="buttonlog">Login</button>
 
 <p><strong><a href="/passwd/lost">Mot de passe perdu</a></strong></p>
 

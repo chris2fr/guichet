@@ -11,7 +11,7 @@ import (
 	"net"
 
 	// "flag"
-	"html/template"
+	htmltemplate "html/template"
 	// "log"
 	"net/http"
 	// "os"
@@ -21,12 +21,18 @@ import (
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/gorilla/sessions"
+
 	// "goauthentik.io/api/v3"
+
+	"github.com/labstack/echo/v5"
+	"github.com/pocketbase/pocketbase/tools/template"
 )
 
 const SESSION_NAME = "guichet_session"
 
 var templatePath = "./templates"
+var registry = template.NewRegistry()
+
 var GuichetSessionStore sessions.Store = nil
 
 type EntryList []*ldap.Entry
@@ -116,7 +122,7 @@ type NestedLoginTplData struct {
 }
 
 
-func execTemplate(w http.ResponseWriter, t *template.Template, commonData NestedCommonTplData, loginData NestedLoginTplData, data any) error {
+func execTemplate(w http.ResponseWriter, t *htmltemplate.Template, commonData NestedCommonTplData, loginData NestedLoginTplData, data any) error {
 	commonData.WebsiteURL = config.WebAddress
 	commonData.WebsiteName = config.Org
 	return t.Execute(w, LayoutTemplateData{
@@ -128,6 +134,9 @@ func execTemplate(w http.ResponseWriter, t *template.Template, commonData Nested
 
 
 func (login *LoginStatus) WelcomeName() string {
+	if (login == nil) {
+		return "anon"
+	}
 	ret := login.UserEntry.GetAttributeValue("givenName")
 	if ret == "" {
 		ret = login.UserEntry.GetAttributeValue("displayName")
@@ -138,6 +147,23 @@ func (login *LoginStatus) WelcomeName() string {
 	return ret
 }
 
+
+func doEchoRender(c echo.Context, templateFileRelPath string, data interface{}) error {
+	var err error
+	var html string	
+	html, err = registry.LoadFiles(
+		templatePath+"/layout.html",
+		templatePath+"/"+templateFileRelPath,
+	).Render(data)
+
+	if err != nil {
+		// or redirect to a dedicated 404 HTML page
+		// return c.String(http.StatusNoContent, "Beta Code EN DEV")
+		return err
+	}
+
+	return c.HTML(http.StatusOK, html)
+}
 
 type AdminUsersTplData struct {
 	UserNameAttr string
@@ -314,13 +340,11 @@ type LoginFormData struct {
 
 
 type WrapperTemplate struct {
-	Template *template.Template
+	Template *htmltemplate.Template
 }
 
-
-
-func getTemplate(name string) *template.Template {
-	return template.Must(template.New("layout.html").Funcs(template.FuncMap{
+func getTemplate(name string) *htmltemplate.Template {
+	return htmltemplate.Must(htmltemplate.New("layout.html").Funcs(htmltemplate.FuncMap{
 		"contains": strings.Contains,
 	}).ParseFiles(
 		templatePath+"/layout.html",
