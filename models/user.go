@@ -189,6 +189,8 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// err = os.Chmod(domainPath, 0775)
 	err = os.Chmod(userPath, 0775)
 	if err != nil {
+		log.Println("here")
+
 			fmt.Println("Error creating folders:", err)
 			// return nil
 	}
@@ -204,18 +206,23 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
 	// err = os.Chmod(domainPath, 0775)
 	err = os.Chmod(userPath, 0775)
 	if err != nil {
+		log.Println("here")
+
 			fmt.Println("Error creating folders:", err)
 			// return nil
 	}
 
+	log.Println("here")
 	fmt.Println("Folders created successfully:", userPath)
 
 
 	err = utils.CopyFiles(basePath + "/example.com/templateuser", userPath )
 	if err != nil {
+		log.Println("here")
 		fmt.Println("Error copying files:", err)
 	}
 
+	log.Println("here")
 	fmt.Println("Files /example.com/templateuser copied successfully")
 
 	// Create user for file browser
@@ -225,6 +232,7 @@ func add(user User, config *ConfigFile, ldapConn *ldap.Conn) error {
   err = cmd.Run()
 
   if err != nil {
+		log.Println("here")
 		fmt.Println("Error creating user %v :", err)
   } 
 

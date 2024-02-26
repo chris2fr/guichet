@@ -50,5 +50,7 @@ type ConfigFile struct {
 	NewUserDefaultDomain string `json:"new_user_default_domain"`
 
 	AuthentikAPIBearerToken string `json:"authentik_api_bearer_token"`
+	PocketbaseServer string `json:"pocketbase_server"`
+	SessionKey string `json:"session_key"`
 }
 

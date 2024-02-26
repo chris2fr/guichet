@@ -5,7 +5,7 @@
 
 {{define "body"}}
 <div class="alert alert-info">
-    Bienvenue, <strong>{{ .Login.Login.WelcomeName }}</strong> !
+    Bienvenue, <strong>{{ .Login.Login.Info.Name }}</strong> !
 </div>
 
 <div class="mt-3">
@@ -44,7 +44,7 @@
     <!-- <a class="list-group-item list-group-item-action" href="/user/send_code">Envoyer un code d'invitation</a> -->
 
 
-{{if .Common.CanAdmin}}
+{{if .Login.Login.Info.CanAdmin}}
   <div class="card mt-3">
     <div class="card-header">
       Administration

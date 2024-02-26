@@ -42,6 +42,9 @@ func MakeGVRouter() (*mux.Router, error) {
 	r := mux.NewRouter()
 	r.HandleFunc("/", views.HandleHome)
 
+	r.HandleFunc("/pocket/login", views.PocketLogin)
+	r.HandleFunc("/pocket/logout", views.PocketLogout)
+
 	r.HandleFunc("/session/logout", views.HandleLogout)
 
 	r.HandleFunc("/user", views.HandleUser)

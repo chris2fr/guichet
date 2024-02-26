@@ -35,6 +35,8 @@ type LoginInfo struct {
 	Email    string
 	DN       string
 	Password string
+	Name string
+	CanAdmin bool
 }
 
 type LoginStatus struct {

@@ -4,10 +4,180 @@ Handles session login and lougout with HTTP stuff
 package views
 
 import (
+	"fmt"
 	"guichet/models"
 	"log"
 	"net/http"
+
+	"bytes"
+	"encoding/json"
+	"io"
 )
+
+func PocketLogin (w http.ResponseWriter, r *http.Request) {
+
+
+	type PocketRecord struct {
+		avatar string
+		email string
+		username string
+		name string
+		collectionId string
+		collectionName string
+		emailVisibility bool 
+		created string
+		id string 
+		updated string 
+		verified bool
+	}
+
+	type PocketUser struct {
+		record PocketRecord
+		token string 
+		code float64 
+		message string 
+		data map[string]interface{}
+	}
+
+	var postBody []byte
+	var err error
+	var responseBody *bytes.Buffer
+	var resp *http.Response
+	var body []byte
+	// var pocketUserData PocketUser
+	var jsonData map[string]interface{}
+	// var jsonRecordData map[string]interface{}
+
+	// log.Printf(apis.ContextAuthRecordKey)
+
+	postBody, _ = json.Marshal(map[string]string{
+		"identity": r.PostFormValue("identity"),
+		"password": r.PostFormValue("password"),
+	})
+
+	// log.Printf(string(postBody))
+
+	responseBody = bytes.NewBuffer(postBody)
+	resp, err = http.Post(config.PocketbaseServer + "/api/collections/users/auth-with-password", "application/json", responseBody)
+	if err != nil {
+		log.Fatalf("An Error Occured %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err = io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	// jsonData := PocketUser{}
+	if err := json.Unmarshal(body, &jsonData); err != nil {
+		panic(err)	
+	}
+
+	// fmt.Println(jsonData)
+
+	session, err := GuichetSessionStore.Get(r, SESSION_NAME)
+	if err != nil {
+		session, _ = GuichetSessionStore.New(r, SESSION_NAME)
+		log.Println("Supposed to be a new session")
+		// return err
+	}
+	token, loggedin := jsonData["token"]
+	if loggedin {
+		session.Values["pocketbase_token"] = token
+		session.Values["loggedin"] = loggedin
+		// session.Values["loggedin"] = loggedin && jsonData["verified"].bool
+		session.Values["can_admin"] = loggedin && r.PostFormValue("identity") == "chris@lesgrandsvoisins.com"
+		// _ = json.Unmarshal([]byte(jsonData["record"]), &jsonRecordData)
+		// session.Values["record"] = jsonData["record"].(map[string]interface{})
+		jsonRecord := jsonData["record"].(map[string]interface{})
+		session.Values["email"] = jsonRecord["email"].(string)
+		session.Values["emailVisibility"] = jsonRecord["emailVisibility"].(bool)
+		session.Values["username"] = jsonRecord["username"].(string)
+		session.Values["avatar"] = jsonRecord["avatar"].(string)
+		session.Values["name"] = jsonRecord["name"].(string)
+		session.Values["created"] = jsonRecord["created"].(string)
+		session.Values["updated"] = jsonRecord["updated"].(string)
+		session.Values["verified"] = jsonRecord["verified"].(bool)
+		// fmt.Println(session.Values["loggedin"])
+		err = session.Save(r, w)
+		if err != nil {
+			log.Println("here")
+			fmt.Println(err)
+		}
+	} else {
+		session.Values["loggedin"] = false
+		delete(session.Values, "pocketbase_token")
+		delete(session.Values, "loggedin")
+		delete(session.Values, "can_admin")
+		delete(session.Values, "info")
+		_ = session.Save(r, w)
+	}
+
+	// sb := string(body)
+	// log.Printf(sb)
+	// log.Printf(apis.ContextAuthRecordKey)
+	http.Redirect(w, r, "/", http.StatusFound)
+
+}
+
+func PocketLoginCheck (w http.ResponseWriter, r *http.Request) (bool, bool, *LoginInfo) {
+	
+	session, err := GuichetSessionStore.Get(r, SESSION_NAME)
+	if err != nil {
+		// session, _ = GuichetSessionStore.New(r, SESSION_NAME)
+		// return err
+		fmt.Println("Not Supposed to be a new session")
+		log.Printf("checkLogin ldapOpen : %v", err)
+		log.Printf("checkLogin ldapOpen : %v", session)
+		log.Printf("checkLogin ldapOpen : %v", session.Values)
+	}
+	
+	// fmt.Println(session.Values["loggedin"])
+
+	if session.Values["loggedin"] != nil {
+			
+		username, _ := session.Values["username"]
+		email, _ := session.Values["email"]
+		name, _ := session.Values["name"]
+		can_admin, _ := session.Values["can_admin"]
+		info := LoginInfo {
+			Username: username.(string),
+			Email: email.(string),
+			Name: name.(string),
+			CanAdmin: can_admin.(bool),
+		}
+		// info.Username = session.Values["record"].(map[string]string)["username"]
+		// info.Email = session.Values["record"].(map[string]string)["email"]
+		// info.Avatar = session.Values["record"].(map[string]string)["avatar"]
+		// info.DN = session.Values["record"].(map[string]string)["dn"]
+		// fmt.Println(info)
+		return true, session.Values["can_admin"].(bool), &info
+	} else {
+		return false, false, nil
+	}
+}
+
+func PocketLogout (w http.ResponseWriter, r *http.Request) {
+	session, err := GuichetSessionStore.Get(r, SESSION_NAME)
+	if err != nil {
+		session, _ = GuichetSessionStore.New(r, SESSION_NAME)
+		// return err
+	} else {
+		session.Values["loggedin"] = false
+		delete(session.Values, "pocketbase_token")
+		delete(session.Values, "loggedin")
+		delete(session.Values, "can_admin")
+		delete(session.Values, "info")
+		_ = session.Save(r, w)
+	}
+	// http.Redirect(w,r,"/",http.StatusTemporaryRedirect)
+	// http.Redirect(w, r, "/", http.StatusFound)
+	loggedin, canadmin, info := PocketLoginCheck(w,r)
+	if loggedin || canadmin || info != nil {
+		log.Println("not logged out when should be logged out")
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
+}
 
 func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	var login_info *LoginInfo
