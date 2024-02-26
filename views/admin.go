@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
 	// "log"
 
 	"github.com/go-ldap/ldap/v3"
@@ -15,7 +16,7 @@ import (
 
 
 func checkAdminLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
-	// log.n := checkLogin(w, r)
+	login := checkLogin(w, r)
 	if login == nil {
 		return nil
 	}
@@ -41,7 +42,7 @@ func (d EntryList) Less(i, j int) bool {
 
 func HandleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 	templateAdminActivateUsers := getTemplate("admin/activate.html")
-	// log.n := checkAdminLogin(w, r)
+	login := checkAdminLogin(w, r)
 	if login == nil {
 		return
 	}
@@ -62,20 +63,20 @@ func HandleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
 	data := &AdminUsersTplData{
-		// log.n: NestedLoginTplData{
-			// log.n: login,
+		Login: NestedLoginTplData{
+			Login: login,
 		},
 		UserNameAttr: config.UserNameAttr,
 		UserBaseDN:   config.UserBaseDN,
 		Users:        EntryList(sr.Entries),
 		Common: NestedCommonTplData{
 			CanAdmin: true,
-			// log.edIn: true,
+			LoggedIn: true,
 		},
 	}
 	templateAdminActivateUsers.Execute(w, data)
@@ -84,40 +85,40 @@ func HandleAdminActivateUsers(w http.ResponseWriter, r *http.Request) {
 
 func HandleAdminActivateUser(w http.ResponseWriter, r *http.Request) {
 	cn := mux.Vars(r)["cn"]
-	// log.n := checkAdminLogin(w, r)
+	login := checkAdminLogin(w, r)
 	if login == nil {
 		return
 	}
 	modifyRequest := *ldap.NewModifyDNRequest("cn="+cn+","+config.InvitationBaseDN, "cn="+cn, true, config.UserBaseDN)
 	err := login.conn.ModifyDN(&modifyRequest)
 	if err != nil {
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
-	// log.n.conn.Close()
+	login.conn.Close()
 	http.Redirect(w, r, "/admin/activate", http.StatusFound)
 }
 
 func HandleAdminUnactivateUser(w http.ResponseWriter, r *http.Request) {
 	cn := mux.Vars(r)["cn"]
-	// log.n := checkAdminLogin(w, r)
+	login := checkAdminLogin(w, r)
 	if login == nil {
 		return
 	}
 	modifyRequest := *ldap.NewModifyDNRequest("cn="+cn+","+config.UserBaseDN, "cn="+cn, true, config.InvitationBaseDN)
 	err := login.conn.ModifyDN(&modifyRequest)
 	if err != nil {
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
-	// log.n.conn.Close()
+	login.conn.Close()
 	http.Redirect(w, r, "/admin/users", http.StatusFound)
 }
 
 func HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	templateAdminUsers := getTemplate("admin/users.html")
 
-	// log.n := checkAdminLogin(w, r)
+	login := checkAdminLogin(w, r)
 	if login == nil {
 		return
 	}
@@ -132,7 +133,7 @@ func HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
@@ -143,7 +144,7 @@ func HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 		Users:        EntryList(sr.Entries),
 		Common: NestedCommonTplData{
 			CanAdmin: login.Common.CanAdmin,
-			// log.edIn: false},
+			LoggedIn: false},
 	}
 	sort.Sort(data.Users)
 
@@ -157,13 +158,13 @@ func HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	// }, config, login)
 
 	templateAdminUsers.Execute(w, data)
-	// log.n.conn.Close()
+	login.conn.Close()
 }
 
 func HandleAdminGroups(w http.ResponseWriter, r *http.Request) {
 	templateAdminGroups := getTemplate("admin/groups.html")
 
-	// log.n := checkAdminLogin(w, r)
+	login := checkAdminLogin(w, r)
 	if login == nil {
 		return
 	}
@@ -178,30 +179,30 @@ func HandleAdminGroups(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
 	data := &AdminGroupsTplData{
-		// log.n: NestedLoginTplData{
-			// log.n: login},
+		Login: NestedLoginTplData{
+			Login: login},
 		GroupNameAttr: config.GroupNameAttr,
 		GroupBaseDN:   config.GroupBaseDN,
 		Groups:        EntryList(sr.Entries),
 		Common: NestedCommonTplData{
 			CanAdmin: login.Common.CanAdmin,
-			// log.edIn: false},
+			LoggedIn: false},
 	}
 	sort.Sort(data.Groups)
 
 	templateAdminGroups.Execute(w, data)
-	// log.n.conn.Close()
+	login.conn.Close()
 }
 
 func HandleAdminMailing(w http.ResponseWriter, r *http.Request) {
 	templateAdminMailing := getTemplate("admin/mailing.html")
 
-	// log.n := checkAdminLogin(w, r)
+	login := checkAdminLogin(w, r)
 	if login == nil {
 		return
 	}
@@ -216,30 +217,30 @@ func HandleAdminMailing(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
 	data := &AdminMailingTplData{
-		// log.n: NestedLoginTplData{
-			// log.n: login},
+		Login: NestedLoginTplData{
+			Login: login},
 		MailingNameAttr: config.MailingNameAttr,
 		MailingBaseDN:   config.MailingBaseDN,
 		MailingLists:    EntryList(sr.Entries),
 		Common: NestedCommonTplData{
 			CanAdmin: login.Common.CanAdmin,
-			// log.edIn: false},
+			LoggedIn: false},
 	}
 	sort.Sort(data.MailingLists)
 
 	templateAdminMailing.Execute(w, data)
-	// log.n.conn.Close()
+	login.conn.Close()
 }
 
 func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 	templateAdminMailingList := getTemplate("admin/mailing/list.html")
 
-	// log.n := checkAdminLogin(w, r)
+	login := checkAdminLogin(w, r)
 	if login == nil {
 		return
 	}
@@ -362,13 +363,13 @@ func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
 	if len(sr.Entries) != 1 {
 		http.Error(w, fmt.Sprintf("Object not found: %s", dn), http.StatusNotFound)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
@@ -396,7 +397,7 @@ func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
@@ -409,8 +410,8 @@ func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &AdminMailingListTplData{
-		// log.n: NestedLoginTplData{
-			// log.n: login,
+		Login: NestedLoginTplData{
+			Login: login,
 		},
 		MailingNameAttr: config.MailingNameAttr,
 		MailingBaseDN:   config.MailingBaseDN,
@@ -423,13 +424,13 @@ func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 			CanAdmin: true,
 			Error:    dError,
 			Success:  dSuccess,
-			// log.edIn: true},
+			LoggedIn: true},
 	}
 	sort.Sort(data.Members)
 	sort.Sort(data.PossibleNewMembers)
 
 	templateAdminMailingList.Execute(w, data)
-	// log.n.conn.Close()
+	login.conn.Close()
 }
 
 // ===================================================
@@ -439,7 +440,7 @@ func HandleAdminMailingList(w http.ResponseWriter, r *http.Request) {
 func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	templateAdminLDAP := getTemplate("admin/ldap.html")
 
-	// log.n := checkAdminLogin(w, r)
+	login := checkAdminLogin(w, r)
 	if login == nil {
 		return
 	}
@@ -577,7 +578,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 				dError = err.Error()
 			} else {
 				http.Redirect(w, r, "/admin/ldap/"+strings.Join(dn_split[1:], ","), http.StatusFound)
-				// log.n.conn.Close()
+				login.conn.Close()
 				return
 			}
 		}
@@ -596,13 +597,13 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
 	if len(sr.Entries) != 1 {
 		http.Error(w, fmt.Sprintf("Object not found: %s", dn), http.StatusNotFound)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
@@ -688,7 +689,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		sr, err = login.conn.Search(searchRequest)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			// log.n.conn.Close()
+			login.conn.Close()
 			return
 		}
 		
@@ -744,7 +745,7 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// log.Printf(fmt.Sprintf("745: %v",err))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 	// log.Printf(fmt.Sprintf("749: %v",sr.Entries))
@@ -830,11 +831,11 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 		fmt.Sprintf("(objectclass=*)"),
 		[]string{"dn", "displayname", "description"},
 		nil)
-  log.Printf(fmt.Sprintf("832: %v",sr))
+  // log.Printf(fmt.Sprintf("832: %v",sr))
 	sr, err = login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
@@ -879,18 +880,18 @@ func HandleAdminLDAP(w http.ResponseWriter, r *http.Request) {
 
 		Common: NestedCommonTplData{
 			CanAdmin: true,
-			// log.edIn: true,
+			LoggedIn: true,
 			Error:    dError,
 			Success:  dSuccess,
 		},
 	})
-	// log.n.conn.Close()
+	login.conn.Close()
 }
 
 func HandleAdminCreate(w http.ResponseWriter, r *http.Request) {
 	templateAdminCreate := getTemplate("admin/create.html")
 
-	// log.n := checkAdminLogin(w, r)
+	login := checkAdminLogin(w, r)
 	if login == nil {
 		return
 	}
@@ -909,13 +910,13 @@ func HandleAdminCreate(w http.ResponseWriter, r *http.Request) {
 	sr, err := login.conn.Search(searchRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
 	if len(sr.Entries) != 1 {
 		http.Error(w, fmt.Sprintf("Parent object %s does not exist", super_dn), http.StatusNotFound)
-		// log.n.conn.Close()
+		login.conn.Close()
 		return
 	}
 
@@ -1060,5 +1061,5 @@ func HandleAdminCreate(w http.ResponseWriter, r *http.Request) {
 	data.Common.CanAdmin = true
 
 	templateAdminCreate.Execute(w, data)
-	// log.n.conn.Close()
+	login.conn.Close()
 }

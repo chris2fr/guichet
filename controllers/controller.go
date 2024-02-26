@@ -8,12 +8,9 @@ import (
 	"guichet/views"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/dchest/captcha"
+	"github.com/gorilla/mux"
 	// "log"
-
-
-
 )
 
 // const (
