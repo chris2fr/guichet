@@ -5,6 +5,7 @@ login Handles login and current-user verification
 package views
 
 import (
+	"errors"
 	"fmt"
 	"guichet/models"
 	"log"
@@ -51,7 +52,7 @@ func DetermineLDAPUserDN (identity string) (string, error) {
 		}
 		if len(searchRes.Entries) == 0 {
 			log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchRequest)
-			return "", err // errors.New("Il n'y a pas d'utilisateur qui correspond")
+			return "", errors.New("Il n'y a pas d'utilisateur qui correspond")
 		}
 		newUserLdapConn.Close()
 		return searchRes.Entries[0].DN, nil
