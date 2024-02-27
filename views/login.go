@@ -51,7 +51,7 @@ func DetermineLDAPUserDN (identity string) (string, error) {
 		}
 		if len(searchRes.Entries) == 0 {
 			log.Printf("Il n'y a pas d'utilisateur qui correspond %v", searchRequest)
-			// return errors.New("Il n'y a pas d'utilisateur qui correspond")
+			return "", err // errors.New("Il n'y a pas d'utilisateur qui correspond")
 		}
 		newUserLdapConn.Close()
 		return searchRes.Entries[0].DN, nil
