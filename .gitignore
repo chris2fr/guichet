@@ -4,3 +4,4 @@ config.json
 result
 .direnv/
 password
+pb_data/

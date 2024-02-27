@@ -85,10 +85,11 @@ func PocketLogin (w http.ResponseWriter, r *http.Request) {
 		session.Values["pocketbase_token"] = token
 		session.Values["loggedin"] = loggedin
 		// session.Values["loggedin"] = loggedin && jsonData["verified"].bool
-		session.Values["can_admin"] = loggedin && r.PostFormValue("identity") == "chris@lesgrandsvoisins.com"
 		// _ = json.Unmarshal([]byte(jsonData["record"]), &jsonRecordData)
 		// session.Values["record"] = jsonData["record"].(map[string]interface{})
 		jsonRecord := jsonData["record"].(map[string]interface{})
+		session.Values["can_admin"] = jsonRecord["canAdmin"].(bool)// loggedin && r.PostFormValue("identity") == "chris@lesgrandsvoisins.com"
+
 		session.Values["email"] = jsonRecord["email"].(string)
 		session.Values["emailVisibility"] = jsonRecord["emailVisibility"].(bool)
 		session.Values["username"] = jsonRecord["username"].(string)
