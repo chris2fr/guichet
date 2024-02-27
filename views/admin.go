@@ -20,6 +20,9 @@ func checkAdminLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	if login == nil {
 		return nil
 	}
+		// loggedin, can_admin, info := views.PocketLoginCheck
+
+
 
 	if !login.Common.CanAdmin {
 		http.Error(w, "Not authorized to perform administrative operations.", http.StatusUnauthorized)

@@ -67,6 +67,18 @@ type CodeMailFields struct {
 
 var config = models.ReadConfig()
 
+func ldapSimpleOpen() (*ldap.Conn, error) {
+	if config.LdapTLS {
+		tlsConf := &tls.Config{
+			ServerName:         config.LdapServerAddr,
+			InsecureSkipVerify: true,
+		}
+		return ldap.DialTLS("tcp", net.JoinHostPort(config.LdapServerAddr, "636"), tlsConf)
+	} else {
+		return ldap.DialURL("ldap://" + config.LdapServerAddr)
+	}
+}
+
 func ldapOpen(w http.ResponseWriter) (*ldap.Conn, error) {
 	if config.LdapTLS {
 		tlsConf := &tls.Config{

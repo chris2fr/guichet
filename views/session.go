@@ -14,31 +14,30 @@ import (
 	"io"
 )
 
+type PocketRecord struct {
+	avatar string
+	email string
+	username string
+	name string
+	collectionId string
+	collectionName string
+	emailVisibility bool 
+	created string
+	id string 
+	updated string 
+	verified bool
+}
+
+type PocketUser struct {
+	record PocketRecord
+	token string 
+	code float64 
+	message string 
+	data map[string]interface{}
+}
+
+
 func PocketLogin (w http.ResponseWriter, r *http.Request) {
-
-
-	type PocketRecord struct {
-		avatar string
-		email string
-		username string
-		name string
-		collectionId string
-		collectionName string
-		emailVisibility bool 
-		created string
-		id string 
-		updated string 
-		verified bool
-	}
-
-	type PocketUser struct {
-		record PocketRecord
-		token string 
-		code float64 
-		message string 
-		data map[string]interface{}
-	}
-
 	var postBody []byte
 	var err error
 	var responseBody *bytes.Buffer
@@ -93,7 +92,7 @@ func PocketLogin (w http.ResponseWriter, r *http.Request) {
 		session.Values["email"] = jsonRecord["email"].(string)
 		session.Values["emailVisibility"] = jsonRecord["emailVisibility"].(bool)
 		session.Values["username"] = jsonRecord["username"].(string)
-		session.Values["avatar"] = jsonRecord["avatar"].(string)
+		// session.Values["avatar"] = jsonRecord["avatar"].(string)
 		session.Values["name"] = jsonRecord["name"].(string)
 		session.Values["created"] = jsonRecord["created"].(string)
 		session.Values["updated"] = jsonRecord["updated"].(string)
@@ -112,6 +111,9 @@ func PocketLogin (w http.ResponseWriter, r *http.Request) {
 		delete(session.Values, "info")
 		_ = session.Save(r, w)
 	}
+
+	_, _ = HandleLDAPLogin(w, r)
+	// login := checkLogin(w, r)
 
 	// sb := string(body)
 	// log.Printf(sb)
@@ -135,7 +137,6 @@ func PocketLoginCheck (w http.ResponseWriter, r *http.Request) (bool, bool, *Log
 	// fmt.Println(session.Values["loggedin"])
 
 	if session.Values["loggedin"] != nil {
-			
 		username, _ := session.Values["username"]
 		email, _ := session.Values["email"]
 		name, _ := session.Values["name"]
@@ -146,14 +147,18 @@ func PocketLoginCheck (w http.ResponseWriter, r *http.Request) (bool, bool, *Log
 			Name: name.(string),
 			CanAdmin: can_admin.(bool),
 		}
-		// info.Username = session.Values["record"].(map[string]string)["username"]
-		// info.Email = session.Values["record"].(map[string]string)["email"]
-		// info.Avatar = session.Values["record"].(map[string]string)["avatar"]
-		// info.DN = session.Values["record"].(map[string]string)["dn"]
-		// fmt.Println(info)
 		return true, session.Values["can_admin"].(bool), &info
 	} else {
-		return false, false, nil
+			templateLogin := getTemplate("login.html")
+			execTemplate(w, templateLogin, NestedCommonTplData{
+				CanAdmin:  false,
+				CanInvite: true,
+				LoggedIn:  false}, NestedLoginTplData{}, LoginFormData{
+				Common: NestedCommonTplData{
+					CanAdmin:  false,
+					CanInvite: true,
+					LoggedIn:  false}})
+		return  false, false, nil
 	}
 }
 
@@ -175,9 +180,15 @@ func PocketLogout (w http.ResponseWriter, r *http.Request) {
 	loggedin, canadmin, info := PocketLoginCheck(w,r)
 	if loggedin || canadmin || info != nil {
 		log.Println("not logged out when should be logged out")
+		http.Redirect(w, r, "/", http.StatusFound)
 	}
-	http.Redirect(w, r, "/", http.StatusFound)
+	// http.Redirect(w, r, "/", http.StatusFound)
 }
+
+
+
+
+
 
 func checkLogin(w http.ResponseWriter, r *http.Request) *LoginStatus {
 	var login_info *LoginInfo

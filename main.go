@@ -17,23 +17,18 @@ import (
 	"guichet/views"
 	"log"
 
-	// "os"
+	"os"
 
 	// "strings"
 
 	"github.com/gorilla/sessions"
+
+	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/apis"
+	"github.com/pocketbase/pocketbase/core"
 )
 
-func main() {
-
-	flag.Parse()
-
-	// session_key := make([]byte, 32)
-	// n, err := rand.Read(session_key)
-	// if err != nil || n != 32 {
-	// 	log.Fatal(err)
-	// }
-	// views.GuichetSessionStore = sessions.NewCookieStore(session_key)
+func launchPocketBase () {
 	config := models.ReadConfig()
 	views.GuichetSessionStore = sessions.NewCookieStore([]byte(config.SessionKey))
 	
@@ -42,4 +37,35 @@ func main() {
 	if err != nil {
 		log.Fatal("Cannot start http server: ", err)
 	}
+}
+
+func launchGuichet () {
+	app := pocketbase.New()
+
+	// serves static files from the provided public dir (if exists)
+	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+			e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS("./pb_public"), false))
+			return nil
+	})
+
+	if err := app.Start(); err != nil {
+			log.Fatal(err)
+	}
+}
+
+func main() {
+
+	flag.Parse()
+
+	go launchPocketBase()
+	launchGuichet()
+
+	// session_key := make([]byte, 32)
+	// n, err := rand.Read(session_key)
+	// if err != nil || n != 32 {
+	// 	log.Fatal(err)
+	// }
+	// views.GuichetSessionStore = sessions.NewCookieStore(session_key)
+	
+
 }

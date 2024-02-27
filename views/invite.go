@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+
 	// "crypto/rand"
 	// "github.com/emersion/go-smtp"
 	"github.com/go-ldap/ldap/v3"
@@ -23,8 +24,8 @@ import (
 	// "flag"
 	// "github.com/mojocn/base64Captcha"
 	// "math/rand"
-	"time"
 	"errors"
+	"time"
 	// "encoding/json"
 	// "clevergo.tech/captchas/stores/memstore"
 )

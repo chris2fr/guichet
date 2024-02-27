@@ -11,23 +11,13 @@ import (
 func HandleHome(w http.ResponseWriter, r *http.Request) {
 	templateHome := getTemplate("home.html")
 	loggedin, can_admin, info := PocketLoginCheck(w,r)
-	if !loggedin {
-		templateLogin := getTemplate("login.html")
-		execTemplate(w, templateLogin, NestedCommonTplData{
-			CanAdmin:  false,
-			CanInvite: true,
-			LoggedIn:  false}, NestedLoginTplData{}, LoginFormData{
-			Common: NestedCommonTplData{
-				CanAdmin:  false,
-				CanInvite: true,
-				LoggedIn:  false}})
-		// templateLogin.Execute(w, LoginFormData{
-		// 	Common: NestedCommonTplData{
-		// 		CanAdmin:  false,
-		// 		CanInvite: true,
-		// 		LoggedIn:  false}})
-		return
-	}
+
+	// if login == nil {
+		login := &LoginStatus{
+				Info: info,
+			}
+	// }
+	
 	// if ! loggedin {
 	// 	status, _ := HandleLogin(w, r)
 	// 	if status == nil {
@@ -52,10 +42,8 @@ func HandleHome(w http.ResponseWriter, r *http.Request) {
 
 	data := HomePageData{
 		Login: NestedLoginTplData{
-			// Login: login,
-			Login: &LoginStatus{
-				Info: info,
-			},
+			Login: login,
+			// Login: 
 		},
 		BaseDN: config.BaseDN,
 		Org:    config.Org,
