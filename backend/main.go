@@ -6,12 +6,10 @@ Oriniated with deuxfleurs.fr and advanced by resdigita.com
 package main
 
 import (
-
-	// "crypto/tls"
-	// "encoding/json"
 	"flag"
-	// "fmt"
-	// "io/ioutil"
+	"path/filepath"
+	"strings"
+
 	"guichet/controllers"
 	"guichet/models"
 	"guichet/views"
@@ -19,14 +17,21 @@ import (
 
 	"os"
 
-	// "strings"
-
 	"github.com/gorilla/sessions"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 )
+
+func defaultPublicDir() string {
+	if strings.HasPrefix(os.Args[0], os.TempDir()) {
+		// most likely ran with go run
+		return "./pb_public"
+	}
+
+	return filepath.Join(os.Args[0], "./pb_public")
+}
 
 func launchPocketBase () {
 	config := models.ReadConfig()
@@ -39,26 +44,34 @@ func launchPocketBase () {
 	}
 }
 
-func launchGuichet () {
-	app := pocketbase.New()
-
-	// serves static files from the provided public dir (if exists)
-	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-			e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS("./pb_public"), false))
-			return nil
-	})
-
-	if err := app.Start(); err != nil {
-			log.Fatal(err)
-	}
-}
-
 func main() {
+	var publicDirFlag string
 
 	flag.Parse()
 
+	app := pocketbase.New()
+
+	// add "--publicDir" option flag
+	app.RootCmd.PersistentFlags().StringVar(
+		&publicDirFlag,
+		"publicDir",
+		defaultPublicDir(),
+		"the directory to serve static files",
+	)
+
+	// serves static files from the provided public dir (if exists)
+	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+			e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS(publicDirFlag), false))
+			return nil
+	})
+
+	// Launch pocketbase router n background
 	go launchPocketBase()
-	launchGuichet()
+
+	// Launch legacy Guichet router
+	if err := app.Start(); err != nil {
+			log.Fatal(err)
+	}
 
 	// session_key := make([]byte, 32)
 	// n, err := rand.Read(session_key)

@@ -1,0 +1,9 @@
+guichet
+guichet.static
+config.json
+result
+.direnv/
+password
+pb_data/*
+guichet.exe
+pb_public/*
