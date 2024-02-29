@@ -1,1 +1,0 @@
-import{a as t}from"./Alerts.7274dc2c.js";async function i(o){try{await o()}catch(n){const{message:a,data:{data:e={}}}=n;a&&t.error(a);for(const r in e){const{message:s}=e[r];s&&t.error(`${r}: ${s}`)}}}export{i as a};
