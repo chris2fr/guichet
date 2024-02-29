@@ -4,4 +4,6 @@ config.json
 result
 .direnv/
 password
-pb_data/
+pb_data/*
+guichet.exe
+pb_public/*
