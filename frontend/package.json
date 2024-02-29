@@ -22,7 +22,7 @@
     "@sveltejs/adapter-static": "^2.0.3",
     "@sveltejs/kit": "^1.27.6",
     "@types/node": "^20.10.1",
-    "pocketbase-typegen": "^1.1.2",
+    "pocketbase-typegen": "^1.2.1",
     "prettier": "^3.1.0",
     "prettier-plugin-svelte": "^3.1.2",
     "sass": "^1.69.5",

@@ -7,7 +7,7 @@
   import type { PageData } from "./$types";
   export let data: PageData;
   $: ({
-    user: { id, username, email, name, avatar },
+    user: { id, username, email, name, avatar, structures },
   } = data);
   $: $metadata.title = name;
 </script>

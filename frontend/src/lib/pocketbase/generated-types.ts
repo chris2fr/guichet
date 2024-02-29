@@ -2,77 +2,97 @@
 * This file was @generated using pocketbase-typegen
 */
 
+import type PocketBase from 'pocketbase'
+import type { RecordService } from 'pocketbase'
+
 export enum Collections {
-	Hooks = "hooks",
-	Posts = "posts",
+	MyStructures = "myStructures",
+	NotYetMyStructures = "notYetMyStructures",
+	Structures = "structures",
 	Users = "users",
 }
 
 // Alias types for improved usability
 export type IsoDateString = string
 export type RecordIdString = string
+export type HTMLString = string
 
 // System fields
-export type BaseSystemFields = {
+export type BaseSystemFields<T = never> = {
 	id: RecordIdString
 	created: IsoDateString
 	updated: IsoDateString
 	collectionId: string
 	collectionName: Collections
-	expand?: { [key: string]: any }
+	expand?: T
 }
 
-export type AuthSystemFields = {
+export type AuthSystemFields<T = never> = {
 	email: string
 	emailVisibility: boolean
 	username: string
 	verified: boolean
-} & BaseSystemFields
+} & BaseSystemFields<T>
 
 // Record types for each collection
 
-export enum HooksEventOptions {
-	"insert" = "insert",
-	"update" = "update",
-	"delete" = "delete",
+export type MyStructuresRecord = {
+	description?: HTMLString
+	logo?: string
+	name?: string
+	users?: RecordIdString[]
 }
 
-export enum HooksActionTypeOptions {
-	"command" = "command",
-	"post" = "post",
-}
-export type HooksRecord = {
-	collection: string
-	event: HooksEventOptions
-	action_type: HooksActionTypeOptions
-	action: string
-	action_params?: string
-	expands?: string
-	disabled?: boolean
+export type NotYetMyStructuresRecord = {
+	description?: HTMLString
+	logo?: string
+	name?: string
+	users?: RecordIdString[]
 }
 
-export type PostsRecord = {
-	title: string
-	body: string
-	slug: string
-	files?: string[]
-	user?: RecordIdString
+export type StructuresRecord = {
+	description?: HTMLString
+	logo?: string
+	name?: string
+	users?: RecordIdString[]
 }
 
 export type UsersRecord = {
-	name?: string
-  email?: string
-  username?: string
 	avatar?: string
+	canadmin?: boolean
+	dn?: string
+	name?: string
+	structures?: RecordIdString[]
 }
 
 // Response types include system fields and match responses from the PocketBase API
-export type HooksResponse = HooksRecord & BaseSystemFields
-export type PostsResponse = PostsRecord & BaseSystemFields
-export type UsersResponse = UsersRecord & AuthSystemFields
+export type MyStructuresResponse<Texpand = unknown> = Required<MyStructuresRecord> & BaseSystemFields<Texpand>
+export type NotYetMyStructuresResponse<Texpand = unknown> = Required<NotYetMyStructuresRecord> & BaseSystemFields<Texpand>
+export type StructuresResponse<Texpand = unknown> = Required<StructuresRecord> & BaseSystemFields<Texpand>
+export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
+
+// Types containing all Records and Responses, useful for creating typing helper functions
 
 export type CollectionRecords = {
-	hooks: HooksRecord
-	posts: PostsRecord
+	myStructures: MyStructuresRecord
+	notYetMyStructures: NotYetMyStructuresRecord
+	structures: StructuresRecord
 	users: UsersRecord
+}
+
+export type CollectionResponses = {
+	myStructures: MyStructuresResponse
+	notYetMyStructures: NotYetMyStructuresResponse
+	structures: StructuresResponse
+	users: UsersResponse
+}
+
+// Type for usage with type asserted PocketBase instance
+// https://github.com/pocketbase/js-sdk#specify-typescript-definitions
+
+export type TypedPocketBase = PocketBase & {
+	collection(idOrName: 'myStructures'): RecordService<MyStructuresResponse>
+	collection(idOrName: 'notYetMyStructures'): RecordService<NotYetMyStructuresResponse>
+	collection(idOrName: 'structures'): RecordService<StructuresResponse>
+	collection(idOrName: 'users'): RecordService<UsersResponse>
 }

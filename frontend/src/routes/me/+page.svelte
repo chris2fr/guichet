@@ -8,15 +8,7 @@
 
 
   import { watch } from "$lib/pocketbase";
-    import { pbkdf2 } from "crypto";
 
-  // const userStructures = watch<MyStructuresResponse>("myStructures", {
-  //   sort: "name",
-  // });
-  // const structures = watch<StructuresResponse>("structures", {
-  //   sort: "name",
-  // });
-  
   const structures = watch<NotYetMyStructuresResponse>("notYetMyStructures", {
     sort: "name",
   });
@@ -25,7 +17,6 @@
   $: ({ user } = data);
 
   async function submit(e: SubmitEvent) {
-    // user.id = $authModel?.id;
     alertOnFailure(async () => {
       await save("users", user);
       goto("../..");
