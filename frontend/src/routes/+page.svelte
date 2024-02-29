@@ -6,6 +6,6 @@
 
 <ul>
 
-<li><a href="https://guichet.resdigita.com">guichet.resdigita.com</a></li>
+<li><a href="https://newguichet.resdigita.com">newguichet.resdigita.com</a></li>
 
 </ul>
